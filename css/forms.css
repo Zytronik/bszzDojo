@@ -1,0 +1,108 @@
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+input,
+select {
+    background-color: var(--greyBackground);
+    padding: 5px 8px;
+    border-radius: 5px;
+    box-shadow: none;
+	border: none;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+.form-row.checkbox label {
+    display: block;
+    position: relative;
+    margin-bottom: unset;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.form-row.checkbox label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    transition: 0.3s;
+}
+
+.checkmark {
+    display: block;
+    height: 25px;
+    width: 25px;
+    position: relative;
+    background-color: var(--greyBackground);
+    border-radius: 5px;
+}
+
+.form-row.checkbox label:hover input~.checkmark {
+    background-color: var(--highlightsColor);
+}
+
+.form-row.checkbox label input:checked~.checkmark {
+    background-color: var(--highlightsColor);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.form-row.checkbox label input:checked~.checkmark:after {
+    display: block;
+}
+
+.form-row.checkbox label .checkmark:after {
+    left: 35%;
+    top: 25%;
+    width: 8px;
+    height: 13px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+button {
+    background-color: var(--highlightsColor);
+	box-shadow: none;
+	border: none;
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.message.error {
+    color: var(--highlightsColor);
+    padding: 5px 0;
+}
+
+.message {
+    padding: 10px 0;
+    height: auto;
+    transition: 0.3s;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.message.hidden {
+    opacity: 0;
+    height: 0;
+    visibility: hidden;
+    pointer-events: none;
+}

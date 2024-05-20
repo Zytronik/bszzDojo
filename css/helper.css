@@ -1,0 +1,121 @@
+/* Alignments */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.margin-bottom-small {
+    margin-bottom: 15px;
+}
+
+.margin-top-small {
+    margin-top: 15px;
+}
+
+/* Positioning */
+.flex-center,
+.flexcenter {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.flex-center-row,
+.flexcenterrow {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+/* Bootstrap Grid Extensions */
+.container-small,
+.container-large {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 576px) {
+    .container-small {
+        max-width: 490px;
+    }
+
+    .container-large {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-small {
+        max-width: 620px;
+    }
+
+    .container-large {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container-small {
+        max-width: 780px;
+    }
+
+    .container-large {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-small {
+        max-width: 940px;
+    }
+
+    .container-large {
+        max-width: 1180px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .container-large {
+        max-width: 1400px;
+    }
+}
+
+@media (min-width: 3000px) {
+    .container-large {
+        max-width: 2500px;
+    }
+}
+
+/* Miscellaneous */
+.maxwidth {
+    max-width: 100%;
+    height: auto;
+}
+
+.size-auto,
+.size-full,
+.size-large,
+.size-medium,
+.size-small,
+.size-thumbnail {
+    max-width: 100%;
+    height: auto;
+}

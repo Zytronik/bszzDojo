@@ -1,0 +1,165 @@
+body,
+html {
+	background-color: rgb(20, 20, 20) !important;
+	color: white !important;
+	font-size: 18px !important;
+	font-family: Avenir !important;
+	overflow-x: hidden !important;
+}
+
+body{
+	overflow: hidden;
+}
+
+:root {
+	--greyBackground: rgb(40, 40, 40);
+	--highlightsColor: #e43811;
+}
+
+@font-face {
+	font-family: Avenir;
+	src: url(../fonts/avenir/avenir_roman_12.woff);
+}
+
+p {
+	margin: unset;
+}
+
+a {
+	color: white !important;
+	text-decoration: none;
+}
+
+h1 {
+	margin: unset !important;
+	margin-bottom: 5px !important;
+	font-size: 180% !important;
+	font-family: Avenir;
+	color: white;
+	z-index: 1;
+	line-height: 1.2;
+}
+
+h2 {
+	margin: unset;
+	font-size: 140%;
+	margin-bottom: 5px;
+	font-family: Avenir;
+}
+
+h3 {
+	margin: unset;
+	font-size: 120%;
+}
+
+article > section:first-of-type {
+	padding-top: 15px;
+}
+
+section {
+	padding: 20px 0;
+}
+
+article {
+	padding-top: 60px;
+	min-height: calc(100vh - 40px);
+}
+
+/* header */
+header {
+	background-color: var(--greyBackground);
+	position: fixed;
+	width: 100%;
+	z-index: 1000;
+	height: 60px;
+	padding: 10px 0;
+	font-size: 170%;
+}
+
+header .row,
+header .container {
+	height: 100%;
+}
+
+header .row > div {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	justify-content: space-between;
+}
+
+header .row > div > a {
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+header .logo {
+	height: 100%;
+	object-fit: contain;
+}
+
+header nav ul {
+	display: flex;
+	list-style: none;
+	gap: 30px;
+	margin: unset;
+	padding: unset;
+}
+
+/* footer */
+footer {
+	background-color: var(--greyBackground);
+	z-index: 1000;
+	height: 40px;
+}
+
+footer .container,
+footer .row {
+	height: 100%;
+}
+
+footer .row > div {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* tabs */
+.tabs {
+	display: flex;
+	gap: 15px;
+	border-bottom: 2px solid var(--greyBackground);
+	margin-bottom: 15px;
+}
+
+.tab {
+	cursor: pointer;
+	opacity: 0.4;
+	background-color: var(--greyBackground);
+	padding: 10px 15px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	transition: opacity 0.3s;
+}
+
+.tab.active {
+	opacity: 1;
+}
+
+.tab-wrapper.active {
+    opacity: 1;
+    height: auto;
+    visibility: visible;
+	pointer-events: all;
+}
+
+.tab-wrapper {
+    opacity: 0;
+    transition: opacity 0.3s;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+	pointer-events: none;
+}
