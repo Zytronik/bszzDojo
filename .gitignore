@@ -1,0 +1,10 @@
+# Ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# Ignore environment config
+.env
+
+# Ignore dbconfig file
+dbConfig.php
