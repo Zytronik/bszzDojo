@@ -1,5 +1,5 @@
-<?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+<?php $msg = [];
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitScore'])) {
 	$bowType = $_POST['bowType'];
 	$targetSize = $_POST['targetSize'];
 	$distance = $_POST['distance'];
@@ -9,14 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$result = $_POST['result'];
 	$arrows = $_POST['arrows'];
 
-	if (isset($_POST['submitScore'])) {
-		echo submitScore($conn, $_SESSION['user_id'], $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows);
-	}
+	$msg = submitScore($conn, $_SESSION['user_id'], $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows);
 } ?>
 <section>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
+				<?php include 'infoMessage.php'; ?>
 				<h2>Erfasse einen neuen Score</h2>
 				<form method="post">
 					<div class="form-row">

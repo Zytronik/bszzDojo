@@ -4,6 +4,10 @@
     margin-bottom: 15px;
 }
 
+form > *:last-child {
+    margin-bottom: 0;
+}
+
 input,
 select {
     background-color: var(--greyBackground);
@@ -69,7 +73,7 @@ label {
     top: 25%;
     width: 8px;
     height: 13px;
-    border: solid white;
+    border: solid var(--fontColor);
     border-width: 0 3px 3px 0;
     transform: rotate(45deg);
 }
@@ -84,11 +88,17 @@ button {
     cursor: pointer;
     transition: 0.3s;
     margin-top: 10px;
+    color: white;
 }
 
 .message.error {
-    color: var(--highlightsColor);
-    padding: 5px 0;
+    color: var(--errorColor);
+    background-color: var(--errorBackground);
+}
+
+.message.success {
+    color: var(--successColor);
+    background-color: var(--successBackground);
 }
 
 .message {
@@ -98,6 +108,8 @@ button {
     opacity: 1;
     visibility: visible;
     pointer-events: all;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .message.hidden {
@@ -105,4 +117,6 @@ button {
     height: 0;
     visibility: hidden;
     pointer-events: none;
+    padding: unset;
+    margin: unset;
 }

@@ -1,4 +1,5 @@
-<?php include 'includes/sessionProtect.php'; ?>
+<?php include 'includes/sessionProtect.php'; 
+include 'utils.php'; ?>
 <!DOCTYPE html>
 <html lang="de">
 
@@ -14,7 +15,11 @@
 		<article>
 			<?php $title = "Einstellungen";
 			$desc = "Konfiguriere dein BSZZ Dojo.";
-			include 'includes/title.php'; ?>
+			include 'includes/title.php'; 
+			include 'includes/requestBadge.php';
+			include 'includes/editProfile.php';
+			include 'includes/settings.php';
+			include 'includes/logout.php'; ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
 	</main>

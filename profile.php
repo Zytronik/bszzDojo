@@ -1,10 +1,14 @@
-<?php include 'includes/sessionProtect.php'; ?>
+<?php include 'includes/sessionProtect.php';
+include 'utils.php';
+$user = getUserFromUrl($conn);
+$userId = $user['id']; ?>
 <!DOCTYPE html>
 <html lang="de">
 
 <head>
 	<title>BSZZ Dojo | Profile</title>
 	<?php include 'includes/head.php'; ?>
+	<link rel="stylesheet" href="css/profile.css">
 </head>
 
 <body>
@@ -12,10 +16,10 @@
 	<main>
 		<?php include 'includes/header.php'; ?>
 		<article>
-			<?php $title = "Profile";
-			$desc = "Rekorde, Statistiken und mehr.";
-			include 'includes/title.php'; ?>
-			<?php include 'includes/profile.php'; ?>
+			<?php include 'includes/profileInfo.php';
+			include 'includes/personalRecords.php';
+			include 'includes/personalCharts.php';
+			include 'includes/personalHistory.php'; ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
 	</main>

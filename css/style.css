@@ -1,19 +1,35 @@
 body,
 html {
-	background-color: rgb(20, 20, 20) !important;
-	color: white !important;
-	font-size: 18px !important;
+	background-color: var(--darkBackground) !important;
+	color: var(--fontColor) !important;
+	font-size: var(--defaultFontSize) !important;
 	font-family: Avenir !important;
 	overflow-x: hidden !important;
 }
 
-body{
+body {
 	overflow: hidden;
 }
 
 :root {
-	--greyBackground: rgb(40, 40, 40);
+	--defaultFontSize: 18px;
 	--highlightsColor: #e43811;
+	--errorColor: #e43811;
+	--errorBackground: rgba(228, 56, 17, 0.2);
+	--successColor: #0c940c;
+	--successBackground: rgba(12, 148, 12, 0.2);
+}
+
+body.light-theme {
+	--darkBackground: rgb(230, 230, 230);
+	--greyBackground: rgb(160, 160, 160);
+	--fontColor: black;
+}
+
+body {
+	--darkBackground: rgb(20, 20, 20);
+	--greyBackground: rgb(40, 40, 40);
+	--fontColor: white;
 }
 
 @font-face {
@@ -26,7 +42,7 @@ p {
 }
 
 a {
-	color: white !important;
+	color: var(--fontColor) !important;
 	text-decoration: none;
 }
 
@@ -35,7 +51,7 @@ h1 {
 	margin-bottom: 5px !important;
 	font-size: 180% !important;
 	font-family: Avenir;
-	color: white;
+	color: var(--fontColor);
 	z-index: 1;
 	line-height: 1.2;
 }
@@ -52,12 +68,12 @@ h3 {
 	font-size: 120%;
 }
 
-article > section:first-of-type {
-	padding-top: 15px;
+article>section:last-of-type {
+	padding-bottom: 30px;
 }
 
 section {
-	padding: 20px 0;
+	padding: 15px 0;
 }
 
 article {
@@ -81,14 +97,14 @@ header .container {
 	height: 100%;
 }
 
-header .row > div {
+header .row>div {
 	display: flex;
 	align-items: center;
 	height: 100%;
 	justify-content: space-between;
 }
 
-header .row > div > a {
+header .row>div>a {
 	display: flex;
 	align-items: center;
 	height: 100%;
@@ -97,6 +113,18 @@ header .row > div > a {
 header .logo {
 	height: 100%;
 	object-fit: contain;
+}
+
+body.light-theme .logo.white {
+	display: none;
+}
+
+body.light-theme .logo:not(.white) {
+	display: block;
+}
+
+body .logo:not(.white) {
+	display: none;
 }
 
 header nav ul {
@@ -119,7 +147,7 @@ footer .row {
 	height: 100%;
 }
 
-footer .row > div {
+footer .row>div {
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -132,13 +160,14 @@ footer .row > div {
 	gap: 15px;
 	border-bottom: 2px solid var(--greyBackground);
 	margin-bottom: 15px;
+	overflow-x: scroll;
 }
 
 .tab {
 	cursor: pointer;
 	opacity: 0.4;
 	background-color: var(--greyBackground);
-	padding: 10px 15px;
+	padding: 8px 15px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	transition: opacity 0.3s;
@@ -149,17 +178,21 @@ footer .row > div {
 }
 
 .tab-wrapper.active {
-    opacity: 1;
-    height: auto;
-    visibility: visible;
+	opacity: 1;
+	height: auto;
+	visibility: visible;
 	pointer-events: all;
 }
 
 .tab-wrapper {
-    opacity: 0;
-    transition: opacity 0.3s;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.3s;
+	height: 0;
+	overflow: hidden;
+	visibility: hidden;
 	pointer-events: none;
+}
+
+.lead {
+	margin-bottom: 10px;
 }

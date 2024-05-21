@@ -1,17 +1,17 @@
-<?php $allTimeBests = getAllTimeRankings($conn); ?>
+<?php $monthlyBest = getMonthlyRankings($conn); ?>
 <section>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<h2>Allzeit Rangliste</h2>
-				<p class="lead">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
+				<h2><?php echo getCurrentMonthName(); ?> Rangliste</h2>
+				<p class="lead">Die besten mönatlichen Resultate, mit 30 Pfeilen und Faktor</p>
 				<div class="tabs">
-					<div class="tab active" data-tab-id="alltime-18m">18m</div>
-					<div class="tab" data-tab-id="alltime-8m">8m</div>
+					<div class="tab active" data-tab-id="monthly-18m">18m</div>
+					<div class="tab" data-tab-id="monthly-8m">8m</div>
 				</div>
-				<div class="tab-wrapper active" id="alltime-18m">
-					<?php if (isset($allTimeBests["18"])) {
-						$records = $allTimeBests["18"]; ?>
+				<div class="tab-wrapper active" id="monthly-18m">
+					<?php if (isset($monthlyBest["18"])) {
+						$records = $monthlyBest["18"]; ?>
 						<?php foreach ($records as $record) {
 							$rank = sanitizeOutput($record['rank']);
 							$result = sanitizeOutput($record['result']);
@@ -30,9 +30,9 @@
 					<?php } ?>
 				</div>
 
-				<div class="tab-wrapper" id="alltime-8m">
-					<?php if (isset($allTimeBests["8"])) {
-						$records = $allTimeBests["8"]; ?>
+				<div class="tab-wrapper" id="monthly-8m">
+					<?php if (isset($monthlyBest["8"])) {
+						$records = $monthlyBest["8"]; ?>
 						<?php foreach ($records as $record) {
 							$rank = sanitizeOutput($record['rank']);
 							$result = sanitizeOutput($record['result']);

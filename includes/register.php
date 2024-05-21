@@ -1,16 +1,16 @@
-<?php
+<?php $msg = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 	$email = $_POST['email'];
 
 	if (usernameExists($conn, $username) || emailExists($conn, $email)) {
-		$errorMsg = "Benutzername oder E-Mail bereits vergeben.";
+		$msg = ["error", "Benutzername oder E-Mail bereits vergeben."];
 	} else {
-		$errorMsg =  registerUser($conn, $username, $password, $email);
+		$msg =  registerUser($conn, $username, $password, $email);
 	}
 } ?>
-<?php include 'errorMessage.php'; ?>
+<?php include 'infoMessage.php'; ?>
 <h2>Registrieren</h2>
 <form method="post">
 	<div class="form-row">

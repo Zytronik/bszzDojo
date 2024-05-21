@@ -1,4 +1,5 @@
-<?php session_start(); ?>
+<?php session_start(); 
+include 'utils.php'; ?>
 <!DOCTYPE html>
 <html lang="de">
 

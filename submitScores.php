@@ -1,4 +1,5 @@
-<?php include 'includes/sessionProtect.php'; ?>
+<?php include 'includes/sessionProtect.php'; 
+include 'utils.php';  ?>
 <!DOCTYPE html>
 <html lang="de">
 

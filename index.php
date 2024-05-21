@@ -1,4 +1,5 @@
-<?php include 'includes/sessionProtect.php'; ?>
+<?php include 'includes/sessionProtect.php'; 
+include 'utils.php'; ?>
 <!DOCTYPE html>
 <html lang="de">
 
@@ -16,7 +17,7 @@
 			$desc = "Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen.";
 			include 'includes/title.php'; ?>
 			<?php include 'includes/allTimeRanking.php'; ?>
-			<?php include 'includes/montlyRanking.php'; ?>
+			<?php include 'includes/monthlyRanking.php'; ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
 	</main>

@@ -1,0 +1,30 @@
+.record-wrapper,
+.lb-record-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 2px solid var(--greyBackground);
+}
+
+.record-wrapper:first-of-type,
+.lb-record-wrapper:first-of-type {
+    padding-top: 0;
+}
+
+.record .date,
+.lb-record .date,
+.lb-record .infos {
+    font-size: 80%;
+    opacity: 0.7;
+}
+
+.record .results,
+.lb-record .results{
+    margin-bottom: 5px;
+}
+
+.record .results span,
+.lb-record .results span {
+    color: var(--highlightsColor);
+}

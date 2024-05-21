@@ -16,9 +16,9 @@
 <link href='css/helper.css' rel='stylesheet' />
 <link href='css/responsive.css' rel='stylesheet' />
 <link href='css/forms.css' rel='stylesheet' />
+<link href='css/records.css' rel='stylesheet' />
+<link href='css/search.css' rel='stylesheet' />
 
 <script defer src='js/main.js'></script>
 <script defer src='js/vendor/jquery.min.js'></script>
-
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/bszzDojo/dbConfig.php';
-include $_SERVER['DOCUMENT_ROOT'] . '/bszzDojo/functions.php'; ?>
+<script defer src='js/vendor/chart.min.js'></script>

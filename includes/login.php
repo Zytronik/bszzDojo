@@ -1,11 +1,11 @@
-<?php
+<?php $msg = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
-
-	$errorMsg = loginUser($conn, $username, $password);
+	
+	$msg = loginUser($conn, $username, $password);
 } ?>
-<?php include 'errorMessage.php'; ?>
+<?php include 'infoMessage.php'; ?>
 <h2>Einloggen</h2>
 <form method="post">
 	<div class="form-row">
