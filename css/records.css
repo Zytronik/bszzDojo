@@ -9,6 +9,14 @@
     border-bottom: 2px solid var(--greyBackground);
 }
 
+.user-record-wrapper {
+    justify-content: space-between;
+}
+
+.user-record-wrapper i {
+    cursor: pointer;
+}
+
 .record-wrapper:first-of-type,
 .lb-record-wrapper:first-of-type,
 .badge-record-wrapper:first-of-type,

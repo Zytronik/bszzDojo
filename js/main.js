@@ -136,7 +136,7 @@ function getCookie(name) {
     return null;
 }
 
-if ('serviceWorker' in navigator) {
+/* if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
         .then(function (registration) {
             console.log('Service Worker registered with scope:', registration.scope);
@@ -144,4 +144,55 @@ if ('serviceWorker' in navigator) {
         .catch(function (error) {
             console.log('Service Worker registration failed:', error);
         });
+} */
+
+let deleteModal = document.getElementById("deleteModal");
+if (deleteModal) {
+    let confirmDeleteButton = deleteModal.querySelector("#confirmDelete");
+    let cancelDeleteButton = deleteModal.querySelector("#cancelDelete");
+    let closeButton = deleteModal.querySelector(".close");
+    let deleteIcons = document.querySelectorAll(".delete-icon");
+
+    closeButton.onclick = function () {
+        deleteModal.classList.remove("open");
+    }
+
+    window.onclick = function (event) {
+        if (event.target == deleteModal) {
+            deleteModal.classList.remove("open");
+        }
+    }
+
+    deleteIcons.forEach(icon => {
+        icon.addEventListener("click", function () {
+            let userId = this.getAttribute("data-user-id");
+            confirmDeleteButton.setAttribute("data-user-id", userId);
+            deleteModal.classList.add("open");
+        });
+    });
+
+    confirmDeleteButton.addEventListener("click", function () {
+        let userId = this.getAttribute("data-user-id");
+
+        fetch(`deleteUser.php?id=${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`.user-record-wrapper[data-user-record-id="${userId}"]`).remove();
+                    deleteModal.classList.remove("open");
+                } else {
+                    alert("Beim Löschen des Benutzers ist ein Fehler aufgetreten.");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    cancelDeleteButton.onclick = function () {
+        deleteModal.classList.remove("open");
+    }
 }
