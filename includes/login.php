@@ -18,3 +18,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
 	</div>
 	<button type="submit" name="login">Einloggen</button>
 </form>
+<a class="formBottomText" href="forgotPassword.php">Passwort vergessen?</a>

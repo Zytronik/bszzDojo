@@ -130,7 +130,7 @@ body .logo:not(.white) {
 header nav ul {
 	display: flex;
 	list-style: none;
-	gap: 30px;
+	gap: 25px;
 	margin: unset;
 	padding: unset;
 }

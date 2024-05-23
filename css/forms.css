@@ -120,3 +120,8 @@ button {
     padding: unset;
     margin: unset;
 }
+
+.formBottomText {
+    margin-top: 15px;
+    display: block;
+}

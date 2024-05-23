@@ -1,5 +1,7 @@
 .record-wrapper,
-.lb-record-wrapper {
+.lb-record-wrapper,
+.badge-record-wrapper,
+.user-record-wrapper {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -8,23 +10,28 @@
 }
 
 .record-wrapper:first-of-type,
-.lb-record-wrapper:first-of-type {
+.lb-record-wrapper:first-of-type,
+.badge-record-wrapper:first-of-type,
+.user-record-wrapper:first-of-type {
     padding-top: 0;
 }
 
 .record .date,
 .lb-record .date,
-.lb-record .infos {
+.lb-record .infos,
+.badge-record .date,
+.user-record .date {
     font-size: 80%;
     opacity: 0.7;
 }
 
 .record .results,
-.lb-record .results{
+.lb-record .results {
     margin-bottom: 5px;
 }
 
 .record .results span,
-.lb-record .results span {
+.lb-record .results span,
+.badge-record span {
     color: var(--highlightsColor);
 }

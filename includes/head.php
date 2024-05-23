@@ -18,6 +18,7 @@
 <link href='css/forms.css' rel='stylesheet' />
 <link href='css/records.css' rel='stylesheet' />
 <link href='css/search.css' rel='stylesheet' />
+<link href="manifest.json" rel="manifest" />
 
 <script defer src='js/main.js'></script>
 <script defer src='js/vendor/jquery.min.js'></script>

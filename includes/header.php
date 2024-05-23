@@ -14,6 +14,9 @@
 										class="fa-solid fa-user"></i></a></li>
 							<li class="search"><a href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
 							<li class="settings"><a href="settings.php"><i class="fa-solid fa-cog"></i></a></li>
+							<?php if ($_SESSION['role'] == "admin") { ?>
+								<li class="admin"><a href="admin.php"><i class="fa-solid fa-crown"></i></a></li>
+							<?php } ?>
 						</ul>
 					</nav>
 				<?php } ?>

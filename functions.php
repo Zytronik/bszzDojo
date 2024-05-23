@@ -2,6 +2,7 @@
     header("Location: index.php");
     exit();
 }
+
 function getCurrentMonthName()
 {
     $months = [
@@ -49,14 +50,17 @@ function registerUser($conn, $username, $password, $email)
 
 function loginUser($conn, $username, $password)
 {
-    $credentials = $conn->query("SELECT id, passwordHash FROM user WHERE username = '" . $username . "'");
+    $credentials = $conn->query("SELECT id, passwordHash, role FROM user WHERE username = '" . $username . "'");
     if ($credentials->num_rows > 0) {
         $users = $credentials->fetch_assoc();
         $id = $users['id'];
         $password_hash = $users['passwordHash'];
+        $role = $users['role'];
         if (password_verify($password, $password_hash)) {
             $_SESSION['user_id'] = sanitizeOutput($id);
             $_SESSION['username'] = sanitizeOutput($username);
+            $_SESSION['role'] = sanitizeOutput($role);
+            ;
             header("Location: index.php");
             exit();
         } else {
@@ -404,7 +408,7 @@ function editProfile($conn, $username, $email, $password, $userId)
     }
 
     if (!empty($password)) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $fields[] = "passwordHash = '" . dbSanitize($hashedPassword) . "'";
     }
 
@@ -432,7 +436,8 @@ function requestBadge($conn, $userId, $badgeName, $badgeRank)
     }
 }
 
-function getTotalScoresFromUser($conn, $userId){
+function getTotalScoresFromUser($conn, $userId)
+{
     $sql = "SELECT COUNT(*) as totalScores FROM score WHERE userId = '" . $userId . "'";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -442,7 +447,8 @@ function getTotalScoresFromUser($conn, $userId){
     return 0;
 }
 
-function getAverageScoreFromUser($conn, $userId){
+function getAverageScoreFromUser($conn, $userId)
+{
     $sql = "SELECT AVG(result / numberOfArrows) as averageScore FROM score WHERE userId = '" . $userId . "'";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -450,4 +456,201 @@ function getAverageScoreFromUser($conn, $userId){
         return round($averageScore["averageScore"], 2);
     }
     return 0.00;
+}
+
+function getBadgeRequests($conn, $limit = 0)
+{
+    $limitQuery = "";
+    if ($limit && $limit > 0) {
+        $limitQuery = "LIMIT " . $limit;
+    }
+
+    $sql = "
+        SELECT r.*, u.username
+        FROM request r
+        INNER JOIN user u ON r.userId = u.id
+        " . $limitQuery . "
+    ";
+
+    $badgeRequests = $conn->query($sql);
+    if ($badgeRequests->num_rows > 0) {
+        return $badgeRequests->fetch_all(MYSQLI_ASSOC);
+    }
+    return [];
+}
+
+function requestPasswordReset($conn, $email)
+{
+    $sql = $conn->query("SELECT id, username FROM user WHERE email = '" . $email . "'");
+    if ($sql->num_rows > 0) {
+        $user = $sql->fetch_assoc();
+        $userId = $user['id'];
+        $username = $user['username'];
+        $token = bin2hex(random_bytes(32));
+        $insertToken = "INSERT INTO password_reset (userId, token) VALUES ('" . $userId . "', '" . $token . "')";
+        if ($conn->query($insertToken)) {
+            sendResetEmail($email, $token, $username);
+            return ["success", "Passwort zurücksetzen erfolgreich. Bitte überprüfen Sie Ihre E-Mails."];
+        } else {
+            return ["error", "Es ist ein Fehler aufgetreten."];
+        }
+    } else {
+        return ["error", "Es wurde kein Benutzer mit dieser E-Mail-Adresse gefunden."];
+    }
+}
+
+function sendResetEmail($email, $token, $username)
+{
+    $base_url = "https://omaroberholzer.com/bszzDojo";
+
+    if ($_SERVER["SERVER_NAME"] == "localhost") {
+        $base_url = "http://localhost/bszzDojo";
+    }
+    $fromName = 'BSZZ Dojo';
+    $fromEmail = 'omar.oberholzer@gmail.com';
+
+    $headers = "From: $fromName <$fromEmail>\r\n";
+    $headers .= "Reply-To: $fromEmail\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    $subject = "Passwort zurücksetzen | BSZZ Dojo";
+    $message = "Hallo " . $username . ",\n\n";
+    $message .= "Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt.\n";
+    $message .= "Klicken Sie auf den folgenden Link, um Ihr Passwort zurückzusetzen:\n";
+    $message .= $base_url . "/resetPassword.php?token=" . $token . "\n\n";
+    $message .= "Wenn Sie diese Anfrage nicht gestellt haben, können Sie diese E-Mail ignorieren.\n\n";
+    $message .= "Mit freundlichen Grüssen,\n";
+    $message .= "Ihr BSZZ Dojo Team";
+
+    mail($email, $subject, $message, $headers);
+}
+
+function resetUserPassword($conn, $token, $password)
+{
+    $sql = $conn->query("SELECT userId FROM password_reset WHERE token = '" . $token . "'");
+    if ($sql->num_rows > 0) {
+        $reset = $sql->fetch_assoc();
+        $userId = $reset['userId'];
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $updatePassword = "UPDATE user SET passwordHash = '" . $hashedPassword . "' WHERE id = '" . $userId . "'";
+        if ($conn->query($updatePassword)) {
+            $conn->query("DELETE FROM password_reset WHERE userId = '" . $userId . "'");
+            return ["success", "Passwort erfolgreich zurückgesetzt."];
+        } else {
+            return ["error", "Es ist ein Fehler aufgetreten."];
+        }
+    } else {
+        return ["error", "Ungültiger Token."];
+    }
+}
+
+function setRoleToAdmin($conn, $userId)
+{
+    $sql = "UPDATE user SET role = 'admin' WHERE id = '" . $userId . "'";
+    if ($conn->query($sql)) {
+        return ["success", "Benutzer erfolgreich zum Admin ernannt."];
+    } else {
+        return ["error", "Es ist ein Fehler aufgetreten."];
+    }
+}
+
+function giveBadge($conn, $badgeName, $username)
+{
+    // Check if the user exists and retrieve their current badges
+    $sql = "SELECT badges FROM user WHERE username = '" . $username . "'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $badges = $row['badges'];
+
+        // Check if badges field is empty or not a valid JSON array
+        if (empty($badges) || json_decode($badges) === null) {
+            // Initialize badges as an array
+            $sql = "UPDATE user SET badges = JSON_ARRAY('" . $badgeName . "') WHERE username = '" . $username . "'";
+            $result = $conn->query($sql);
+        } else {
+            // Append the new badge to the existing array
+            $sql = "UPDATE user SET badges = JSON_ARRAY_APPEND(badges, '$','" . $badgeName . "') WHERE username = '" . $username . "'";
+            $result = $conn->query($sql);
+        }
+
+        if ($result) {
+            return ["success", "Auszeichnung erfolgreich vergeben."];
+        } else {
+            return ["error", "Es ist ein Fehler aufgetreten."];
+        }
+    } else {
+        return ["error", "Benutzer nicht gefunden."];
+    }
+}
+
+function removeBadge($conn, $badgeName, $username)
+{
+    // Check if the user exists and retrieve their current badges
+    $sql = "SELECT badges FROM user WHERE username = '" . $username . "'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $badges = $row['badges'];
+
+        // Check if badges field is empty or not a valid JSON array
+        if (empty($badges) || json_decode($badges) === null) {
+            return ["error", "Der Benutzer hat keine Auszeichnungen."];
+        } else {
+            // Remove the badge from the existing array
+            $sql = "UPDATE user SET badges = JSON_REMOVE(badges, JSON_UNQUOTE(JSON_SEARCH(badges, 'one', '" . $badgeName . "'))) WHERE username = '" . $username . "'";
+            $result = $conn->query($sql);
+        }
+
+        if ($result) {
+            return ["success", "Auszeichnung erfolgreich entfernt."];
+        } else {
+            return ["error", "Es ist ein Fehler aufgetreten."];
+        }
+    } else {
+        return ["error", "Benutzer nicht gefunden."];
+    }
+}
+
+function getUsers($conn)
+{
+    $sql = "SELECT * FROM user";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    return [];
+}
+
+function giveRank($conn, $rankName, $username)
+{
+    $sql = "UPDATE user SET rank = '" . $rankName . "' WHERE username = '" . $username . "'";
+    if ($conn->query($sql)) {
+        return ["success", "Rang erfolgreich vergeben."];
+    } else {
+        return ["error", "Es ist ein Fehler aufgetreten."];
+    }
+}
+
+function removeRank($conn, $rankName, $username)
+{
+    $sql = "UPDATE user SET rank = NULL WHERE username = '" . $username . "'";
+    if ($conn->query($sql)) {
+        return ["success", "Rang erfolgreich entfernt."];
+    } else {
+        return ["error", "Es ist ein Fehler aufgetreten."];
+    }
+}
+
+function rankStringToNumber($rankString)
+{
+    $ranks = [
+        'first' => 1,
+        'second' => 2,
+        'third' => 3,
+    ];
+
+    return $ranks[$rankString];
 }

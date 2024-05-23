@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['requestBadge'])) {
 				<form method="post">
 					<div class="form-row">
 						<label for="badgeName">Name:</label>
-						<input type="text" id="badgeName" name="badgeName" placeholder="bsp: Chlausschüsse 2023">
+						<input type="text" id="badgeName" name="badgeName" placeholder="bsp: Chlausschüsse 2023" required>
 					</div>
 					<div class="form-row">
 						<label for="badgeRank">Platzierung:</label>
-						<input type="number" id="badgeRank" name="badgeRank" min="1" max="3" placeholder="bsp: 1 - 3">
+						<input type="number" id="badgeRank" name="badgeRank" min="1" max="3" placeholder="bsp: 1 - 3" required>
 					</div>
 					<button type="submit" name="requestBadge">Anfordern</button>
 				</form>
