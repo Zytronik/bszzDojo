@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['removeRank'])) {
 <?php include 'infoMessage.php'; ?>
 <form method="post">
 	<div class="form-row">
-		<label for="rankName">Rang Name:</label>
+		<label for="rankName">Abzeichen Name:</label>
 		<select name="rankName" id="rankName" required>
 			<?php foreach (RANKS as $key => $rank): ?>
 				<option value="<?php echo $key; ?>"><?php echo $rank['name']; ?></option>

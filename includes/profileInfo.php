@@ -4,7 +4,7 @@
 			<div class="col-md-12">
 				<h1><?php echo $user["username"]; ?></h1>
 				<div class="rank-wrapper">
-					<p>Rang:</p>
+					<p>Abzeichen:</p>
 					<?php if (isset($user["rank"]) && isset(RANKS[$user["rank"]])) { ?>
 						<div title='<?php echo RANKS[$user["rank"]]["name"]; ?>'
 							style='background-color: <?php echo RANKS[$user["rank"]]["color"]; ?>;' class="rank">
