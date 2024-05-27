@@ -71,9 +71,9 @@ function loginUser($conn, $username, $password)
     }
 }
 
-function submitScore($conn, $userId, $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows)
+function submitScore($conn, $userId, $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows, $date)
 {
-    $insertScore = "INSERT INTO score (userId, bowType, targetSize, distance, isSpot, tens, nines, result, numberOfArrows) VALUES ('
+    $insertScore = "INSERT INTO score (userId, bowType, targetSize, distance, isSpot, tens, nines, result, createdAt, numberOfArrows) VALUES ('
     " . dbSanitize($userId) . "',
     '" . dbSanitize($bowType) . "',
     '" . dbSanitize($targetSize) . "',
@@ -82,6 +82,7 @@ function submitScore($conn, $userId, $bowType, $targetSize, $distance, $isSpot, 
     '" . dbSanitize($tens) . "',
     '" . dbSanitize($nines) . "',
     '" . dbSanitize($result) . "',
+    '" . dbSanitize($date) . "',
     '" . dbSanitize($arrows) . "')";
     if ($conn->query($insertScore)) {
         return ["success", "Score erfolgreich eingetragen."];

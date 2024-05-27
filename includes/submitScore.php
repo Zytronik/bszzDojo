@@ -8,8 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitScore'])) {
 	$nines = $_POST['nines'];
 	$result = $_POST['result'];
 	$arrows = $_POST['arrows'];
+	$date = $_POST['date'];
 
-	$msg = submitScore($conn, $_SESSION['user_id'], $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows);
+	$msg = submitScore($conn, $_SESSION['user_id'], $bowType, $targetSize, $distance, $isSpot, $tens, $nines, $result, $arrows, $date);
 } ?>
 <section>
 	<div class="container">
@@ -42,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitScore'])) {
 							<input id="isSpot" name="isSpot" type="checkbox">
 							<span class="checkmark"></span>
 						</label>
+					</div>
+					<div class="form-row">
+						<label for="date">Datum:</label>
+						<input class="datePicker" type="date" id="date" name="date">
 					</div>
 					<div class="form-row">
 						<label for="distance">Distanz:</label>

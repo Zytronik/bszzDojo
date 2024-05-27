@@ -8,12 +8,22 @@ window.onload = function () {
         setupUserSearch();
     }
 
+    initDatePickers();
+
     setupLightThemeSwitch();
 }
 
 window.addEventListener('resize', function () {
 
 });
+
+function initDatePickers() {
+    const datePickers = document.querySelectorAll('.datePicker');
+    datePickers.forEach(function (datePicker) {
+        datePicker.valueAsDate = new Date();
+        datePicker.max = new Date().toISOString().split('T')[0];
+    });
+}
 
 function setupLightThemeSwitch() {
     const body = document.querySelector('body');
@@ -135,16 +145,6 @@ function getCookie(name) {
     }
     return null;
 }
-
-/* if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-        .then(function (registration) {
-            console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(function (error) {
-            console.log('Service Worker registration failed:', error);
-        });
-} */
 
 let deleteModal = document.getElementById("deleteModal");
 if (deleteModal) {

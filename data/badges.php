@@ -18,4 +18,22 @@ const BADGES = [
         "abreviation" => "SM23",
         "imgUrl" => ""
     ],
+    "3DCT18_1" => [
+        "name" => "3D Clubturnier 2018",
+        "rank" => "first",
+        "abreviation" => "3DCT18",
+        "imgUrl" => ""
+    ],
+    "3DCT19_3" => [
+        "name" => "3D Clubturnier 2019",
+        "rank" => "third",
+        "abreviation" => "3DCT18",
+        "imgUrl" => ""
+    ],
+    "OstCT18_3" => [
+        "name" => "Oster Clubturnier 2018",
+        "rank" => "third",
+        "abreviation" => "OstCT18",
+        "imgUrl" => ""
+    ],
 ];
