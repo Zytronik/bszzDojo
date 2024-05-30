@@ -1,4 +1,5 @@
-.record-wrapper,
+.personalHistory-record-wrapper,
+.personalRecord-record-wrapper,
 .lb-record-wrapper,
 .badge-record-wrapper,
 .user-record-wrapper {
@@ -9,15 +10,21 @@
     border-bottom: 2px solid var(--greyBackground);
 }
 
-.user-record-wrapper {
+
+
+.user-record-wrapper,
+.personalHistory-record-wrapper {
     justify-content: space-between;
 }
 
-.user-record-wrapper i {
+.user-record-wrapper i,
+.personalHistory-record-wrapper i {
     cursor: pointer;
+    padding: 10px 0px 10px 10px;
 }
 
-.record-wrapper:first-of-type,
+.personalHistory-record-wrapper:first-of-type,
+.personalRecord-record-wrapper:first-of-type,
 .lb-record-wrapper:first-of-type,
 .badge-record-wrapper:first-of-type,
 .user-record-wrapper:first-of-type {

@@ -1,8 +1,9 @@
-<?php include 'utils.php';
+<?php include 'includes/sessionProtect.php'; 
+include 'utils.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $userId = $_GET['id'];
-    if ($userId) {
+    if ($userId && isAdmin($conn, $_SESSION['user_id'])) {
         // Begin a transaction
         $conn->begin_transaction();
 

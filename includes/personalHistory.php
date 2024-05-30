@@ -9,7 +9,8 @@ $personalHistory = getPersonalHistory($conn, $userId, 15);
 				<?php if (empty($personalHistory)) { ?>
 					<p>Keine Historie vorhanden.</p>
 				<?php }else{ ?>
-					<?php foreach ($personalHistory as $records) {
+					<?php foreach ($personalHistory as $record) {
+							$id = sanitizeOutput($record['id']);
 							$result = sanitizeOutput($record['result']);
 							$bowType = sanitizeOutput($record['bowType']);
 							$numberOfArrows = sanitizeOutput($record['numberOfArrows']);
@@ -19,9 +20,17 @@ $personalHistory = getPersonalHistory($conn, $userId, 15);
 							$tens = sanitizeOutput($record['tens']);
 							$nines = sanitizeOutput($record['nines']);
 							$rank = false;
-							include "scoreRecord.php";
+							include "personalHistoryRecord.php";
 					} ?>
 				<?php } ?>
+				<div id="deleteRecordModal" class="modal">
+					<div class="modal-content">
+						<span class="close">&times;</span>
+						<p>Sind Sie sicher, dass Sie den Eintrag löschen möchten?</p>
+						<button id="confirmDelete" data-delete-id="">Ja, löschen</button>
+						<button id="cancelDelete">Abbrechen</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

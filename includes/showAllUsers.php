@@ -14,11 +14,11 @@
 						include "userRecord.php";
 					} ?>
 				<?php } ?>
-				<div id="deleteModal" class="modal">
+				<div id="deleteUserModal" class="modal">
 					<div class="modal-content">
 						<span class="close">&times;</span>
 						<p>Sind Sie sicher, dass Sie den Benutzer löschen möchten?</p>
-						<button id="confirmDelete" data-user-id="">Ja, löschen</button>
+						<button id="confirmDelete" data-delete-id="">Ja, löschen</button>
 						<button id="cancelDelete">Abbrechen</button>
 					</div>
 				</div>

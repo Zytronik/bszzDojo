@@ -4,7 +4,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<h2><?php echo getCurrentMonthName(); ?> Rangliste</h2>
-				<p class="lead">Die besten mönatlichen Resultate, mit 30 Pfeilen und Faktor</p>
+				<p class="lead">Die besten monatlichen Resultate, mit 30 Pfeilen und Faktor</p>
 				<div class="tabs">
 					<div class="tab active" data-tab-id="monthly-18m">18m</div>
 					<div class="tab" data-tab-id="monthly-8m">8m</div>
@@ -43,6 +43,7 @@
 							$tens = sanitizeOutput($record['tens']);
 							$nines = sanitizeOutput($record['nines']);
 							$username = sanitizeOutput($record['username']);
+							$resultOriginal = sanitizeOutput($record['resultOriginal']);
 							include "scoreRecordLeaderBoard.php";
 						} ?>
 					<?php } else { ?>

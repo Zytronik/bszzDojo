@@ -11,6 +11,6 @@ if (isset($_POST['query'])) {
             echo "<a href='profile.php?u=" . $username . "'>" . $username . "</a>";
         }
     } else {
-        echo "<div>No results found</div>";
+        echo "<div>Keine Ergebnisse gefunden</div>";
     }
 }

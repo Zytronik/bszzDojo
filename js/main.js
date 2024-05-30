@@ -1,7 +1,10 @@
 window.onload = function () {
-    document.querySelectorAll('.tabs').forEach(function (tab) {
-        tab.addEventListener('click', handleTabClick);
-    });
+    const tabs = document.querySelectorAll('.tabs');
+    if (tabs) {
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', handleTabClick);
+        });
+    }
 
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
@@ -146,53 +149,60 @@ function getCookie(name) {
     return null;
 }
 
-let deleteModal = document.getElementById("deleteModal");
-if (deleteModal) {
-    let confirmDeleteButton = deleteModal.querySelector("#confirmDelete");
-    let cancelDeleteButton = deleteModal.querySelector("#cancelDelete");
-    let closeButton = deleteModal.querySelector(".close");
-    let deleteIcons = document.querySelectorAll(".delete-icon");
+const deleteUserModal = document.getElementById("deleteUserModal");
+setupDeleteModal(deleteUserModal,  ".user-record-wrapper", "deleteUser");
 
-    closeButton.onclick = function () {
-        deleteModal.classList.remove("open");
-    }
+const deleteRecordModal = document.getElementById("deleteRecordModal");
+setupDeleteModal(deleteRecordModal, ".personalHistory-record-wrapper", "deleteRecord");
 
-    window.onclick = function (event) {
-        if (event.target == deleteModal) {
+function setupDeleteModal(deleteModal, recordClassName, fileName) {
+    if (deleteModal) {
+        let confirmDeleteButton = deleteModal.querySelector("#confirmDelete");
+        let cancelDeleteButton = deleteModal.querySelector("#cancelDelete");
+        let closeButton = deleteModal.querySelector(".close");
+        let deleteIcons = document.querySelectorAll(`${recordClassName} .delete-icon`);
+
+        closeButton.onclick = function () {
             deleteModal.classList.remove("open");
         }
-    }
 
-    deleteIcons.forEach(icon => {
-        icon.addEventListener("click", function () {
-            let userId = this.getAttribute("data-user-id");
-            confirmDeleteButton.setAttribute("data-user-id", userId);
-            deleteModal.classList.add("open");
-        });
-    });
-
-    confirmDeleteButton.addEventListener("click", function () {
-        let userId = this.getAttribute("data-user-id");
-
-        fetch(`deleteUser.php?id=${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
+        window.onclick = function (event) {
+            if (event.target == deleteModal) {
+                deleteModal.classList.remove("open");
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector(`.user-record-wrapper[data-user-record-id="${userId}"]`).remove();
-                    deleteModal.classList.remove("open");
-                } else {
-                    alert("Beim Löschen des Benutzers ist ein Fehler aufgetreten.");
+        }
+
+        deleteIcons.forEach(icon => {
+            icon.addEventListener("click", function () {
+                let id = this.getAttribute("data-id");
+                confirmDeleteButton.setAttribute("data-delete-id", id);
+                deleteModal.classList.add("open");
+            });
+        });
+
+        confirmDeleteButton.addEventListener("click", function () {
+            let id = this.getAttribute("data-delete-id");
+
+            fetch(`${fileName}.php?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            .catch(error => console.error('Error:', error));
-    });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelector(`${recordClassName}[data-record-id="${id}"]`).remove();
+                        deleteModal.classList.remove("open");
+                    } else {
+                        alert("Beim Löschen ist ein Fehler aufgetreten.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
 
-    cancelDeleteButton.onclick = function () {
-        deleteModal.classList.remove("open");
+        cancelDeleteButton.onclick = function () {
+            deleteModal.classList.remove("open");
+        }
     }
 }

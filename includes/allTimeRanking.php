@@ -43,6 +43,7 @@
 							$tens = sanitizeOutput($record['tens']);
 							$nines = sanitizeOutput($record['nines']);
 							$username = sanitizeOutput($record['username']);
+							$resultOriginal = sanitizeOutput($record['resultOriginal']);
 							include "scoreRecordLeaderBoard.php";
 						} ?>
 					<?php } else { ?>

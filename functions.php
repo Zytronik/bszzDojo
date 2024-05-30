@@ -311,9 +311,22 @@ function getAllTimeRankings($conn)
                 $sortedResults[$distance][] = $record;
             }
         }
+
+        foreach ($sortedResults as $key => $subArray) {
+            usort($subArray, 'sortByResult');
+            foreach ($subArray as $index => $item) {
+                $subArray[$index]['rank'] = $index + 1;
+            }
+            $sortedResults[$key] = $subArray;
+        }
+
         return $sortedResults;
     }
     return [];
+}
+
+function sortByResult($a, $b) {
+    return $b['result'] <=> $a['result'];
 }
 
 function getMonthlyRankings($conn)
@@ -382,6 +395,15 @@ function getMonthlyRankings($conn)
                 $sortedResults[$distance][] = $record;
             }
         }
+
+        foreach ($sortedResults as $key => $subArray) {
+            usort($subArray, 'sortByResult');
+            foreach ($subArray as $index => $item) {
+                $subArray[$index]['rank'] = $index + 1;
+            }
+            $sortedResults[$key] = $subArray;
+        }
+
         return $sortedResults;
     }
     return [];
@@ -654,4 +676,15 @@ function rankStringToNumber($rankString)
     ];
 
     return $ranks[$rankString];
+}
+
+function isAdmin($conn, $userId)
+{
+    $sql = "SELECT role FROM user WHERE id = '" . $userId . "'";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['role'] === 'admin';
+    }
+    return false;
 }

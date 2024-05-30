@@ -32,7 +32,7 @@ $personalBests = getPersonalBests($conn, $userId);
 								$isSpot = sanitizeOutput($record['isSpot']) ? ' Spot' : '';
 								$tens = sanitizeOutput($record['tens']);
 								$nines = sanitizeOutput($record['nines']);
-								include "scoreRecord.php";
+								include "personalRecordRecord.php";
 							} ?>
 						</div>
 						<?php $isFirst = false; ?>
