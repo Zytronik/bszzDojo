@@ -18,27 +18,35 @@
                         <?php endforeach; ?>
                     </div>
                     <?php $isFirst = true; ?>
-                    <?php foreach ($chartData as $distance => $records): ?>
+                    <?php foreach ($chartData as $distance => $bowTypes): ?>
                         <div class="tab-wrapper <?php echo $isFirst ? 'active' : ''; ?>" id="chart-<?php echo $distance; ?>">
                             <canvas id="personalHistoryChart-<?php echo $distance; ?>"></canvas>
                             <script>
                                 document.addEventListener('DOMContentLoaded', function () {
                                     const ctx = document.getElementById('personalHistoryChart-<?php echo $distance; ?>');
-                                    const personalChartData = <?php echo json_encode($chartData[$distance]); ?>;
-                                    const labels = personalChartData.map(record => record.createdAt);
-                                    const scores = personalChartData.map(record => parseInt(record.result, 10));
+                                    const personalChartData = <?php echo json_encode($bowTypes); ?>;
+                                    const BOW_TYPES = <?php echo json_encode(BOW_TYPES); ?>;
+                                    const datasets = [];
+                                    Object.keys(personalChartData).forEach(bowType => {
+                                        const records = personalChartData[bowType];
+                                        const labels = records.map(record => record.createdAt);
+                                        const scores = records.map(record => parseInt(record.result, 10));
+
+                                        datasets.push({
+                                            label: BOW_TYPES[bowType].name,
+                                            data: scores,
+                                            borderWidth: 1,
+                                            tension: 0.3,
+                                            borderColor: BOW_TYPES[bowType].color,
+                                            backgroundColor: BOW_TYPES[bowType].color
+                                        });
+                                    });
 
                                     new Chart(ctx, {
                                         type: 'line',
                                         data: {
-                                            labels: labels,
-                                            datasets: [{
-                                                label: 'Punkte',
-                                                data: scores,
-                                                borderWidth: 1,
-                                                tension: 0.3,
-                                                borderColor: "#e43811",
-                                            }]
+                                            labels: personalChartData[Object.keys(personalChartData)[0]].map(record => record.createdAt),
+                                            datasets: datasets,
                                         },
                                         options: {
                                             scales: {
@@ -48,17 +56,24 @@
                                             },
                                             plugins: {
                                                 legend: {
-                                                    display: false
+                                                    display: true
                                                 },
                                                 tooltip: {
-                                                    displayColors: false,
+                                                    displayColors: true,
                                                 }
                                             }
                                         }
                                     });
                                 });
 
-
+                                function getRandomColor() {
+                                    const letters = '0123456789ABCDEF';
+                                    let color = '#';
+                                    for (let i = 0; i < 6; i++) {
+                                        color += letters[Math.floor(Math.random() * 16)];
+                                    }
+                                    return color;
+                                }
                             </script>
                         </div>
                         <?php $isFirst = false; ?>

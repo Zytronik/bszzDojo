@@ -216,17 +216,24 @@ function getChartData($conn, $userId)
     foreach ($history as $record) {
         $record['createdAt'] = formatDate($record['createdAt']);
         $distance = $record['distance'];
+        $bowType = $record['bowType'];
+
         if (!isset($sortedResults[$distance])) {
             $sortedResults[$distance] = [];
         }
-        $sortedResults[$distance][] = $record;
+        if (!isset($sortedResults[$distance][$bowType])) {
+            $sortedResults[$distance][$bowType] = [];
+        }
+        $sortedResults[$distance][$bowType][] = $record;
     }
 
     ksort($sortedResults, SORT_NUMERIC);
+    foreach ($sortedResults as &$bowTypeArray) {
+        ksort($bowTypeArray, SORT_STRING);
+    }
 
     return $sortedResults;
 }
-
 
 function getUsernameFromURL()
 {

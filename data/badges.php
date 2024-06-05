@@ -36,4 +36,10 @@ const BADGES = [
         "abreviation" => "OstCT18",
         "imgUrl" => ""
     ],
+    "OstCT24_3" => [
+        "name" => "Oster Clubturnier 2024",
+        "rank" => "third",
+        "abreviation" => "OstCT24",
+        "imgUrl" => ""
+    ],
 ];

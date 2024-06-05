@@ -13,6 +13,7 @@ $personalHistory = getPersonalHistory($conn, $userId, 15);
 							$id = sanitizeOutput($record['id']);
 							$result = sanitizeOutput($record['result']);
 							$bowType = sanitizeOutput($record['bowType']);
+							$distance = sanitizeOutput($record['distance']);
 							$numberOfArrows = sanitizeOutput($record['numberOfArrows']);
 							$createdAt = sanitizeOutput($record['createdAt']);
 							$targetSize = sanitizeOutput($record['targetSize']);
