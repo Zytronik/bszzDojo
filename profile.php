@@ -1,5 +1,5 @@
-<?php include 'includes/sessionProtect.php';
-include 'utils.php';
+<?php include 'utils.php';
+include 'includes/sessionProtect.php';
 $user = getUserFromUrl($conn);
 $userId = $user['id']; ?>
 <!DOCTYPE html>

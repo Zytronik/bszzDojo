@@ -1,5 +1,6 @@
-<?php include 'includes/sessionProtect.php';
-include 'utils.php';
+<?php include 'utils.php';
+include 'includes/sessionProtect.php';
+
 if ($_SESSION['role'] != "admin") {
 	header("Location: index.php");
 	exit();

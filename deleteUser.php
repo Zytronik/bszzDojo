@@ -1,5 +1,5 @@
-<?php include 'includes/sessionProtect.php'; 
-include 'utils.php';
+<?php include 'utils.php';
+include 'includes/sessionProtect.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $userId = $_GET['id'];

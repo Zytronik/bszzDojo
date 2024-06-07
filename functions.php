@@ -60,7 +60,14 @@ function loginUser($conn, $username, $password)
             $_SESSION['user_id'] = sanitizeOutput($id);
             $_SESSION['username'] = sanitizeOutput($username);
             $_SESSION['role'] = sanitizeOutput($role);
-            ;
+
+            $token = bin2hex(random_bytes(16));
+            $expires = time() + (30 * 24 * 60 * 60); // 30 Tage
+            setcookie('auto_login', $token, $expires, "/", "", false, true);
+
+            $tokenHash = password_hash($token, PASSWORD_BCRYPT);
+            $conn->query("UPDATE user SET loginToken = '" . dbSanitize($tokenHash) . "', tokenExpires = FROM_UNIXTIME($expires) WHERE id = $id");
+
             header("Location: index.php");
             exit();
         } else {
@@ -692,6 +699,23 @@ function isAdmin($conn, $userId)
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         return $row['role'] === 'admin';
+    }
+    return false;
+}
+
+function autoLogin($conn)
+{
+    if (isset($_COOKIE['auto_login'])) {
+        $token = $_COOKIE['auto_login'];
+        $result = $conn->query("SELECT id, username, role, loginToken, tokenExpires FROM user WHERE tokenExpires > NOW()");
+        while ($user = $result->fetch_assoc()) {
+            if (password_verify($token, $user['loginToken'])) {
+                $_SESSION['user_id'] = sanitizeOutput($user['id']);
+                $_SESSION['username'] = sanitizeOutput($user['username']);
+                $_SESSION['role'] = sanitizeOutput($user['role']);
+                return true;
+            }
+        }
     }
     return false;
 }
