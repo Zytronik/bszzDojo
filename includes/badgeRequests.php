@@ -13,7 +13,7 @@
 						$username = sanitizeOutput($record['username']);
 						$name = sanitizeOutput($record['name']);
 						$rank = sanitizeOutput($record['rank']);
-						include "badgeRecord.php";
+						include "badgeRequestRecord.php";
 					} ?>
 				<?php } ?>
 			</div>

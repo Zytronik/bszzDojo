@@ -11,31 +11,25 @@
 							<img src="img/ranks/<?php echo RANKS[$user["rank"]]["imgUrl"]; ?>" alt="Rank">
 						</div>
 					<?php } else { ?>
-						<p>Keiner</p>
-					<?php } ?>
-				</div>
-				<div class="badges-wrapper">
-					<p>Auszeichnungen:</p>
-					<?php $badges = json_decode($user["badges"], true);
-					if (!empty($badges)) { ?>
-						<?php foreach ($badges as $badge) { ?>
-							<div title='<?php echo BADGES[$badge]["name"]; ?>' class='badge <?php echo BADGES[$badge]["rank"]; ?>'>
-								<?php echo BADGES[$badge]["abreviation"]; ?>
-							</div>
-						<?php } ?>
-					<?php } else { ?>
-						<p>Keine</p>
+						<p>Keines</p>
 					<?php } ?>
 				</div>
 				<div class="stats-wrapper">
 					<div>
-						<p>Durchschnitt Punkte:</p>
+						<p>Punkte Durchschnitt:</p>
 						<p><?php echo getAverageScoreFromUser($conn, $user["id"]); ?></p>
 					</div>
 					<div>
 						<p>Anzahl Scores:</p>
 						<p><?php echo getTotalScoresFromUser($conn, $user["id"]); ?></p>
 					</div>
+					<?php $badges = json_decode($user["badges"], true); ?>
+					<?php if (!empty($badges)) { ?>
+						<div>
+							<p>Anzahl Auszeichnungen:</p>
+							<p><?php echo count($badges); ?></p>
+						</div>
+					<?php } ?>
 				</div>
 			</div>
 		</div>

@@ -581,70 +581,108 @@ function resetUserPassword($conn, $token, $password)
     }
 }
 
-function setRoleToAdmin($conn, $userId)
+function giveBadge($conn, $badgeName, $username, $year, $rank)
 {
-    $sql = "UPDATE user SET role = 'admin' WHERE id = '" . $userId . "'";
-    if ($conn->query($sql)) {
-        return ["success", "Benutzer erfolgreich zum Admin ernannt."];
-    } else {
-        return ["error", "Es ist ein Fehler aufgetreten."];
-    }
-}
+    // JSON-Objekt für das neue Badge erstellen
+    $newBadge = json_encode([
+        'badgeName' => $badgeName,
+        'year' => $year,
+        'rank' => $rank
+    ]);
 
-function giveBadge($conn, $badgeName, $username)
-{
-    // Check if the user exists and retrieve their current badges
-    $sql = "SELECT badges FROM user WHERE username = '" . $username . "'";
-    $result = $conn->query($sql);
+    // Benutzer überprüfen und aktuelle Badges abrufen
+    $sql = "SELECT badges FROM user WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $badges = $row['badges'];
 
-        // Check if badges field is empty or not a valid JSON array
+        // Prüfen, ob das badges-Feld leer oder kein gültiges JSON ist
         if (empty($badges) || json_decode($badges) === null) {
-            // Initialize badges as an array
-            $sql = "UPDATE user SET badges = JSON_ARRAY('" . $badgeName . "') WHERE username = '" . $username . "'";
-            $result = $conn->query($sql);
+            // Badges initialisieren und das erste Badge hinzufügen
+            $sql = "UPDATE user SET badges = JSON_ARRAY(?) WHERE username = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $newBadge, $username);
         } else {
-            // Append the new badge to the existing array
-            $sql = "UPDATE user SET badges = JSON_ARRAY_APPEND(badges, '$','" . $badgeName . "') WHERE username = '" . $username . "'";
-            $result = $conn->query($sql);
+            // Neues Badge an das bestehende JSON-Array anhängen
+            $sql = "UPDATE user SET badges = JSON_ARRAY_APPEND(badges, '$', ?) WHERE username = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $newBadge, $username);
         }
 
-        if ($result) {
+        if ($stmt->execute()) {
             return ["success", "Auszeichnung erfolgreich vergeben."];
         } else {
-            return ["error", "Es ist ein Fehler aufgetreten."];
+            return ["error", "Es ist ein Fehler beim Aktualisieren der Datenbank aufgetreten."];
         }
     } else {
         return ["error", "Benutzer nicht gefunden."];
     }
 }
 
-function removeBadge($conn, $badgeName, $username)
+function removeBadge($conn, $badgeName, $username, $year)
 {
-    // Check if the user exists and retrieve their current badges
-    $sql = "SELECT badges FROM user WHERE username = '" . $username . "'";
-    $result = $conn->query($sql);
+    // Benutzer prüfen und aktuelle Badges abrufen
+    $sql = "SELECT badges FROM user WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $badges = $row['badges'];
 
-        // Check if badges field is empty or not a valid JSON array
-        if (empty($badges) || json_decode($badges) === null) {
+        // Prüfen, ob das badges-Feld leer oder kein gültiges JSON-Array ist
+        if (empty($badges)) {
             return ["error", "Der Benutzer hat keine Auszeichnungen."];
-        } else {
-            // Remove the badge from the existing array
-            $sql = "UPDATE user SET badges = JSON_REMOVE(badges, JSON_UNQUOTE(JSON_SEARCH(badges, 'one', '" . $badgeName . "'))) WHERE username = '" . $username . "'";
-            $result = $conn->query($sql);
         }
 
-        if ($result) {
+        // JSON-Daten dekodieren
+        $badgesArray = json_decode($badges, true);
+        if (!is_array($badgesArray)) {
+            error_log("Ungültiges JSON im Feld badges: " . $badges);
+            return ["error", "Die Auszeichnungen-Daten sind ungültig."];
+        }
+
+        // Gesuchtes Badge entfernen
+        $updatedBadges = [];
+        $badgeFound = false;
+
+        foreach ($badgesArray as $badge) {
+            $badge = json_decode($badge, true);
+
+            // Sicherstellen, dass $badge ein Array ist
+            if (!is_array($badge)) {
+                error_log("Ungültige Badge-Daten: " . print_r($badge, true));
+                continue;
+            }
+
+            if ($badge['badgeName'] === $badgeName && $badge['year'] == $year) {
+                $badgeFound = true;
+                continue; // Überspringt das Badge, das entfernt werden soll
+            }
+            $updatedBadges[] = json_encode($badge); // Fügt die anderen Badges in das neue Array ein
+        }
+
+        if (!$badgeFound) {
+            return ["error", "Die angegebene Auszeichnung wurde nicht gefunden."];
+        }
+
+        // Aktualisiertes JSON-Array in der Datenbank speichern
+        $updatedBadgesJson = json_encode($updatedBadges);
+        $sql = "UPDATE user SET badges = ? WHERE username = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $updatedBadgesJson, $username);
+
+        if ($stmt->execute()) {
             return ["success", "Auszeichnung erfolgreich entfernt."];
         } else {
-            return ["error", "Es ist ein Fehler aufgetreten."];
+            return ["error", "Es ist ein Fehler beim Aktualisieren der Datenbank aufgetreten."];
         }
     } else {
         return ["error", "Benutzer nicht gefunden."];
@@ -719,3 +757,36 @@ function autoLogin($conn)
     }
     return false;
 }
+
+
+/* function clearAllBadges($conn)
+{
+    $sql = "UPDATE user SET badges = NULL";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Alle Auszeichnungen erfolgreich gelöscht.";
+    } else {
+        echo "Fehler beim Löschen der Auszeichnungen: " . $conn->error;
+    }
+} */
+
+/* function clearRequestTable($conn)
+{
+    $sql = "DELETE FROM request";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Alle Anfragen erfolgreich gelöscht.";
+    } else {
+        echo "Fehler beim Löschen der Anfragen: " . $conn->error;
+    }
+} */
+
+/* function setRoleToAdmin($conn, $userId)
+{
+    $sql = "UPDATE user SET role = 'admin' WHERE id = '" . $userId . "'";
+    if ($conn->query($sql)) {
+        return ["success", "Benutzer erfolgreich zum Admin ernannt."];
+    } else {
+        return ["error", "Es ist ein Fehler aufgetreten."];
+    }
+} */

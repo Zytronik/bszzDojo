@@ -6,4 +6,3 @@ include 'dbConfig.php';
 include 'functions.php';
 include 'data/bowTypes.php';
 include 'data/ranks.php';
-include 'data/badges.php';

@@ -19,6 +19,7 @@ $userId = $user['id']; ?>
 			<?php include 'includes/profileInfo.php';
 			include 'includes/personalRecords.php';
 			include 'includes/personalCharts.php';
+			include 'includes/personalAchievements.php';
 			include 'includes/personalHistory.php'; ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
