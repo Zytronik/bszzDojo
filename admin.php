@@ -21,6 +21,7 @@ if ($_SESSION['role'] != "admin") {
 			<?php $title = "Admin";
 			$desc = "Verwalte das BSZZ Dojo.";
 			include 'includes/title.php';
+			include 'includes/updateAppButton.php';
 			include 'includes/badgeRequests.php';
 			include 'includes/adminEdit.php';
 			include 'includes/showAllUsers.php'; ?>

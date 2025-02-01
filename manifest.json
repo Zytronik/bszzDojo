@@ -1,15 +1,15 @@
 {
-    "name": "BSZZ | Dojo",
-    "short_name": "BSZZ | Dojo",
-    "start_url": "index.php",
-    "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#141414",
-    "icons": [
-        {
-            "src": "img/logo.png",
-            "sizes": "258x208",
-            "type": "image/png"
-        }
-    ]
+  "name": "BSZZ | Dojo",
+  "short_name": "BSZZ | Dojo",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "icons": [
+    {
+      "src": "img/logo.png",
+      "sizes": "258x208",
+      "type": "image/png"
+    }
+  ]
 }
