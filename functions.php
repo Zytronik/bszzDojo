@@ -339,6 +339,66 @@ function getAllTimeRankings($conn)
     return [];
 }
 
+function getAllTimeMedalRankings($conn) {
+    $query = "SELECT id, username, badges FROM user WHERE JSON_LENGTH(badges) > 0";
+    $result = $conn->query($query);
+    
+    $ranking = [];
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $badges = json_decode($row['badges'], true);
+            
+            if (!is_array($badges)) {
+                continue; // Skip users with invalid badge data
+            }
+            
+            $score = 0;
+            $firstPlaceCount = 0;
+            $secondPlaceCount = 0;
+            $thirdPlaceCount = 0;
+            
+            foreach ($badges as $badge) {
+                $badge = json_decode($badge, true);
+                if (isset($badge['rank'])) {
+                    if ($badge['rank'] == 1) {
+                        $score += 3;
+                        $firstPlaceCount++;
+                    } elseif ($badge['rank'] == 2) {
+                        $score += 2;
+                        $secondPlaceCount++;
+                    } elseif ($badge['rank'] == 3) {
+                        $score += 1;
+                        $thirdPlaceCount++;
+                    }
+                }
+            }
+            
+            $ranking[] = [
+                'id' => $row['id'],
+                'username' => $row['username'],
+                'score' => $score,
+                'first_place' => $firstPlaceCount,
+                'second_place' => $secondPlaceCount,
+                'third_place' => $thirdPlaceCount
+            ];
+        }
+    }
+    
+    usort($ranking, function ($a, $b) {
+        return $b['score'] - $a['score'];
+    });
+
+    $ranking = array_slice($ranking, 0, 10);
+    
+    $rank = 1;
+    foreach ($ranking as $key => $user) {
+        $ranking[$key]['rank'] = $rank++;
+    }
+    
+    return $ranking;
+}
+
 function sortByResult($a, $b) {
     return $b['result'] <=> $a['result'];
 }

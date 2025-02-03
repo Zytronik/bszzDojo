@@ -18,6 +18,7 @@ include 'includes/sessionProtect.php'; ?>
 			include 'includes/title.php'; ?>
 			<?php include 'includes/allTimeRanking.php'; ?>
 			<?php include 'includes/monthlyRanking.php'; ?>
+			<?php include 'includes/medalsRanking.php'; ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
 	</main>

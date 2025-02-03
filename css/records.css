@@ -2,7 +2,8 @@
 .personalRecord-record-wrapper,
 .lb-record-wrapper,
 .badge-record-wrapper,
-.user-record-wrapper {
+.user-record-wrapper,
+.medal-record-wrapper {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -49,4 +50,44 @@
 .lb-record .results span,
 .badge-record span {
   color: var(--highlightsColor);
+}
+
+.medal-record {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.medal-record .medals {
+  display: flex;
+  gap: 15px;
+}
+
+.medal-record .medal p {
+  color: var(--highlightsColor);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.medal-record-wrapper:first-of-type {
+  padding-top: 5px;
+}
+
+.medal-record .medal p::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  background-color: gold;
+}
+
+.medal-record .medal.silver p::after {
+  background-color: silver;
+}
+
+.medal-record .medal.bronze p::after {
+  background-color: #cd7f32;
 }
