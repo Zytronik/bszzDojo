@@ -3,7 +3,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<h2>Allzeit Rangliste</h2>
+				<h2>Top 10 - Allzeit</h2>
 				<p class="lead">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
 				<div class="tabs">
 					<div class="tab active" data-tab-id="alltime-18m">18m</div>

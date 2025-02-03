@@ -3,8 +3,8 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<h2>Medaillen Rangliste</h2>
-				<p class="lead">Die Schützen mit den meisten Medaillen.</p>
+				<h2>Top 10 - Medaillen</h2>
+				<p class="lead">Die Schützen mit den meisten Medaillen</p>
 				<?php if (isset($medalRanking)) { ?>
 					<?php foreach ($medalRanking as $record) {
 						$rank = sanitizeOutput($record['rank']);
