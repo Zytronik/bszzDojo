@@ -9,7 +9,7 @@ if ($_SESSION['role'] != "admin") {
 <html lang="de">
 
 <head>
-	<title>BSZZ Dojo | Settings</title>
+	<title>BSZZ Dojo | Admins</title>
 	<?php include 'includes/head.php'; ?>
 </head>
 

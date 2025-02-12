@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submitScore'])) {
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-				<?php include 'infoMessage.php'; ?>
+				<?php include __DIR__ . '/../infoMessage.php'; ?>
 				<h2>Erfasse einen neuen Score</h2>
 				<form method="post">
 					<div class="form-row">

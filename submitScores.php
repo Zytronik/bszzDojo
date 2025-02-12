@@ -16,7 +16,10 @@ include 'includes/sessionProtect.php'; ?>
 		<?php $title = "Score erfassen";
 			$desc = "Trage hier deine Leistungen im BSZZ Dojo ein.";
 			include 'includes/title.php'; ?>
-			<?php include 'includes/submitScore.php'; ?>
+			<?php include 'includes/submitScores/submitScore.php';
+			if(isAdmin($conn, $_SESSION['user_id'])) {
+				include 'includes/submitScores/recordScore.php'; 
+			} ?>
 		</article>
 		<?php include 'includes/footer.php'; ?>
 	</main>
