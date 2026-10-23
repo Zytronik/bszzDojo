@@ -81,7 +81,7 @@ Every function must declare its return type and `any` is not allowed. CI fails o
 
 Web, API and database are all on Vercel: one project with two
 [services](https://vercel.com/docs/services) and a Neon Postgres database each for dev (local and
-previews) and prod. See [docs/deployment.md](docs/deployment.md).
+previews) and prod. Every release deploys production. See [docs/deployment.md](docs/deployment.md).
 
 ## AI agents
 
