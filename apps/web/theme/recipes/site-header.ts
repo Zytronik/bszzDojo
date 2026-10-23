@@ -12,7 +12,7 @@ export const siteHeader = defineSlotRecipe({
       zIndex: 'header',
       height: 'header',
       py: '10',
-      fontSize: '3xl',
+      fontSize: 'headerIcon',
     },
     bar: {
       height: 'full',

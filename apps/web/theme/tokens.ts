@@ -78,6 +78,8 @@ export const tokens = defineTokens({
     xl: { value: '130%' },
     '2xl': { value: '140%' },
     '3xl': { value: '170%' },
+    /** The header's icons, which are `1em` */
+    headerIcon: { value: '150%' },
     '4xl': { value: '180%' },
     '5xl': { value: '200%' },
   },
