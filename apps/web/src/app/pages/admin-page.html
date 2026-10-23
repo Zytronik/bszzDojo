@@ -1,0 +1,217 @@
+<app-page-title title="Admin" description="Verwalte das BSZZ Dojo." />
+
+<app-section>
+  <h2>App Aktualisieren</h2>
+  <button type="button" [class]="styles.button" (click)="updateDialogOpen.set(true)">
+    App aktualisieren
+  </button>
+  <app-confirm-dialog
+    [open]="updateDialogOpen()"
+    message="Möchtest du die App aktualisieren?"
+    confirmLabel="Ja, aktualisieren"
+    [pending]="updating()"
+    (confirmed)="updateApp()"
+    (cancelled)="updateDialogOpen.set(false)"
+  />
+</app-section>
+
+<app-section>
+  <app-feedback-message [feedback]="requestsFeedback()" />
+  <h2>Anfragen</h2>
+  @if (requests.hasValue()) { @for (request of requests.value(); track request.id) {
+  <div [class]="recordStyles.root">
+    <div [class]="recordStyles.body">
+      <p [class]="recordStyles.meta">{{ formatDate(request.createdAt) }}</p>
+      <p [class]="recordStyles.title">{{ request.username }}</p>
+      <p>Name: <span [class]="recordStyles.highlight">{{ request.name }}</span></p>
+      <p>Platzierung: <span [class]="recordStyles.highlight">#{{ request.place }}</span></p>
+    </div>
+    <div [class]="recordStyles.actions">
+      <button
+        type="button"
+        [class]="recordStyles.action"
+        aria-label="Anfrage annehmen"
+        (click)="openApprove(request)"
+      >
+        <app-icon [icon]="icons.faCheck" />
+      </button>
+      <button
+        type="button"
+        [class]="recordStyles.action"
+        aria-label="Anfrage ablehnen"
+        (click)="requestToReject.set(request)"
+      >
+        <app-icon [icon]="icons.faDeleteLeft" />
+      </button>
+    </div>
+  </div>
+  } @empty {
+  <p>Keine Anfragen vorhanden.</p>
+  } } @else if (requests.isLoading()) {
+  <p [class]="mutedStyles">Wird geladen…</p>
+  }
+
+  <app-confirm-dialog
+    [open]="requestToApprove() !== null"
+    [message]="'Auszeichnung «' + (requestToApprove()?.name ?? '') + '» an ' + (requestToApprove()?.username ?? '') + ' vergeben?'"
+    confirmLabel="Ja, vergeben"
+    [pending]="requestPending()"
+    (confirmed)="approve()"
+    (cancelled)="requestToApprove.set(null)"
+  >
+    <div [class]="styles.field.root">
+      <label for="approve-year" [class]="styles.field.label">Jahr:</label>
+      <input
+        #approveYearInput
+        id="approve-year"
+        type="number"
+        [class]="styles.input"
+        [min]="earliestYear"
+        [max]="currentYear"
+        [value]="approveYear()"
+        (input)="approveYear.set(approveYearInput.valueAsNumber)"
+      />
+    </div>
+  </app-confirm-dialog>
+  <app-confirm-dialog
+    [open]="requestToReject() !== null"
+    message="Bist du sicher, dass du die Anfrage ablehnen möchtest?"
+    confirmLabel="Ja, ablehnen"
+    [pending]="requestPending()"
+    (confirmed)="reject()"
+    (cancelled)="requestToReject.set(null)"
+  />
+</app-section>
+
+<app-section>
+  <h2>Abzeichen bearbeiten</h2>
+  <app-tabs [tabs]="editTabs" [(selected)]="editTab">
+    <app-feedback-message [feedback]="editFeedback()" />
+    @if (editTab() === 'rank') {
+    <form [formGroup]="rankForm" (ngSubmit)="$event.preventDefault()">
+      <div [class]="styles.field.root">
+        <label for="rank-name" [class]="styles.field.label">Abzeichen Name:</label>
+        <select id="rank-name" [class]="styles.input" formControlName="rank">
+          @for (rank of ranks; track rank.id) {
+          <option [ngValue]="rank.id">{{ rank.name }}</option>
+          }
+        </select>
+      </div>
+      <div [class]="styles.field.root">
+        <label for="rank-username" [class]="styles.field.label">Benutzername:</label>
+        <input
+          id="rank-username"
+          [class]="styles.input"
+          formControlName="username"
+          autocomplete="off"
+        />
+      </div>
+      <button type="button" [class]="styles.button" [disabled]="editPending()" (click)="giveRank()">
+        Geben
+      </button>
+      <button
+        type="button"
+        [class]="styles.button"
+        [disabled]="editPending()"
+        (click)="removeRank()"
+      >
+        Entfernen
+      </button>
+    </form>
+    } @else {
+    <form [formGroup]="badgeForm" (ngSubmit)="$event.preventDefault()">
+      <div [class]="styles.field.root">
+        <label for="badge-name" [class]="styles.field.label">Auszeichnungs Name:</label>
+        <input
+          id="badge-name"
+          [class]="styles.input"
+          formControlName="name"
+          [maxLength]="badgeNameMaxLength"
+        />
+      </div>
+      <div [class]="styles.field.root">
+        <label for="badge-username" [class]="styles.field.label">Benutzername:</label>
+        <input
+          id="badge-username"
+          [class]="styles.input"
+          formControlName="username"
+          autocomplete="off"
+        />
+      </div>
+      <div [class]="styles.field.root">
+        <label for="badge-year" [class]="styles.field.label">Jahr:</label>
+        <input
+          id="badge-year"
+          type="number"
+          [class]="styles.input"
+          formControlName="year"
+          [min]="earliestYear"
+          [max]="currentYear"
+        />
+      </div>
+      <div [class]="styles.field.root">
+        <label for="badge-place" [class]="styles.field.label">Platzierung:</label>
+        <select id="badge-place" [class]="styles.input" formControlName="place">
+          @for (place of places; track place.value) {
+          <option [ngValue]="place.value">{{ place.label }}</option>
+          }
+        </select>
+      </div>
+      <button
+        type="button"
+        [class]="styles.button"
+        [disabled]="editPending()"
+        (click)="giveBadge()"
+      >
+        Geben
+      </button>
+      <button
+        type="button"
+        [class]="styles.button"
+        [disabled]="editPending()"
+        (click)="removeBadge()"
+      >
+        Entfernen
+      </button>
+    </form>
+    }
+  </app-tabs>
+</app-section>
+
+<app-section>
+  <app-feedback-message [feedback]="usersFeedback()" />
+  <h2>Alle Benutzer</h2>
+  @if (users.hasValue()) { @for (user of users.value(); track user.id) {
+  <div [class]="recordStyles.root">
+    <div [class]="recordStyles.body">
+      <p [class]="recordStyles.meta">{{ formatDate(user.createdAt) }}</p>
+      <a [routerLink]="['/profile', user.username]" [class]="recordStyles.title"
+        >{{ user.username }}</a
+      >
+    </div>
+    @if (user.id !== auth.user()?.id) {
+    <div [class]="recordStyles.actions">
+      <button
+        type="button"
+        [class]="recordStyles.action"
+        [attr.aria-label]="user.username + ' löschen'"
+        (click)="userToDelete.set(user)"
+      >
+        <app-icon [icon]="icons.faDeleteLeft" />
+      </button>
+    </div>
+    }
+  </div>
+  } @empty {
+  <p>Keine Benutzer vorhanden.</p>
+  } } @else if (users.isLoading()) {
+  <p [class]="mutedStyles">Wird geladen…</p>
+  }
+  <app-confirm-dialog
+    [open]="userToDelete() !== null"
+    [message]="'Bist du sicher, dass du ' + (userToDelete()?.username ?? '') + ' mit allen Scores und Auszeichnungen löschen möchtest?'"
+    [pending]="deletingUser()"
+    (confirmed)="deleteUser()"
+    (cancelled)="userToDelete.set(null)"
+  />
+</app-section>

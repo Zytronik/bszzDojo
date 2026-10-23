@@ -1,0 +1,77 @@
+<header [class]="styles.root">
+  <div [class]="barStyles">
+    <a
+      routerLink="/"
+      [class]="styles.home"
+      [attr.aria-label]="appName + ', Startseite'"
+      (click)="search.close()"
+    >
+      <img src="/img/logo_weiss.png" alt="" [class]="whiteLogo" width="258" height="208" />
+      <img src="/img/logo.png" alt="" [class]="darkLogo" width="258" height="208" />
+    </a>
+
+    @if (auth.isAuthenticated()) {
+    <nav aria-label="Hauptnavigation">
+      <ul [class]="styles.nav">
+        <li>
+          <a
+            routerLink="/scores/new"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [class]="styles.link"
+            (click)="search.close()"
+          >
+            <app-icon [icon]="icons.faCirclePlus" label="Score erfassen" />
+          </a>
+        </li>
+        <li>
+          <a
+            [routerLink]="['/profile', auth.username()]"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [class]="styles.link"
+            (click)="search.close()"
+          >
+            <app-icon [icon]="icons.faUser" label="Mein Profil" />
+          </a>
+        </li>
+        <li>
+          <button
+            type="button"
+            [class]="styles.link"
+            aria-controls="user-search"
+            [attr.aria-expanded]="search.open()"
+            (click)="search.toggle()"
+          >
+            <app-icon [icon]="icons.faMagnifyingGlass" label="Suche" />
+          </button>
+        </li>
+        <li>
+          <a
+            routerLink="/settings"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [class]="styles.link"
+            (click)="search.close()"
+          >
+            <app-icon [icon]="icons.faGear" label="Einstellungen" />
+          </a>
+        </li>
+        @if (auth.isAdmin()) {
+        <li>
+          <a
+            routerLink="/admin"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [class]="styles.link"
+            (click)="search.close()"
+          >
+            <app-icon [icon]="icons.faCrown" label="Admin" />
+          </a>
+        </li>
+        }
+      </ul>
+    </nav>
+    }
+  </div>
+</header>

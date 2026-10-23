@@ -1,0 +1,2 @@
+/* Panda's PostCSS plugin replaces these layers with the generated CSS (see panda.config.ts). */
+@layer reset, base, tokens, recipes, utilities;

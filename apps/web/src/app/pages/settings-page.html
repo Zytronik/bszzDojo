@@ -1,0 +1,104 @@
+<app-page-title title="Einstellungen" description="Konfiguriere dein BSZZ Dojo." />
+
+<app-section>
+  <app-feedback-message [feedback]="badgeFeedback()" />
+  <h2>Auszeichnung anfordern</h2>
+  <p [class]="styles.lead">
+    Da ich keinen Zugriff auf SM/Clubturnier Titel oder Abzeichen habe, kannst du hier deine
+    anfordern.
+  </p>
+  <form [formGroup]="badgeForm" (ngSubmit)="requestBadge()">
+    <div [class]="styles.field.root">
+      <label for="badge-name" [class]="styles.field.label">Name:</label>
+      <input
+        id="badge-name"
+        [class]="styles.input"
+        formControlName="name"
+        placeholder="bsp: Chlausschüsse 2023"
+        [maxLength]="badgeNameMaxLength"
+      />
+    </div>
+    <div [class]="styles.field.root">
+      <label for="badge-place" [class]="styles.field.label">Platzierung:</label>
+      <select id="badge-place" [class]="styles.input" formControlName="place">
+        @for (place of places; track place.value) {
+        <option [ngValue]="place.value">{{ place.label }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" [class]="styles.button" [disabled]="badgePending()">Anfordern</button>
+  </form>
+</app-section>
+
+<app-section>
+  <app-feedback-message [feedback]="profileFeedback()" />
+  <h2>Profil bearbeiten</h2>
+  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+    <div [class]="styles.field.root">
+      <label for="profile-username" [class]="styles.field.label">Benutzername:</label>
+      <input
+        id="profile-username"
+        [class]="styles.input"
+        formControlName="username"
+        autocomplete="username"
+        [maxLength]="limits.USERNAME_MAX_LENGTH"
+      />
+    </div>
+    <div [class]="styles.field.root">
+      <label for="profile-email" [class]="styles.field.label">E-Mail:</label>
+      <input
+        id="profile-email"
+        type="email"
+        [class]="styles.input"
+        formControlName="email"
+        autocomplete="email"
+        [maxLength]="limits.EMAIL_MAX_LENGTH"
+      />
+    </div>
+    <div [class]="styles.field.root">
+      <label for="profile-new-password" [class]="styles.field.label">Neues Passwort:</label>
+      <input
+        id="profile-new-password"
+        type="password"
+        [class]="styles.input"
+        formControlName="password"
+        autocomplete="new-password"
+        [maxLength]="limits.PASSWORD_MAX_LENGTH"
+      />
+      <span [class]="styles.field.hint">Leer lassen, um es nicht zu ändern.</span>
+    </div>
+    @if (needsCurrentPassword()) {
+    <div [class]="styles.field.root">
+      <label for="profile-current-password" [class]="styles.field.label">Aktuelles Passwort:</label>
+      <input
+        id="profile-current-password"
+        type="password"
+        [class]="styles.input"
+        formControlName="currentPassword"
+        autocomplete="current-password"
+        [maxLength]="limits.PASSWORD_MAX_LENGTH"
+      />
+      <span [class]="styles.field.hint">Nötig, um E-Mail oder Passwort zu ändern.</span>
+    </div>
+    }
+    <button type="submit" [class]="styles.button" [disabled]="profilePending()">Speichern</button>
+  </form>
+</app-section>
+
+<app-section>
+  <h2>Settings</h2>
+  <app-checkbox-field
+    label="Light Theme:"
+    [checked]="settings.theme() === 'light'"
+    (checkedChange)="settings.setTheme($event ? 'light' : 'dark')"
+  />
+  @if (settings.saveStatus() === 'error') {
+  <app-feedback-message [feedback]="themeError" />
+  }
+</app-section>
+
+<app-section>
+  <h2>Ausloggen</h2>
+  <p [class]="styles.lead">Möchtest du dich wirklich ausloggen?</p>
+  <button type="button" [class]="styles.button" (click)="logout()">Logout</button>
+</app-section>

@@ -1,0 +1,40 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "codegen": "panda codegen",
+    "dev": "panda codegen && ng serve",
+    "build": "panda codegen && ng build",
+    "typecheck": "panda codegen && tsc -p tsconfig.app.json --noEmit",
+    "lint": "oxlint --threads 1",
+    "lint:fix": "oxlint --threads 1 --fix",
+    "clean": "rm -rf dist .angular .turbo styled-system"
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@angular/service-worker": "^21.2.0",
+    "@bszz-dojo/shared": "*",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@ngrx/signals": "^21.0.0",
+    "chart.js": "^4.4.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.8.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.0",
+    "@angular/cli": "^21.2.0",
+    "@angular/compiler-cli": "^21.2.0",
+    "@angular/pwa": "^21.2.0",
+    "@pandacss/dev": "^1.0.0",
+    "@pandacss/eslint-plugin": "^0.2.0",
+    "postcss": "^8.5.0",
+    "typescript": "~5.9.2"
+  }
+}
