@@ -1,0 +1,24 @@
+# Temporary: installs dependencies for a sandbox without npm registry access. Removed before merging.
+name: Bootstrap deps
+
+on:
+  push:
+    branches: [feat/rewrite-monorepo]
+    paths: ['**/package.json', '.github/workflows/bootstrap.yml']
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: tar -czf /tmp/workspace-deps.tgz package-lock.json node_modules $(ls -d apps/*/node_modules packages/*/node_modules 2>/dev/null)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: workspace-deps
+          path: /tmp/workspace-deps.tgz
+          retention-days: 3
