@@ -26,6 +26,9 @@ export const tokens = defineTokens({
     red: { 400: { value: '#ec4231' } },
     yellow: { 300: { value: '#faf000' } },
     blue: { 400: { value: '#00a4e2' } },
+    gold: { value: '#ffd700' },
+    silver: { value: '#c0c0c0' },
+    bronze: { value: '#cd7f32' },
     blackAlpha: { 80: { value: 'rgba(0, 0, 0, 0.8)' } },
   },
   // Named after their pixel value: the old design was built on a 5px grid plus 8px.

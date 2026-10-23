@@ -1,4 +1,5 @@
 import type { UserName } from './auth';
+import type { Badge } from './badges';
 import type { BowTypeId } from './bow-types';
 import type { IsoDate } from './dates';
 import type { RankId } from './ranks';
@@ -38,6 +39,8 @@ export interface DistanceProgress {
 export interface Profile extends UserName {
   rank: RankId | null;
   stats: ProfileStats;
+  /** Newest year first */
+  badges: Badge[];
   /** Ordered by distance */
   personalBests: PersonalBests[];
   /** Ordered by distance */

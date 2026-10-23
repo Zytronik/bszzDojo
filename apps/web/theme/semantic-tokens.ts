@@ -31,6 +31,11 @@ export const semanticTokens = defineSemanticTokens({
         bg: { value: '{colors.green.a20}' },
       },
     },
+    medal: {
+      gold: { value: '{colors.gold}' },
+      silver: { value: '{colors.silver}' },
+      bronze: { value: '{colors.bronze}' },
+    },
     /** Backgrounds of the club badges ("Abzeichen") */
     rank: {
       red: { value: '{colors.red.400}' },

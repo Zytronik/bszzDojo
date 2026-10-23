@@ -19,11 +19,13 @@ packages/
 - Accounts with a username (case-insensitive, no spaces) and password, plus an optional display
   name shown instead of the username; stays logged in for 30 days.
 - Record rounds (bow type, target face, spot, date, distance, arrows, 10s, 9s, result).
-- Leaderboards: all time and this month at 18m and 8m (30 arrows, with the bow type's handicap).
+- Leaderboards: all time and this month at 18m and 8m (30 arrows, with the bow type's handicap),
+  and the medal table of tournament placings.
 - Profiles with your club badge ("Abzeichen"), average per arrow, personal bests per distance,
-  a progress chart per bow type and the latest rounds (deletable on your own profile).
-- Settings: username, display name, Abzeichen, password, light and dark theme (saved in the
-  account).
+  a progress chart per bow type, placings ("Auszeichnungen") and the latest rounds (deletable on
+  your own profile).
+- Settings: record and delete your placings (SM, Clubturnier, Turnier), username, display name,
+  Abzeichen, password, light and dark theme (saved in the account).
 - User search. Admins can delete users.
 
 ## Getting started

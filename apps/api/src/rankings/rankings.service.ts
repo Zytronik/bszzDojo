@@ -9,14 +9,17 @@ import {
   type Rankings,
 } from '@bszz-dojo/shared';
 import { In, Repository } from 'typeorm';
+import { BadgeEntity } from '../badges/badge.entity';
 import { ScoreEntity } from '../scores/score.entity';
-import { buildLeaderboard, type LeaderboardRound } from './leaderboard';
+import { buildLeaderboard, buildMedalStandings, type LeaderboardRound } from './leaderboard';
 
 @Injectable()
 export class RankingsService {
   constructor(
     @InjectRepository(ScoreEntity)
     private readonly scores: Repository<ScoreEntity>,
+    @InjectRepository(BadgeEntity)
+    private readonly badges: Repository<BadgeEntity>,
   ) {}
 
   /**
@@ -49,6 +52,16 @@ export class RankingsService {
         ),
       }));
 
-    return { month, allTime: boards(false), monthly: boards(true) };
+    const badges = await this.badges.find({ relations: { user: true } });
+    const medals = buildMedalStandings(
+      badges.map((badge) => ({
+        userId: badge.userId,
+        username: badge.user.username,
+        displayName: badge.user.displayName,
+        place: badge.place,
+      })),
+    );
+
+    return { month, allTime: boards(false), monthly: boards(true), medals };
   }
 }

@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './badges';
 export * from './bow-types';
 export * from './constants';
 export * from './dates';

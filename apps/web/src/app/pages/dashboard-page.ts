@@ -13,6 +13,7 @@ import { errorMessage } from '../core/error-message';
 import { failure, type Feedback } from '../core/feedback';
 import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
+import { MedalList } from '../dashboard/medal-list';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
@@ -21,7 +22,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
 @Component({
   selector: 'app-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageTitle, Section, Tabs, LeaderboardList, FeedbackMessage],
+  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage],
   templateUrl: './dashboard-page.html',
 })
 export class DashboardPage {

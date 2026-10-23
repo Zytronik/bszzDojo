@@ -30,6 +30,7 @@ import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
 import { UsersApiService } from '../core/users-api.service';
+import { BadgesSection } from '../settings/badges-section';
 import { SettingsStore } from '../settings/settings.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FormButton } from '../forms/form-button';
@@ -54,6 +55,7 @@ import { Section } from '../ui/section';
     FieldControl,
     FormButton,
     RankBadge,
+    BadgesSection,
   ],
   templateUrl: './settings-page.html',
 })

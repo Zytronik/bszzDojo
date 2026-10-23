@@ -4,23 +4,28 @@
  *   npm run legacy:import -w api
  *
  * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
- * pending migrations and copies users and scores. It refuses to run if the Postgres database
- * already has users, so it can't import twice. Passwords keep working: the old bcrypt hashes are
- * copied. Emails, Auszeichnungen, badge requests, open password reset links and "auto
- * login" cookies are not copied. Usernames with characters that aren't allowed any more (spaces, umlauts) get them
- * replaced by `_` and keep their old spelling as display name; the warnings list who logs in how.
+ * pending migrations and copies users, scores and placings (as "Turnier" under their old name). It
+ * refuses to run if the Postgres database already has users, so it can't import twice. Passwords
+ * keep working: the old bcrypt hashes are copied. Emails, badge requests, open password reset links
+ * and "auto login" cookies are not copied. Usernames with characters that aren't allowed any more
+ * (spaces, umlauts) get them replaced by `_` and keep their old spelling as display name; the
+ * warnings list who logs in how.
  */
 import {
+  BADGE_TEXT_MAX_LENGTH,
   DEFAULT_USER_SETTINGS,
   DISPLAY_NAME_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   isValidUsername,
+  isBadgePlace,
   isBowTypeId,
   isRankId,
+  isRecord,
   isTargetSize,
   normalizeDisplayName,
   usernameKey,
+  type BadgePlace,
   type TargetSize,
 } from '@bszz-dojo/shared';
 import { existsSync } from 'node:fs';
@@ -28,6 +33,7 @@ import { randomUUID } from 'node:crypto';
 import { createConnection, type RowDataPacket } from 'mysql2/promise';
 import { DataSource, type EntityManager } from 'typeorm';
 import { compatibleHash } from '../auth/auth.service';
+import { BadgeEntity } from '../badges/badge.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
 import { typeOrmOptions } from './typeorm-options';
@@ -38,7 +44,14 @@ interface LegacyUser extends RowDataPacket {
   passwordHash: string;
   role: string | null;
   rank: string | null;
+  badges: string | null;
   createdAt: string | null;
+}
+
+interface LegacyBadge {
+  name: string;
+  year: number;
+  place: BadgePlace;
 }
 
 interface LegacyScore extends RowDataPacket {
@@ -69,6 +82,46 @@ function toDate(value: string | null): Date {
 
 function toIsoDay(value: string): string {
   return value.slice(0, 10);
+}
+
+/**
+ * `badges` was a JSON array of `{ badgeName, year, rank }`; the old "remove badge" re-encoded the
+ * remaining entries as JSON strings, so both forms occur.
+ */
+function parseBadges(raw: string | null, username: string): LegacyBadge[] {
+  if (!raw) return [];
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    warn(`${username}: unreadable badges JSON, skipped: ${raw}`);
+    return [];
+  }
+  if (!Array.isArray(parsed)) return [];
+  const badges: LegacyBadge[] = [];
+  for (const item of parsed as unknown[]) {
+    let entry: unknown = item;
+    if (typeof item === 'string') {
+      try {
+        entry = JSON.parse(item);
+      } catch {
+        entry = null;
+      }
+    }
+    if (!isRecord(entry)) {
+      warn(`${username}: unreadable badge, skipped: ${JSON.stringify(item)}`);
+      continue;
+    }
+    const name = typeof entry['badgeName'] === 'string' ? entry['badgeName'].trim() : '';
+    const year = Number(entry['year']);
+    const place = Number(entry['rank']);
+    if (!name || !Number.isInteger(year) || !isBadgePlace(place)) {
+      warn(`${username}: incomplete badge, skipped: ${JSON.stringify(entry)}`);
+      continue;
+    }
+    badges.push({ name, year, place });
+  }
+  return badges;
 }
 
 /** A valid username from an old one: disallowed characters become `_`. */
@@ -125,6 +178,24 @@ async function copyUsers(
       createdAt,
       updatedAt: createdAt,
     });
+
+    for (const badge of parseBadges(legacy.badges, username)) {
+      await manager.insert(BadgeEntity, {
+        id: randomUUID(),
+        userId: id,
+        kind: 'tournament',
+        place: badge.place,
+        year: badge.year,
+        eventName: badge.name.slice(0, BADGE_TEXT_MAX_LENGTH),
+        bowType: null,
+        distance: null,
+        location: null,
+        team: null,
+        venue: null,
+        is3d: null,
+        ageCategory: null,
+      });
+    }
   }
   return ids;
 }

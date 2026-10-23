@@ -8,8 +8,9 @@ Turborepo monorepo using npm workspaces, Node 22.
 
 BSZZ Dojo is the archery club's results app (German UI, Swiss spelling: "ss", never "ß"). Archers
 log in with username and password, record their rounds ("Scores"), compare themselves on the
-leaderboards and look at each other's profiles, which show the club badge ("Abzeichen") each
-archer picked for themselves. Admins manage users. It's an installable PWA.
+leaderboards and look at each other's profiles with their club badge ("Abzeichen") and
+tournament placings ("Auszeichnungen"), both recorded by the archers themselves. Admins manage
+users. It's an installable PWA.
 
 - `apps/api`: NestJS 11. REST under the global prefix `/api` (Swagger UI at `/api`, OpenAPI JSON
   at `/api-json`), Postgres through TypeORM. The database is Neon (Vercel Postgres).
@@ -75,14 +76,23 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `LEADERBOARD_DISTANCES` (18m, 8m) with exactly `LEADERBOARD_ARROWS` (30) arrows count. Each
   archer's best round by _adjusted_ result, top 10; ties go to whoever shot it first. "Monthly"
   is the current calendar month in `CLUB_TIME_ZONE` (Europe/Zurich), by the day it was shot.
+- **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.
 - **Profiles** (`GET /api/profiles/:username`): stats, the top 3 rounds per distance, the progress
-  chart (one line per bow type per distance) and the last 15 rounds. Usernames in
+  chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds. Usernames in
   URLs are matched ignoring case.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
-  (`PATCH /api/users/me`), no admin approval. There are no tournament placings
-  ("Auszeichnungen"), badge requests or medal table any more.
+  (`PATCH /api/users/me`), no admin approval.
+- **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record and
+  delete themselves (`/api/users/me/badges`), no admin approval and no requests. The kind (`SM`,
+  `Clubturnier`, `Turnier`) decides the fields (`BADGE_KIND_FIELDS`): SM has location, team and
+  indoor/outdoor; Clubturnier the event name; Turnier all of them. Year, bow type and distance are
+  always required, 3D only applies outdoors, the age category is optional free text until the
+  club defines a list. `normalizeBadgeInput` clears what the kind doesn't use and
+  `badgeFieldErrors` validates in the form and the API. Placings from the old app are a
+  "Turnier" with only the old name (as `eventName`), year and place, so the details are nullable.
+  Show them with `badgeTitle` / `badgeDetails` (`BadgeRow`).
 
 ## Auth
 
@@ -139,7 +149,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
   git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
 - One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
-  `admin/`, `health/`); cross-cutting helpers in `common/`.
+  `badges/`, `admin/`, `health/`); cross-cutting helpers in `common/`.
 - Errors are Nest HTTP exceptions with a German message the web app can show as is.
 - `src/main.ts` is the Vercel entrypoint (NestJS zero-config): it must call `app.listen`.
 
@@ -194,11 +204,11 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   - `tokens.ts`: raw values only (the old app's colors, its 5px spacing grid, Bootstrap 3
     container widths). Components never use raw color tokens.
   - `semantic-tokens.ts`: what components use (`bg.canvas`, `bg.surface`, `fg.default`,
-    `accent.default`, `status.*`, `rank.*`, spacing like `gutter`, `section`, `stack`).
+    `accent.default`, `status.*`, `medal.*`, `rank.*`, spacing like `gutter`, `section`, `stack`).
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop) and `global-css.ts`.
-  - `recipes/`: `button`, `container`, `input`, `message`, `rankBadge`, `spinner` and the slot
+  - `recipes/`: `button`, `container`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
     recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
     `siteHeader`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
