@@ -16,7 +16,7 @@
     @if (rankings.hasValue()) {
     <app-leaderboard-list [entries]="entries(rankings.value().allTime, allTimeTab())" />
     } @else if (rankings.isLoading()) {
-    <p [class]="mutedStyles">Wird geladen…</p>
+    <app-skeleton-list [rank]="true" [lines]="3" />
     }
   </app-tabs>
 </app-section>
@@ -28,7 +28,7 @@
     @if (rankings.hasValue()) {
     <app-leaderboard-list [entries]="entries(rankings.value().monthly, monthlyTab())" />
     } @else if (rankings.isLoading()) {
-    <p [class]="mutedStyles">Wird geladen…</p>
+    <app-skeleton-list [rank]="true" [lines]="3" />
     }
   </app-tabs>
 </app-section>
@@ -39,6 +39,6 @@
   @if (rankings.hasValue()) {
   <app-medal-list [standings]="rankings.value().medals" />
   } @else if (rankings.isLoading()) {
-  <p [class]="mutedStyles">Wird geladen…</p>
+  <app-skeleton-list [rank]="true" [lines]="1" />
   }
 </app-section>

@@ -47,6 +47,10 @@ export const tokens = defineTokens({
     checkbox: { value: '25px' },
     /** Follows the text size of the button it's in. */
     spinner: { value: '1em' },
+    /** Placeholder heights: a line of body text, a line of small text, and the `#1` column */
+    skeletonLine: { value: '18px' },
+    skeletonMeta: { value: '12px' },
+    skeletonRank: { value: '28px' },
     rankBadge: { value: '30px' },
     header: { value: '60px' },
     footer: { value: '40px' },
@@ -102,6 +106,7 @@ export const tokens = defineTokens({
   durations: {
     normal: { value: '0.3s' },
     spin: { value: '0.8s' },
+    pulse: { value: '1.5s' },
   },
   easings: {
     default: { value: 'ease' },
@@ -109,6 +114,7 @@ export const tokens = defineTokens({
   animations: {
     fadeIn: { value: 'fadeIn {durations.normal} {easings.default}' },
     spin: { value: 'spin {durations.spin} linear infinite' },
+    pulse: { value: 'pulse {durations.pulse} {easings.default} infinite' },
   },
   zIndex: {
     header: { value: '1000' },

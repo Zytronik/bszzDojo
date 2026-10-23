@@ -28,6 +28,8 @@ import { ConfirmDialog } from '../ui/confirm-dialog';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
+import { SkeletonChart } from '../ui/skeleton-chart';
+import { SkeletonList } from '../ui/skeleton-list';
 import { Tabs, type TabItem } from '../ui/tabs';
 
 @Component({
@@ -43,6 +45,8 @@ import { Tabs, type TabItem } from '../ui/tabs';
     ConfirmDialog,
     FeedbackMessage,
     ShownNamePipe,
+    SkeletonList,
+    SkeletonChart,
   ],
   templateUrl: './profile-page.html',
 })
@@ -96,7 +100,6 @@ export class ProfilePage {
       pt: '10',
     }),
     stat: css({ display: 'flex', gap: '15' }),
-    muted: css({ layerStyle: 'muted' }),
   };
 
   protected distanceTabs(groups: readonly { distance: number }[]): TabItem[] {
