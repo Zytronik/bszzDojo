@@ -19,7 +19,7 @@ import {
   BOW_TYPES,
   BOW_TYPE_IDS,
   MAX_DISTANCE,
-  TOURNAMENT_TYPES,
+  BADGE_KIND_TOURNAMENT_TYPES,
   TOURNAMENT_TYPE_LABELS,
   badgeFieldErrors,
   currentClubMonth,
@@ -82,10 +82,6 @@ export class BadgesSection {
     value,
     label: `${value} (${BADGE_PLACE_LABELS[value]})`,
   }));
-  protected readonly tournamentTypes = TOURNAMENT_TYPES.map((id) => ({
-    id,
-    label: TOURNAMENT_TYPE_LABELS[id],
-  }));
   protected readonly ageCategories = AGE_CATEGORIES;
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
 
@@ -107,6 +103,13 @@ export class BadgesSection {
   });
   /** What the picked kind asks for, so the template only shows those fields. */
   protected readonly fields = computed(() => BADGE_KIND_FIELDS[this.value().kind ?? 'tournament']);
+  /** The national tournament has no "Team" type. */
+  protected readonly tournamentTypes = computed(() =>
+    BADGE_KIND_TOURNAMENT_TYPES[this.value().kind ?? 'tournament'].map((id) => ({
+      id,
+      label: TOURNAMENT_TYPE_LABELS[id],
+    })),
+  );
   /** A "Team" tournament type says it already. */
   protected readonly askTeam = computed(
     () => this.fields().team && this.value().tournamentType !== 'team',
@@ -116,6 +119,13 @@ export class BadgesSection {
   protected readonly feedback = signal<Feedback | null>(null);
 
   constructor() {
+    // Switching from an SM "Team" to a national tournament falls back to FITA.
+    this.form.controls.kind.valueChanges.pipe(takeUntilDestroyed()).subscribe((kind) => {
+      const type = this.form.controls.tournamentType.value;
+      if (type !== null && !BADGE_KIND_TOURNAMENT_TYPES[kind].includes(type)) {
+        this.form.controls.tournamentType.setValue('fita');
+      }
+    });
     // Switching the kind changes what's required.
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       for (const control of Object.values(this.form.controls)) {
