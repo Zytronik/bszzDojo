@@ -1,11 +1,7 @@
 import { css } from 'styled-system/css';
-import { button, field, input } from 'styled-system/recipes';
 
-/** Classes every form template uses; templates can't call recipes themselves. */
+/** Classes form templates use besides `FormField` and `FormButton`. */
 export const formStyles = {
-  field: field(),
-  input: input(),
-  button: button(),
   lead: css({ mb: '10' }),
 };
 

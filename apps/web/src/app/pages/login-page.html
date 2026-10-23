@@ -10,74 +10,63 @@
 
     @if (isTab('login')) {
     <h2>Einloggen</h2>
-    <form [formGroup]="login" (ngSubmit)="submitLogin()">
-      <div [class]="styles.field.root">
-        <label for="login-username" [class]="styles.field.label">Benutzername:</label>
+    <form [formGroup]="login" (ngSubmit)="submitLogin()" novalidate>
+      <app-form-field label="Benutzername:">
         <input
-          id="login-username"
-          [class]="styles.input"
+          appFieldControl
           formControlName="username"
           autocomplete="username"
           autocapitalize="none"
           [maxLength]="limits.USERNAME_MAX_LENGTH"
         />
-      </div>
-      <div [class]="styles.field.root">
-        <label for="login-password" [class]="styles.field.label">Passwort:</label>
+      </app-form-field>
+      <app-form-field label="Passwort:">
         <input
-          id="login-password"
+          appFieldControl
           type="password"
-          [class]="styles.input"
           formControlName="password"
           autocomplete="current-password"
           [maxLength]="limits.PASSWORD_MAX_LENGTH"
         />
-      </div>
-      <button type="submit" [class]="styles.button" [disabled]="auth.pending()">Einloggen</button>
+      </app-form-field>
+      <button type="submit" appButton [pending]="auth.pending()">Einloggen</button>
     </form>
     } @else {
     <h2>Registrieren</h2>
-    <form [formGroup]="register" (ngSubmit)="submitRegister()">
-      <div [class]="styles.field.root">
-        <label for="register-username" [class]="styles.field.label">Benutzername:</label>
+    <form [formGroup]="register" (ngSubmit)="submitRegister()" novalidate>
+      <app-form-field label="Benutzername:" hint="Zum Einloggen. Ohne Leerzeichen.">
         <input
-          id="register-username"
-          [class]="styles.input"
+          appFieldControl
           formControlName="username"
           autocomplete="username"
           autocapitalize="none"
           [maxLength]="limits.USERNAME_MAX_LENGTH"
         />
-        <span [class]="styles.field.hint">Zum Einloggen. Ohne Leerzeichen.</span>
-      </div>
-      <div [class]="styles.field.root">
-        <label for="register-display-name" [class]="styles.field.label"
-          >Anzeigename (optional):</label
-        >
+      </app-form-field>
+      <app-form-field
+        label="Anzeigename (optional):"
+        hint="Wird statt des Benutzernamens angezeigt."
+      >
         <input
-          id="register-display-name"
-          [class]="styles.input"
+          appFieldControl
           formControlName="displayName"
           autocomplete="name"
           [maxLength]="limits.DISPLAY_NAME_MAX_LENGTH"
         />
-        <span [class]="styles.field.hint">Wird statt des Benutzernamens angezeigt.</span>
-      </div>
-      <div [class]="styles.field.root">
-        <label for="register-password" [class]="styles.field.label">Passwort:</label>
+      </app-form-field>
+      <app-form-field
+        label="Passwort:"
+        [hint]="'Mindestens ' + limits.PASSWORD_MIN_LENGTH + ' Zeichen'"
+      >
         <input
-          id="register-password"
+          appFieldControl
           type="password"
-          [class]="styles.input"
           formControlName="password"
           autocomplete="new-password"
           [maxLength]="limits.PASSWORD_MAX_LENGTH"
         />
-        <span [class]="styles.field.hint">Mindestens {{ limits.PASSWORD_MIN_LENGTH }} Zeichen</span>
-      </div>
-      <button type="submit" [class]="styles.button" [disabled]="auth.pending()">
-        Registrieren
-      </button>
+      </app-form-field>
+      <button type="submit" appButton [pending]="auth.pending()">Registrieren</button>
     </form>
     }
   </app-tabs>

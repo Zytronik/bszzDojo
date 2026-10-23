@@ -45,6 +45,8 @@ export const tokens = defineTokens({
     full: { value: '100%' },
     dot: { value: '12px' },
     checkbox: { value: '25px' },
+    /** Follows the text size of the button it's in. */
+    spinner: { value: '1em' },
     rankBadge: { value: '30px' },
     header: { value: '60px' },
     footer: { value: '40px' },
@@ -99,12 +101,14 @@ export const tokens = defineTokens({
   },
   durations: {
     normal: { value: '0.3s' },
+    spin: { value: '0.8s' },
   },
   easings: {
     default: { value: 'ease' },
   },
   animations: {
     fadeIn: { value: 'fadeIn {durations.normal} {easings.default}' },
+    spin: { value: 'spin {durations.spin} linear infinite' },
   },
   zIndex: {
     header: { value: '1000' },

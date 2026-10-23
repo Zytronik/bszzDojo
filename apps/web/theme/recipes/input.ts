@@ -16,5 +16,11 @@ export const input = defineRecipe({
     transitionDuration: 'normal',
     _focusVisible: { outlineWidth: 'thick', outlineStyle: 'solid', outlineColor: 'accent.default' },
     _placeholder: { color: 'fg.default', opacity: 'inactive' },
+    // Set by `FieldControl` once the user touched the field; not `:invalid`, which applies at once.
+    '&[aria-invalid=true]': {
+      outlineWidth: 'thick',
+      outlineStyle: 'solid',
+      outlineColor: 'status.error.fg',
+    },
   },
 });

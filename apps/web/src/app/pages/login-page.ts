@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, type AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   ACCOUNT_FIELD_ERRORS,
@@ -13,8 +13,10 @@ import {
 } from '@bszz-dojo/shared';
 import { AuthStore } from '../auth/auth.store';
 import { failure, type Feedback } from '../core/feedback';
+import { FormButton } from '../forms/form-button';
+import { FieldControl, FormField } from '../forms/form-field';
+import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
 import { FeedbackMessage } from '../ui/feedback-message';
-import { formStyles } from '../ui/form-styles';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -29,7 +31,16 @@ function safeReturnUrl(url: string | undefined): string {
 @Component({
   selector: 'app-login-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, PageTitle, Section, Tabs, FeedbackMessage],
+  imports: [
+    ReactiveFormsModule,
+    PageTitle,
+    Section,
+    Tabs,
+    FeedbackMessage,
+    FormField,
+    FieldControl,
+    FormButton,
+  ],
   templateUrl: './login-page.html',
 })
 export class LoginPage {
@@ -40,7 +51,6 @@ export class LoginPage {
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 
-  protected readonly styles = formStyles;
   protected readonly limits = {
     USERNAME_MAX_LENGTH,
     DISPLAY_NAME_MAX_LENGTH,
@@ -52,50 +62,45 @@ export class LoginPage {
     { id: 'register', label: 'Register' },
   ];
   protected readonly tab = signal<string>('login');
-  private readonly localError = signal<string | null>(null);
+  private readonly invalidSubmit = signal(false);
 
   protected readonly login = this.forms.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required],
+    username: ['', required('Bitte gib deinen Benutzernamen ein.')],
+    password: ['', required('Bitte gib dein Passwort ein.')],
   });
   protected readonly register = this.forms.group({
-    username: ['', Validators.required],
-    displayName: '',
-    password: ['', Validators.required],
+    username: ['', [required(), rule(isValidUsername, ACCOUNT_FIELD_ERRORS.username)]],
+    displayName: ['', rule(isValidDisplayName, ACCOUNT_FIELD_ERRORS.displayName)],
+    password: ['', [required(), rule(isValidPassword, ACCOUNT_FIELD_ERRORS.password)]],
   });
 
   protected readonly feedback = computed((): Feedback | null => {
-    const error = this.localError() ?? this.auth.error();
+    if (this.invalidSubmit()) return INVALID_FORM;
+    const error = this.auth.error();
     return error ? failure(error) : null;
   });
 
   protected selectTab(tab: string): void {
     this.tab.set(tab);
-    this.localError.set(null);
+    this.invalidSubmit.set(false);
     this.auth.clearError();
   }
 
   protected async submitLogin(): Promise<void> {
-    this.localError.set(null);
-    if (this.login.invalid) {
-      this.localError.set('Bitte gib Benutzername und Passwort ein.');
-      return;
-    }
+    if (!this.validate(this.login)) return;
     if (await this.auth.login(this.login.getRawValue())) await this.done();
   }
 
   protected async submitRegister(): Promise<void> {
-    const { username, displayName, password } = this.register.getRawValue();
-    const error = !isValidUsername(username)
-      ? ACCOUNT_FIELD_ERRORS.username
-      : !isValidDisplayName(displayName)
-        ? ACCOUNT_FIELD_ERRORS.displayName
-        : !isValidPassword(password)
-          ? ACCOUNT_FIELD_ERRORS.password
-          : null;
-    this.localError.set(error);
-    if (error) return;
-    if (await this.auth.register({ username, displayName, password })) await this.done();
+    if (!this.validate(this.register)) return;
+    if (await this.auth.register(this.register.getRawValue())) await this.done();
+  }
+
+  private validate(form: AbstractControl): boolean {
+    const valid = checkForm(form);
+    this.invalidSubmit.set(!valid);
+    if (!valid) this.auth.clearError();
+    return valid;
   }
 
   private async done(): Promise<void> {
