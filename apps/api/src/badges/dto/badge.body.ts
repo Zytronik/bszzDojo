@@ -1,15 +1,16 @@
 import {
-  AGE_CATEGORY_MAX_LENGTH,
+  AGE_CATEGORIES,
   BADGE_KINDS,
   BADGE_PLACES,
   BADGE_TEXT_MAX_LENGTH,
-  BADGE_VENUES,
   BOW_TYPE_IDS,
+  TOURNAMENT_TYPES,
+  type AgeCategory,
   type BadgeInput,
   type BadgeKind,
   type BadgePlace,
-  type BadgeVenue,
   type BowTypeId,
+  type TournamentType,
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsIn, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
@@ -19,7 +20,7 @@ import { IsBoolean, IsIn, IsInt, IsOptional, IsString, MaxLength } from 'class-v
  * `badgeFieldErrors`, checked in the service.
  */
 export class BadgeBody implements BadgeInput {
-  /** SM, Clubturnier or Turnier */
+  /** SM, Clubturnier or Nationales Turnier */
   @ApiProperty({ enum: BADGE_KINDS })
   @IsIn(BADGE_KINDS)
   kind: BadgeKind;
@@ -37,44 +38,39 @@ export class BadgeBody implements BadgeInput {
   @IsIn(BOW_TYPE_IDS)
   bowType: BowTypeId;
 
-  /** Meters. @example 70 */
-  @IsInt()
-  distance: number;
+  @ApiProperty({ enum: AGE_CATEGORIES })
+  @IsIn(AGE_CATEGORIES)
+  ageCategory: AgeCategory;
 
-  /** SM and Turnier, else `null`. @example 'Bern' */
+  /** SM and Nationales Turnier, else `null` */
+  @ApiProperty({ enum: TOURNAMENT_TYPES, nullable: true })
+  @IsOptional()
+  @IsIn(TOURNAMENT_TYPES)
+  tournamentType: TournamentType | null;
+
+  /** SM and Nationales Turnier, else `null`. @example 'Bern' */
   @ApiProperty({ type: String, nullable: true })
   @IsOptional()
   @IsString()
   @MaxLength(BADGE_TEXT_MAX_LENGTH)
   location: string | null;
 
-  /** Clubturnier and Turnier, else `null`. @example 'Chlausschiessen' */
+  /** Clubturnier and Nationales Turnier, else `null`. @example 'Chlausschiessen' */
   @ApiProperty({ type: String, nullable: true })
   @IsOptional()
   @IsString()
   @MaxLength(BADGE_TEXT_MAX_LENGTH)
   eventName: string | null;
 
-  /** SM and Turnier, else `null` */
+  /** SM unless the tournament type is "team", else `null` */
   @ApiProperty({ type: Boolean, nullable: true })
   @IsOptional()
   @IsBoolean()
   team: boolean | null;
 
-  /** SM and Turnier, else `null` */
-  @ApiProperty({ enum: BADGE_VENUES, nullable: true })
+  /** Clubturnier only, in meters, else `null`. @example 18 */
+  @ApiProperty({ type: Number, nullable: true })
   @IsOptional()
-  @IsIn(BADGE_VENUES)
-  venue: BadgeVenue | null;
-
-  /** Outdoor only, else `null` */
-  @ApiProperty({ type: Boolean, nullable: true })
-  @IsOptional()
-  @IsBoolean()
-  is3d: boolean | null;
-
-  /** Required for every kind; free text for now. @example 'U18' */
-  @IsString()
-  @MaxLength(AGE_CATEGORY_MAX_LENGTH)
-  ageCategory: string;
+  @IsInt()
+  distance: number | null;
 }

@@ -1,20 +1,22 @@
 import {
+  AGE_CATEGORIES,
   BADGE_KINDS,
   BADGE_PLACES,
-  BADGE_VENUES,
   BOW_TYPE_IDS,
+  TOURNAMENT_TYPES,
+  type AgeCategory,
   type Badge,
   type BadgeKind,
   type BadgePlace,
-  type BadgeVenue,
   type BowTypeId,
+  type TournamentType,
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BadgeResponse implements Badge {
   id: string;
 
-  /** SM, Clubturnier or Turnier */
+  /** SM, Clubturnier or Nationales Turnier */
   @ApiProperty({ enum: BADGE_KINDS })
   kind: BadgeKind;
 
@@ -29,31 +31,27 @@ export class BadgeResponse implements Badge {
   @ApiProperty({ enum: BOW_TYPE_IDS, nullable: true })
   bowType: BowTypeId | null;
 
-  /** Meters; `null` only for placings imported from the old app */
-  @ApiProperty({ type: Number, nullable: true })
-  distance: number | null;
+  /** `null` only for placings recorded before the categories were fixed */
+  @ApiProperty({ enum: AGE_CATEGORIES, nullable: true })
+  ageCategory: AgeCategory | null;
 
-  /** SM and Turnier. @example 'Bern' */
+  /** SM and Nationales Turnier */
+  @ApiProperty({ enum: TOURNAMENT_TYPES, nullable: true })
+  tournamentType: TournamentType | null;
+
+  /** SM and Nationales Turnier. @example 'Bern' */
   @ApiProperty({ type: String, nullable: true })
   location: string | null;
 
-  /** Clubturnier and Turnier. @example 'Chlausschiessen' */
+  /** Clubturnier and Nationales Turnier. @example 'Chlausschiessen' */
   @ApiProperty({ type: String, nullable: true })
   eventName: string | null;
 
-  /** SM and Turnier */
+  /** SM */
   @ApiProperty({ type: Boolean, nullable: true })
   team: boolean | null;
 
-  /** SM and Turnier */
-  @ApiProperty({ enum: BADGE_VENUES, nullable: true })
-  venue: BadgeVenue | null;
-
-  /** Outdoor only */
-  @ApiProperty({ type: Boolean, nullable: true })
-  is3d: boolean | null;
-
-  /** `null` only for placings imported from the old app. @example 'U18' */
-  @ApiProperty({ type: String, nullable: true })
-  ageCategory: string | null;
+  /** Clubturnier, in meters */
+  @ApiProperty({ type: Number, nullable: true })
+  distance: number | null;
 }

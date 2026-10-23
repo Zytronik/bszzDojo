@@ -12,8 +12,7 @@ export function toBadge(badge: BadgeEntity): Badge {
     location: badge.location,
     eventName: badge.eventName,
     team: badge.team,
-    venue: badge.venue,
-    is3d: badge.is3d,
+    tournamentType: badge.tournamentType,
     ageCategory: badge.ageCategory,
   };
 }

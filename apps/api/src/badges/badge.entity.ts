@@ -1,4 +1,10 @@
-import type { BadgeKind, BadgePlace, BadgeVenue, BowTypeId } from '@bszz-dojo/shared';
+import type {
+  AgeCategory,
+  BadgeKind,
+  BadgePlace,
+  BowTypeId,
+  TournamentType,
+} from '@bszz-dojo/shared';
 import {
   Column,
   CreateDateColumn,
@@ -52,14 +58,11 @@ export class BadgeEntity {
   @Column({ type: 'boolean', nullable: true })
   team: boolean | null;
 
-  @Column({ type: 'varchar', length: 10, nullable: true })
-  venue: BadgeVenue | null;
-
-  @Column({ name: 'is_3d', type: 'boolean', nullable: true })
-  is3d: boolean | null;
+  @Column({ name: 'tournament_type', type: 'varchar', length: 10, nullable: true })
+  tournamentType: TournamentType | null;
 
   @Column({ name: 'age_category', type: 'varchar', length: 40, nullable: true })
-  ageCategory: string | null;
+  ageCategory: AgeCategory | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

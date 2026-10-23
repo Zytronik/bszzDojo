@@ -4,7 +4,7 @@
  *   npm run legacy:import -w api
  *
  * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
- * pending migrations and copies users, scores and placings (as "Turnier" under their old name). It
+ * pending migrations and copies users, scores and placings (as "Nationales Turnier" under their old name). It
  * refuses to run if the Postgres database already has users, so it can't import twice. Passwords
  * keep working: the old bcrypt hashes are copied. Emails, badge requests, open password reset links
  * and "auto login" cookies are not copied. Usernames with characters that aren't allowed any more
@@ -191,8 +191,7 @@ async function copyUsers(
         distance: null,
         location: null,
         team: null,
-        venue: null,
-        is3d: null,
+        tournamentType: null,
         ageCategory: null,
       });
     }
