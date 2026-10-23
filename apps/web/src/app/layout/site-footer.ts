@@ -18,11 +18,12 @@ export class SiteFooter {
   protected readonly version = APP_VERSION;
   protected readonly styles = css({
     layerStyle: 'surface',
+    textStyle: 'body.small',
     h: 'footer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '10',
+    gap: '8',
   });
   protected readonly versionStyles = css({ layerStyle: 'muted' });
 }
