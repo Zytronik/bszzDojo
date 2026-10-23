@@ -16,11 +16,24 @@ jobs:
   release-please:
     name: Release PR / tag
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      version: ${{ steps.release.outputs.version }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: release
+        uses: googleapis/release-please-action@v4
         with:
           # A personal access token, because PRs opened with GITHUB_TOKEN don't trigger other
           # workflows, so the required checks would never run on the release PR.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  deploy:
+    name: Deploy
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      version: ${{ needs.release-please.outputs.version }}
+    secrets: inherit

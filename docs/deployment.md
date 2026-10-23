@@ -25,8 +25,22 @@ browser ──▶ Vercel ──/api*──▶ api service (NestJS function) ─�
 
 | Environment | Runs                                     | Database |
 | ----------- | ---------------------------------------- | -------- |
-| Production  | Vercel, deployed from `main`             | `prod`   |
+| Production  | Vercel, deployed for every release       | `prod`   |
 | Preview     | Vercel, every other branch and PR        | `dev`    |
 | Development | locally (`npm run dev`, `apps/api/.env`) | `dev`    |
 
 Never point local development or previews at the prod database.
+
+## Releases deploy production
+
+1. Merging a feature PR into `main` doesn't deploy anything: `vercel.json` turns off Vercel's
+   automatic deploys for `main` (`git.deploymentEnabled`). release-please updates its release PR.
+2. Merging the release PR (`chore: release x.y.z`) creates the `vX.Y.Z` tag and GitHub Release.
+3. The same **Release** workflow then runs **Deploy** (`.github/workflows/deploy.yml`), which calls
+   the project's Vercel Deploy Hook. Vercel builds the latest `main`, i.e. the release commit, as
+   a production deployment.
+
+To redeploy, run **Deploy** by hand (Actions → Deploy → Run workflow); it builds the latest
+`main`. To go back to an older release, use **Instant Rollback** in the Vercel dashboard.
+
+The hook URL is the secret `VERCEL_DEPLOY_HOOK_URL` in the GitHub environment `production`.

@@ -239,8 +239,10 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
   Angular build, static) and `api` (NestJS as a Vercel Function). Requests to `/api/*` go to the
   API, everything else to the web app, so both share one domain and the refresh cookie is
   first-party. Details in `docs/deployment.md`.
-- Vercel's Git integration deploys: `main` → production (prod database), every other branch and
-  PR → a preview deployment (dev database).
+- Production deploys only for releases: Vercel doesn't deploy `main` on push
+  (`git.deploymentEnabled`); the release workflow calls a Vercel Deploy Hook once release-please
+  created a release (`.github/workflows/deploy.yml`). Every other branch and PR gets a preview
+  deployment (dev database). Never deploy production any other way.
 - The API runs as a serverless function: keep it stateless (no in-memory sessions or caches that
   must survive a request), keep the connection pool small, and prefer pure-JS packages.
 - Production secrets live only in the Vercel project's environment variables.

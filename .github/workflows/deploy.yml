@@ -1,0 +1,38 @@
+name: Deploy
+
+# Production deploys only happen for releases: vercel.json turns off Vercel's automatic deploys
+# of `main`, and this calls the project's Deploy Hook instead, which builds the latest `main` on
+# Vercel (the release commit). Run it by hand to redeploy; roll back in the Vercel dashboard.
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Vercel production
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the Vercel Deploy Hook
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          VERSION: ${{ inputs.version || 'latest main' }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL is not set in the production environment"
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST "$DEPLOY_HOOK_URL"
+          echo "Deploying $VERSION; follow the build in the Vercel dashboard." >> "$GITHUB_STEP_SUMMARY"
