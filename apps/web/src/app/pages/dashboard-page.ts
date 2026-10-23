@@ -15,7 +15,7 @@ import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
 import { MedalList } from '../dashboard/medal-list';
 import { FeedbackMessage } from '../ui/feedback-message';
-import { SkeletonList } from '../ui/skeleton-list';
+import { LoadingFrame } from '../ui/loading-frame';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -23,7 +23,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
 @Component({
   selector: 'app-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage, SkeletonList],
+  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage, LoadingFrame],
   templateUrl: './dashboard-page.html',
 })
 export class DashboardPage {
@@ -31,6 +31,9 @@ export class DashboardPage {
   private readonly api = inject(RankingsApiService);
 
   protected readonly rankings = resource({ loader: () => this.api.get() });
+  protected readonly loading = computed(
+    () => !this.rankings.hasValue() && this.rankings.isLoading(),
+  );
 
   protected readonly distanceTabs: TabItem[] = LEADERBOARD_DISTANCES.map((distance) => ({
     id: String(distance),

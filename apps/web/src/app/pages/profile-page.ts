@@ -29,8 +29,7 @@ import { ConfirmDialog } from '../ui/confirm-dialog';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
-import { SkeletonChart } from '../ui/skeleton-chart';
-import { SkeletonList } from '../ui/skeleton-list';
+import { LoadingFrame } from '../ui/loading-frame';
 import { Tabs, type TabItem } from '../ui/tabs';
 
 @Component({
@@ -46,8 +45,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     ConfirmDialog,
     FeedbackMessage,
     ShownNamePipe,
-    SkeletonList,
-    SkeletonChart,
+    LoadingFrame,
   ],
   templateUrl: './profile-page.html',
 })

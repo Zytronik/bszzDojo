@@ -3,32 +3,32 @@
 <app-section>
   <app-feedback-message [feedback]="usersFeedback()" />
   <h2>Alle Benutzer</h2>
-  @if (users.hasValue()) { @for (user of users.value(); track user.id) {
-  <div [class]="recordStyles.root">
-    <div [class]="recordStyles.body">
-      <p [class]="recordStyles.meta">{{ formatDate(user.createdAt) }}</p>
-      <a [routerLink]="['/profile', user.username]" [class]="recordStyles.title"
-        >{{ user | shownName }}</a
-      >
+  <app-loading-frame [loading]="!users.hasValue() && users.isLoading()" [lines]="2">
+    @if (users.hasValue()) { @for (user of users.value(); track user.id) {
+    <div [class]="recordStyles.root">
+      <div [class]="recordStyles.body">
+        <p [class]="recordStyles.meta">{{ formatDate(user.createdAt) }}</p>
+        <a [routerLink]="['/profile', user.username]" [class]="recordStyles.title"
+          >{{ user | shownName }}</a
+        >
+      </div>
+      @if (user.id !== auth.user()?.id) {
+      <div [class]="recordStyles.actions">
+        <button
+          type="button"
+          [class]="recordStyles.action"
+          [attr.aria-label]="(user | shownName) + ' löschen'"
+          (click)="userToDelete.set(user)"
+        >
+          <app-icon [icon]="icons.faDeleteLeft" />
+        </button>
+      </div>
+      }
     </div>
-    @if (user.id !== auth.user()?.id) {
-    <div [class]="recordStyles.actions">
-      <button
-        type="button"
-        [class]="recordStyles.action"
-        [attr.aria-label]="(user | shownName) + ' löschen'"
-        (click)="userToDelete.set(user)"
-      >
-        <app-icon [icon]="icons.faDeleteLeft" />
-      </button>
-    </div>
-    }
-  </div>
-  } @empty {
-  <p>Keine Benutzer vorhanden.</p>
-  } } @else if (users.isLoading()) {
-  <app-skeleton-list [lines]="2" />
-  }
+    } @empty {
+    <p>Keine Benutzer vorhanden.</p>
+    } }
+  </app-loading-frame>
   <app-confirm-dialog
     [open]="userToDelete() !== null"
     [message]="'Bist du sicher, dass du ' + (userToDelete() | shownName) + ' mit allen Scores löschen möchtest?'"

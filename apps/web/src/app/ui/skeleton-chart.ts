@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { css } from 'styled-system/css';
 import { skeleton } from 'styled-system/recipes';
 
@@ -6,13 +6,24 @@ import { skeleton } from 'styled-system/recipes';
 @Component({
   selector: 'app-skeleton-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { role: 'status', 'aria-busy': 'true' },
+  host: {
+    '[attr.role]': "ghost() ? null : 'status'",
+    '[attr.aria-busy]': 'ghost() ? null : true',
+    '[attr.aria-hidden]': 'ghost() || null',
+    '[class]': "ghost() ? ghostStyles : ''",
+  },
   template: `
-    <span [class]="srOnly">Wird geladen…</span>
+    @if (!ghost()) {
+      <span [class]="srOnly">Wird geladen…</span>
+    }
     <div [class]="styles.chart" aria-hidden="true"></div>
   `,
 })
 export class SkeletonChart {
+  /** Invisible, only holding the space (see `LoadingFrame`). */
+  readonly ghost = input(false);
+
   protected readonly styles = skeleton();
   protected readonly srOnly = css({ srOnly: true });
+  protected readonly ghostStyles = css({ visibility: 'hidden', '& *': { animation: 'none' } });
 }

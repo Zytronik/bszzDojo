@@ -14,7 +14,8 @@ export const skeleton = defineSlotRecipe({
       gap: '15',
       py: '10',
       layerStyle: 'divider',
-      _first: { pt: '0' },
+      // Of type: the screen reader text before the rows is a span.
+      _firstOfType: { pt: '0' },
     },
     rank: {
       layerStyle: 'skeleton',

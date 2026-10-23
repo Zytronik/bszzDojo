@@ -2,88 +2,100 @@
 <app-section>
   <app-feedback-message [feedback]="loadError()" />
 </app-section>
-} @else if (profile.hasValue()) { @let p = profile.value();
+} @else { @let p = profile.hasValue() ? profile.value() : null;
 
 <app-section>
-  <h1>{{ p | shownName }}</h1>
-  <div [class]="pageStyles.rankRow">
-    <p>Abzeichen:</p>
-    @if (p.rank) {
-    <app-rank-badge [rankId]="p.rank" />
-    } @else {
-    <p>Keines</p>
+  <app-loading-frame [loading]="!p" [rows]="2" [lines]="3">
+    @if (p) {
+    <h1>{{ p | shownName }}</h1>
+    <div [class]="pageStyles.rankRow">
+      <p>Abzeichen:</p>
+      @if (p.rank) {
+      <app-rank-badge [rankId]="p.rank" />
+      } @else {
+      <p>Keines</p>
+      }
+    </div>
+    <div [class]="pageStyles.stats">
+      <div [class]="pageStyles.stat">
+        <p>Punkte Durchschnitt:</p>
+        <p>{{ p.stats.averagePerArrow ?? '–' }}</p>
+      </div>
+      <div [class]="pageStyles.stat">
+        <p>Anzahl Scores:</p>
+        <p>{{ p.stats.totalScores }}</p>
+      </div>
+      @if (p.badges.length > 0) {
+      <div [class]="pageStyles.stat">
+        <p>Anzahl Auszeichnungen:</p>
+        <p>{{ p.badges.length }}</p>
+      </div>
+      }
+    </div>
     }
-  </div>
-  <div [class]="pageStyles.stats">
-    <div [class]="pageStyles.stat">
-      <p>Punkte Durchschnitt:</p>
-      <p>{{ p.stats.averagePerArrow ?? '–' }}</p>
-    </div>
-    <div [class]="pageStyles.stat">
-      <p>Anzahl Scores:</p>
-      <p>{{ p.stats.totalScores }}</p>
-    </div>
-    @if (p.badges.length > 0) {
-    <div [class]="pageStyles.stat">
-      <p>Anzahl Auszeichnungen:</p>
-      <p>{{ p.badges.length }}</p>
-    </div>
-    }
-  </div>
+  </app-loading-frame>
 </app-section>
 
 <app-section>
   <h2>Rekorde</h2>
-  @if (p.personalBests.length === 0) {
-  <p>Keine Rekorde vorhanden.</p>
-  } @else {
-  <app-tabs [tabs]="distanceTabs(p.personalBests)" [(selected)]="recordsTab">
-    @for (score of bestsFor(p.personalBests); track score.id) {
-    <app-score-row [score]="score" variant="records" [rank]="score.rank" />
-    }
-  </app-tabs>
-  }
+  <app-loading-frame [loading]="!p" [rows]="3" [lines]="3" [rank]="true">
+    @if (p) { @if (p.personalBests.length === 0) {
+    <p>Keine Rekorde vorhanden.</p>
+    } @else {
+    <app-tabs [tabs]="distanceTabs(p.personalBests)" [(selected)]="recordsTab">
+      @for (score of bestsFor(p.personalBests); track score.id) {
+      <app-score-row [score]="score" variant="records" [rank]="score.rank" />
+      }
+    </app-tabs>
+    } }
+  </app-loading-frame>
 </app-section>
 
 <app-section>
   <h2>Entwicklung</h2>
-  @if (p.progress.length === 0) {
-  <p>Keine Rekorde vorhanden.</p>
-  } @else {
-  <app-tabs [tabs]="distanceTabs(p.progress)" [(selected)]="chartTab">
-    @if (progressFor(p.progress); as progress) {
-    <app-progress-chart [progress]="progress" />
-    }
-  </app-tabs>
-  }
+  <app-loading-frame [loading]="!p" [chart]="true">
+    @if (p) { @if (p.progress.length === 0) {
+    <p>Keine Rekorde vorhanden.</p>
+    } @else {
+    <app-tabs [tabs]="distanceTabs(p.progress)" [(selected)]="chartTab">
+      @if (progressFor(p.progress); as progress) {
+      <app-progress-chart [progress]="progress" />
+      }
+    </app-tabs>
+    } }
+  </app-loading-frame>
 </app-section>
 
-@if (p.badges.length > 0) {
 <app-section>
   <app-feedback-message [feedback]="badgeDeleteFeedback()" />
   <h2>Auszeichnungen</h2>
-  @for (badge of p.badges; track badge.id) {
-  <app-badge-row
-    [badge]="badge"
-    [deletable]="isOwnProfile()"
-    (deleted)="badgeToDelete.set(badge.id)"
-  />
-  }
+  <app-loading-frame [loading]="!p" [rows]="2" [lines]="2">
+    @if (p) { @for (badge of p.badges; track badge.id) {
+    <app-badge-row
+      [badge]="badge"
+      [deletable]="isOwnProfile()"
+      (deleted)="badgeToDelete.set(badge.id)"
+    />
+    } @empty {
+    <p>Keine Auszeichnungen vorhanden.</p>
+    } }
+  </app-loading-frame>
 </app-section>
-}
 
 <app-section>
   <app-feedback-message [feedback]="deleteFeedback()" />
   <h2>Historie</h2>
-  @for (score of p.history; track score.id) {
-  <app-score-row
-    [score]="score"
-    [deletable]="isOwnProfile()"
-    (deleted)="scoreToDelete.set(score.id)"
-  />
-  } @empty {
-  <p>Keine Historie vorhanden.</p>
-  }
+  <app-loading-frame [loading]="!p" [rows]="5" [lines]="3">
+    @if (p) { @for (score of p.history; track score.id) {
+    <app-score-row
+      [score]="score"
+      [deletable]="isOwnProfile()"
+      (deleted)="scoreToDelete.set(score.id)"
+    />
+    } @empty {
+    <p>Keine Historie vorhanden.</p>
+    } }
+  </app-loading-frame>
 </app-section>
 
 <app-confirm-dialog
@@ -101,24 +113,4 @@
   (confirmed)="deleteScore()"
   (cancelled)="scoreToDelete.set(null)"
 />
-} @else {
-<app-section>
-  <app-skeleton-list [rows]="1" [lines]="3" />
-</app-section>
-<app-section>
-  <h2>Rekorde</h2>
-  <app-skeleton-list [rows]="3" [lines]="3" [rank]="true" />
-</app-section>
-<app-section>
-  <h2>Entwicklung</h2>
-  <app-skeleton-chart />
-</app-section>
-<app-section>
-  <h2>Auszeichnungen</h2>
-  <app-skeleton-list [rows]="2" [lines]="2" />
-</app-section>
-<app-section>
-  <h2>Historie</h2>
-  <app-skeleton-list [rows]="5" [lines]="3" />
-</app-section>
 }
