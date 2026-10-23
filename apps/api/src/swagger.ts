@@ -11,17 +11,15 @@ import { API_PREFIX, APP_NAME, isRecord } from '@bszz-dojo/shared';
 import { REFRESH_COOKIE } from './auth/refresh-cookie';
 import metadata from './metadata';
 
+/** Major version of the installed `swagger-ui-dist`, for the CDN copy below. */
+const SWAGGER_UI_MAJOR = 5;
+
 /**
  * On Vercel the UI's assets come from a CDN: the function bundle isn't guaranteed to contain
- * `swagger-ui-dist`'s files, which Nest otherwise serves from disk. Same version as installed.
+ * `swagger-ui-dist`'s files, which Nest otherwise serves from disk.
  */
 function cdnAssets(): SwaggerCustomOptions {
-  const packageJson: unknown = require('swagger-ui-dist/package.json');
-  const version =
-    isRecord(packageJson) && typeof packageJson['version'] === 'string'
-      ? packageJson['version']
-      : '5';
-  const base = `https://cdn.jsdelivr.net/npm/swagger-ui-dist@${version}`;
+  const base = `https://cdn.jsdelivr.net/npm/swagger-ui-dist@${SWAGGER_UI_MAJOR}`;
   return {
     customCssUrl: `${base}/swagger-ui.css`,
     customJs: [`${base}/swagger-ui-bundle.js`, `${base}/swagger-ui-standalone-preset.js`],
