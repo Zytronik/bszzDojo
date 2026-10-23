@@ -23,8 +23,11 @@ const DUMMY_PASSWORD_HASH = hashSync('not-a-real-password', BCRYPT_ROUNDS);
 
 export const USERNAME_TAKEN = 'Benutzername ist bereits vergeben.';
 
-/** PHP's `password_hash` writes `$2y$`, which is the same algorithm as `$2b$`. */
-export function compatibleHash(passwordHash: string): string {
+/**
+ * Accounts imported from the old PHP app keep their `password_hash` hashes, which start with
+ * `$2y$`: the same algorithm as `$2b$`.
+ */
+function compatibleHash(passwordHash: string): string {
   return passwordHash.startsWith('$2y$') ? `$2b$${passwordHash.slice(4)}` : passwordHash;
 }
 

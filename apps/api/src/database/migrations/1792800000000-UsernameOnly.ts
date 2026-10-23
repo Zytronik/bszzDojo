@@ -13,7 +13,7 @@ export class UsernameOnly1792800000000 implements MigrationInterface {
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "users" ADD "display_name" character varying(40)`);
-    // Like `legacyUsername()` in the import: accents dropped, anything else not allowed becomes `_`;
+    // Accents dropped, anything else not allowed becomes `_`;
     // the old spelling stays visible as the display name.
     const allowed = `regexp_replace(translate("username", '${FROM}', '${TO}'), '[^a-zA-Z0-9._-]', '_', 'g')`;
     await queryRunner.query(`
