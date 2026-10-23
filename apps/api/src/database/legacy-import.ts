@@ -4,12 +4,12 @@
  *   npm run legacy:import -w api
  *
  * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
- * pending migrations and copies users, scores and placings (as "Nationales Turnier" under their old name). It
- * refuses to run if the Postgres database already has users, so it can't import twice. Passwords
- * keep working: the old bcrypt hashes are copied. Emails, badge requests, open password reset links
- * and "auto login" cookies are not copied. Usernames with characters that aren't allowed any more
- * (spaces, umlauts) get them replaced by `_` and keep their old spelling as display name; the
- * warnings list who logs in how.
+ * pending migrations and copies users, scores and placings (as "Nationales Turnier" under their
+ * old name). It refuses to run if the Postgres database already has users, so it can't import
+ * twice. Passwords keep working: the old bcrypt hashes are copied. Emails, badge requests, open
+ * password reset links and "auto login" cookies are not copied. Usernames with characters that
+ * aren't allowed any more (spaces, umlauts) get them replaced by `_` and keep their old spelling
+ * as display name; the warnings list who logs in how.
  */
 import {
   BADGE_TEXT_MAX_LENGTH,
