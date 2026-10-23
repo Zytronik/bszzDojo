@@ -21,10 +21,13 @@ import { AppUpdateService } from '../core/app-update.service';
 export class UpdateBanner {
   protected readonly updates = inject(AppUpdateService);
   protected readonly styles = css({
-    layerStyle: 'surface',
+    // The accent colour sets it apart from the footer it sits above, which is a surface too.
+    bg: 'accent.default',
+    color: 'fg.onAccent',
     position: 'fixed',
     insetX: '15',
-    bottom: '15',
+    // Above the footer, not on it.
+    bottom: 'calc(token(sizes.footer) + token(spacing.15))',
     zIndex: 'banner',
     display: 'flex',
     alignItems: 'center',
@@ -35,5 +38,5 @@ export class UpdateBanner {
     animation: 'fadeIn',
     md: { insetX: 'auto', right: '15', maxWidth: 'container.sm' },
   });
-  protected readonly buttonStyles = button({ size: 'inline' });
+  protected readonly buttonStyles = button({ size: 'inline', tone: 'neutral' });
 }
