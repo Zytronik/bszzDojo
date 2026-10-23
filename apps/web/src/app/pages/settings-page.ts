@@ -12,25 +12,25 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   ACCOUNT_FIELD_ERRORS,
-  BADGE_NAME_MAX_LENGTH,
-  BADGE_PLACES,
-  BADGE_PLACE_LABELS,
   DISPLAY_NAME_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
+  RANKS,
+  RANK_IDS,
   USERNAME_MAX_LENGTH,
   isValidDisplayName,
   isValidPassword,
   isValidUsername,
   normalizeDisplayName,
   normalizeUsername,
-  type BadgePlace,
+  type RankId,
   type UpdateProfileRequest,
 } from '@bszz-dojo/shared';
+import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
-import { BadgesApiService } from '../core/badges-api.service';
 import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
 import { UsersApiService } from '../core/users-api.service';
+import { BadgesSection } from '../settings/badges-section';
 import { SettingsStore } from '../settings/settings.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FormButton } from '../forms/form-button';
@@ -39,6 +39,7 @@ import { INVALID_FORM, checkForm, messageFrom, required, rule } from '../forms/v
 import { FeedbackMessage } from '../ui/feedback-message';
 import { formStyles } from '../ui/form-styles';
 import { PageTitle } from '../ui/page-title';
+import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 
 @Component({
@@ -53,6 +54,8 @@ import { Section } from '../ui/section';
     FormField,
     FieldControl,
     FormButton,
+    RankBadge,
+    BadgesSection,
   ],
   templateUrl: './settings-page.html',
 })
@@ -60,29 +63,19 @@ export class SettingsPage {
   private readonly auth = inject(AuthStore);
   protected readonly settings = inject(SettingsStore);
   private readonly users = inject(UsersApiService);
-  private readonly badges = inject(BadgesApiService);
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly styles = formStyles;
-  protected readonly badgeNameMaxLength = BADGE_NAME_MAX_LENGTH;
   protected readonly limits = { USERNAME_MAX_LENGTH, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH };
-  protected readonly places = BADGE_PLACES.map((value) => ({
-    value,
-    label: `${value} (${BADGE_PLACE_LABELS[value]})`,
-  }));
+  protected readonly rankRowStyles = css({ display: 'flex', alignItems: 'center', gap: '15' });
+  protected readonly ranks = RANK_IDS.map((id) => ({ id, name: RANKS[id].name }));
   protected readonly themeError = failure('Das Theme konnte nicht gespeichert werden.');
-
-  protected readonly badgeForm = this.forms.group({
-    name: ['', required('Bitte gib einen Namen ein.')],
-    place: this.forms.control<BadgePlace>(1),
-  });
-  protected readonly badgePending = signal(false);
-  protected readonly badgeFeedback = signal<Feedback | null>(null);
 
   protected readonly profileForm = this.forms.group({
     username: ['', [required(), rule(isValidUsername, ACCOUNT_FIELD_ERRORS.username)]],
     displayName: ['', rule(isValidDisplayName, ACCOUNT_FIELD_ERRORS.displayName)],
+    rank: this.forms.control<RankId | null>(null),
     password: [
       '',
       rule(
@@ -107,6 +100,8 @@ export class SettingsPage {
     initialValue: this.profileForm.getRawValue(),
   });
 
+  protected readonly selectedRank = computed(() => this.profileValue().rank ?? null);
+
   /** The API only asks for it when the password changes. */
   protected readonly needsCurrentPassword = computed(
     () => (this.profileValue().password ?? '').length > 0,
@@ -124,29 +119,12 @@ export class SettingsPage {
         this.profileForm.reset({
           username: user.username,
           displayName: user.displayName ?? '',
+          rank: user.rank,
           password: '',
           currentPassword: '',
         }),
       );
     });
-  }
-
-  protected async requestBadge(): Promise<void> {
-    if (!checkForm(this.badgeForm)) {
-      this.badgeFeedback.set(INVALID_FORM);
-      return;
-    }
-    const { name, place } = this.badgeForm.getRawValue();
-    this.badgePending.set(true);
-    try {
-      const response = await this.badges.request({ name: name.trim(), place });
-      this.badgeFeedback.set(success(response.message));
-      this.badgeForm.reset();
-    } catch (error: unknown) {
-      this.badgeFeedback.set(failure(errorMessage(error)));
-    } finally {
-      this.badgePending.set(false);
-    }
   }
 
   protected async saveProfile(): Promise<void> {
@@ -156,13 +134,15 @@ export class SettingsPage {
       this.profileFeedback.set(INVALID_FORM);
       return;
     }
-    const { username, displayName, password, currentPassword } = this.profileForm.getRawValue();
+    const { username, displayName, rank, password, currentPassword } =
+      this.profileForm.getRawValue();
 
     // Only what changed is sent, like the old form, which skipped empty fields.
     const changes: UpdateProfileRequest = {};
     if (normalizeUsername(username) !== user.username) changes.username = username;
     const newDisplayName = normalizeDisplayName(displayName);
     if (newDisplayName !== user.displayName) changes.displayName = newDisplayName;
+    if (rank !== user.rank) changes.rank = rank;
     if (password.length > 0) changes.password = password;
 
     if (Object.keys(changes).length === 0) {

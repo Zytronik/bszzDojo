@@ -1,37 +1,58 @@
-import { BADGE_PLACES, type Badge, type BadgePlace, type BadgeRequest } from '@bszz-dojo/shared';
+import {
+  BADGE_KINDS,
+  BADGE_PLACES,
+  BADGE_VENUES,
+  BOW_TYPE_IDS,
+  type Badge,
+  type BadgeKind,
+  type BadgePlace,
+  type BadgeVenue,
+  type BowTypeId,
+} from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BadgeResponse implements Badge {
   id: string;
 
-  /** @example 'Chlausschüsse' */
-  name: string;
-
-  /** @example 2023 */
-  year: number;
+  /** SM, Clubturnier or Turnier */
+  @ApiProperty({ enum: BADGE_KINDS })
+  kind: BadgeKind;
 
   /** 1 gold, 2 silver, 3 bronze */
   @ApiProperty({ enum: BADGE_PLACES })
   place: BadgePlace;
-}
 
-export class BadgeRequestResponse implements BadgeRequest {
-  id: string;
+  /** @example 2024 */
+  year: number;
 
-  username: string;
+  /** `null` only for placings imported from the old app */
+  @ApiProperty({ enum: BOW_TYPE_IDS, nullable: true })
+  bowType: BowTypeId | null;
 
-  /**
-   * Shown instead of the username when set.
-   * @example 'Robin Hood'
-   */
-  displayName: string | null;
+  /** Meters; `null` only for placings imported from the old app */
+  @ApiProperty({ type: Number, nullable: true })
+  distance: number | null;
 
-  /** @example 'Chlausschüsse 2023' */
-  name: string;
+  /** SM and Turnier. @example 'Bern' */
+  @ApiProperty({ type: String, nullable: true })
+  location: string | null;
 
-  @ApiProperty({ enum: BADGE_PLACES })
-  place: BadgePlace;
+  /** Clubturnier and Turnier. @example 'Chlausschiessen' */
+  @ApiProperty({ type: String, nullable: true })
+  eventName: string | null;
 
-  /** ISO 8601 timestamp */
-  createdAt: string;
+  /** SM and Turnier */
+  @ApiProperty({ type: Boolean, nullable: true })
+  team: boolean | null;
+
+  /** SM and Turnier */
+  @ApiProperty({ enum: BADGE_VENUES, nullable: true })
+  venue: BadgeVenue | null;
+
+  /** Outdoor only */
+  @ApiProperty({ type: Boolean, nullable: true })
+  is3d: boolean | null;
+
+  @ApiProperty({ type: String, nullable: true })
+  ageCategory: string | null;
 }

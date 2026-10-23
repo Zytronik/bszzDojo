@@ -62,12 +62,7 @@
 <app-section>
   <h2>Auszeichnungen</h2>
   @for (badge of p.badges; track badge.id) {
-  <div [class]="recordStyles.root">
-    <p>
-      <span [class]="recordStyles.highlight">#{{ badge.place }}</span> {{ badge.name }} {{
-      badge.year }}
-    </p>
-  </div>
+  <app-badge-row [badge]="badge" />
   }
 </app-section>
 }

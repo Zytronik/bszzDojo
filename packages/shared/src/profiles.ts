@@ -39,6 +39,7 @@ export interface DistanceProgress {
 export interface Profile extends UserName {
   rank: RankId | null;
   stats: ProfileStats;
+  /** Newest year first */
   badges: Badge[];
   /** Ordered by distance */
   personalBests: PersonalBests[];

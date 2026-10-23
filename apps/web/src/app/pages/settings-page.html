@@ -1,31 +1,6 @@
 <app-page-title title="Einstellungen" description="Konfiguriere dein BSZZ Dojo." />
 
-<app-section>
-  <app-feedback-message [feedback]="badgeFeedback()" />
-  <h2>Auszeichnung anfordern</h2>
-  <p [class]="styles.lead">
-    Da ich keinen Zugriff auf SM/Clubturnier Titel oder Abzeichen habe, kannst du hier deine
-    anfordern.
-  </p>
-  <form [formGroup]="badgeForm" (ngSubmit)="requestBadge()" novalidate>
-    <app-form-field label="Name:">
-      <input
-        appFieldControl
-        formControlName="name"
-        placeholder="bsp: Chlausschüsse 2023"
-        [maxLength]="badgeNameMaxLength"
-      />
-    </app-form-field>
-    <app-form-field label="Platzierung:">
-      <select appFieldControl formControlName="place">
-        @for (place of places; track place.value) {
-        <option [ngValue]="place.value">{{ place.label }}</option>
-        }
-      </select>
-    </app-form-field>
-    <button type="submit" appButton [pending]="badgePending()">Anfordern</button>
-  </form>
-</app-section>
+<app-badges-section />
 
 <app-section>
   <app-feedback-message [feedback]="profileFeedback()" />
@@ -50,6 +25,19 @@
         autocomplete="name"
         [maxLength]="limits.DISPLAY_NAME_MAX_LENGTH"
       />
+    </app-form-field>
+    <app-form-field label="Abzeichen:">
+      <div [class]="rankRowStyles">
+        <select appFieldControl formControlName="rank">
+          <option [ngValue]="null">Keines</option>
+          @for (rank of ranks; track rank.id) {
+          <option [ngValue]="rank.id">{{ rank.name }}</option>
+          }
+        </select>
+        @if (selectedRank(); as rankId) {
+        <app-rank-badge [rankId]="rankId" />
+        }
+      </div>
     </app-form-field>
     <app-form-field label="Neues Passwort:" hint="Leer lassen, um es nicht zu ändern.">
       <input

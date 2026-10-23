@@ -1,4 +1,4 @@
-import type { BadgePlace } from '@bszz-dojo/shared';
+import type { BadgeKind, BadgePlace, BadgeVenue, BowTypeId } from '@bszz-dojo/shared';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +10,10 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
-/** A tournament placing ("Auszeichnung") an admin recorded for a user. */
+/**
+ * A tournament placing ("Auszeichnung") a user recorded. The details are nullable for placings
+ * imported from the old app, which only had a name, year and place.
+ */
 @Entity('badges')
 export class BadgeEntity {
   @PrimaryColumn({ type: 'uuid', primaryKeyConstraintName: 'PK_badges' })
@@ -24,14 +27,39 @@ export class BadgeEntity {
   @JoinColumn({ name: 'user_id', foreignKeyConstraintName: 'FK_badges_user' })
   user: UserEntity;
 
-  @Column({ type: 'varchar', length: 100 })
-  name: string;
+  @Column({ type: 'varchar', length: 20 })
+  kind: BadgeKind;
+
+  @Column({ type: 'smallint' })
+  place: BadgePlace;
 
   @Column({ type: 'smallint' })
   year: number;
 
-  @Column({ type: 'smallint' })
-  place: BadgePlace;
+  @Column({ name: 'bow_type', type: 'varchar', length: 4, nullable: true })
+  bowType: BowTypeId | null;
+
+  /** Meters */
+  @Column({ type: 'smallint', nullable: true })
+  distance: number | null;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  location: string | null;
+
+  @Column({ name: 'event_name', type: 'varchar', length: 100, nullable: true })
+  eventName: string | null;
+
+  @Column({ type: 'boolean', nullable: true })
+  team: boolean | null;
+
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  venue: BadgeVenue | null;
+
+  @Column({ name: 'is_3d', type: 'boolean', nullable: true })
+  is3d: boolean | null;
+
+  @Column({ name: 'age_category', type: 'varchar', length: 40, nullable: true })
+  ageCategory: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

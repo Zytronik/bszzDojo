@@ -1,5 +1,5 @@
-import type { UserName } from './auth';
 import type { RankId } from './ranks';
+import type { UserName } from './auth';
 
 export const USER_SEARCH_MIN_LENGTH = 1;
 export const USER_SEARCH_LIMIT = 10;
@@ -17,6 +17,8 @@ export interface UpdateProfileRequest {
   username?: string;
   /** `null` or empty removes it. */
   displayName?: string | null;
+  /** `null` removes it. */
+  rank?: RankId | null;
   /** New password */
   password?: string;
   /** Required to change the password. */
@@ -28,15 +30,4 @@ export interface AdminUser extends UserName {
   id: string;
   /** ISO 8601 timestamp */
   createdAt: string;
-}
-
-/** Body of `PUT /api/admin/users/rank` */
-export interface SetRankRequest {
-  username: string;
-  rank: RankId;
-}
-
-/** Body of `POST /api/admin/users/rank/remove` */
-export interface RemoveRankRequest {
-  username: string;
 }

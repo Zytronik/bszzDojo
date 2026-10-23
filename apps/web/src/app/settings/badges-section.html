@@ -1,0 +1,115 @@
+<app-section>
+  <app-feedback-message [feedback]="feedback()" />
+  <h2>Auszeichnung erfassen</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-form-field label="Art:">
+      <select appFieldControl formControlName="kind">
+        @for (kind of kinds; track kind.id) {
+        <option [ngValue]="kind.id">{{ kind.label }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Platzierung:">
+      <select appFieldControl formControlName="place">
+        @for (place of places; track place.value) {
+        <option [ngValue]="place.value">{{ place.label }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Jahr:">
+      <input
+        appFieldControl
+        type="number"
+        inputmode="numeric"
+        formControlName="year"
+        [min]="limits.BADGE_EARLIEST_YEAR"
+        [max]="currentYear"
+      />
+    </app-form-field>
+    @if (fields().eventName) {
+    <app-form-field label="Name des Events:">
+      <input
+        appFieldControl
+        formControlName="eventName"
+        placeholder="bsp: Chlausschiessen"
+        [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
+      />
+    </app-form-field>
+    } @if (fields().location) {
+    <app-form-field label="Ort:">
+      <input
+        appFieldControl
+        formControlName="location"
+        placeholder="bsp: Bern"
+        [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
+      />
+    </app-form-field>
+    }
+    <app-form-field label="Bogenkategorie:">
+      <select appFieldControl formControlName="bowType">
+        @for (bowType of bowTypes; track bowType.id) {
+        <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Distanz (m):">
+      <input
+        appFieldControl
+        type="number"
+        inputmode="numeric"
+        min="1"
+        [max]="limits.MAX_DISTANCE"
+        formControlName="distance"
+      />
+    </app-form-field>
+    @if (fields().venue) {
+    <app-form-field label="Indoor / Outdoor:">
+      <select appFieldControl formControlName="venue">
+        @for (venue of venues; track venue.id) {
+        <option [ngValue]="venue.id">{{ venue.label }}</option>
+        }
+      </select>
+    </app-form-field>
+    } @if (outdoor()) {
+    <app-checkbox-field
+      label="3D:"
+      [checked]="form.controls.is3d.value"
+      (checkedChange)="form.controls.is3d.setValue($event)"
+    />
+    } @if (fields().team) {
+    <app-checkbox-field
+      label="Team:"
+      [checked]="form.controls.team.value"
+      (checkedChange)="form.controls.team.setValue($event)"
+    />
+    }
+    <app-form-field label="Alterskategorie (optional):">
+      <input
+        appFieldControl
+        formControlName="ageCategory"
+        placeholder="bsp: U18"
+        [maxLength]="limits.AGE_CATEGORY_MAX_LENGTH"
+      />
+    </app-form-field>
+    <button type="submit" appButton [pending]="pending()">Erfassen</button>
+  </form>
+</app-section>
+
+<app-section>
+  <app-feedback-message [feedback]="listFeedback()" />
+  <h2>Meine Auszeichnungen</h2>
+  @if (badges.hasValue()) { @for (badge of badges.value(); track badge.id) {
+  <app-badge-row [badge]="badge" [deletable]="true" (deleted)="badgeToDelete.set(badge.id)" />
+  } @empty {
+  <p>Keine Auszeichnungen vorhanden.</p>
+  } } @else if (badges.isLoading()) {
+  <p [class]="mutedStyles">Wird geladen…</p>
+  }
+  <app-confirm-dialog
+    [open]="badgeToDelete() !== null"
+    message="Bist du sicher, dass du die Auszeichnung löschen möchtest?"
+    [pending]="deleting()"
+    (confirmed)="deleteBadge()"
+    (cancelled)="badgeToDelete.set(null)"
+  />
+</app-section>

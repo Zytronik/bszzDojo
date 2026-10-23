@@ -26,7 +26,7 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 10, default: 'user' })
   role: UserRole;
 
-  /** The club badge ("Abzeichen") an admin gave them. */
+  /** Their club badge ("Abzeichen"), picked in the settings. */
   @Column({ type: 'varchar', length: 20, nullable: true })
   rank: RankId | null;
 

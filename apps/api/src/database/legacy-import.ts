@@ -4,13 +4,15 @@
  *   npm run legacy:import -w api
  *
  * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
- * pending migrations and copies users, scores, badges and badge requests. It refuses to run if the
- * Postgres database already has users, so it can't import twice. Passwords keep working: the old
- * bcrypt hashes are copied. Emails, open password reset links and "auto login" cookies are not
- * copied. Usernames with characters that aren't allowed any more (spaces, umlauts) get them
- * replaced by `_` and keep their old spelling as display name; the warnings list who logs in how.
+ * pending migrations and copies users, scores and placings (as "Turnier" under their old name). It
+ * refuses to run if the Postgres database already has users, so it can't import twice. Passwords
+ * keep working: the old bcrypt hashes are copied. Emails, badge requests, open password reset links
+ * and "auto login" cookies are not copied. Usernames with characters that aren't allowed any more
+ * (spaces, umlauts) get them replaced by `_` and keep their old spelling as display name; the
+ * warnings list who logs in how.
  */
 import {
+  BADGE_TEXT_MAX_LENGTH,
   DEFAULT_USER_SETTINGS,
   DISPLAY_NAME_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
@@ -31,7 +33,6 @@ import { randomUUID } from 'node:crypto';
 import { createConnection, type RowDataPacket } from 'mysql2/promise';
 import { DataSource, type EntityManager } from 'typeorm';
 import { compatibleHash } from '../auth/auth.service';
-import { BadgeRequestEntity } from '../badges/badge-request.entity';
 import { BadgeEntity } from '../badges/badge.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
@@ -47,6 +48,12 @@ interface LegacyUser extends RowDataPacket {
   createdAt: string | null;
 }
 
+interface LegacyBadge {
+  name: string;
+  year: number;
+  place: BadgePlace;
+}
+
 interface LegacyScore extends RowDataPacket {
   id: number;
   userId: number;
@@ -59,20 +66,6 @@ interface LegacyScore extends RowDataPacket {
   result: number;
   numberOfArrows: number;
   createdAt: string;
-}
-
-interface LegacyRequest extends RowDataPacket {
-  id: number;
-  userId: number;
-  name: string;
-  rank: number | string;
-  createdAt: string | null;
-}
-
-interface LegacyBadge {
-  name: string;
-  year: number;
-  place: BadgePlace;
 }
 
 const warnings: string[] = [];
@@ -187,7 +180,21 @@ async function copyUsers(
     });
 
     for (const badge of parseBadges(legacy.badges, username)) {
-      await manager.insert(BadgeEntity, { id: randomUUID(), userId: id, ...badge });
+      await manager.insert(BadgeEntity, {
+        id: randomUUID(),
+        userId: id,
+        kind: 'tournament',
+        place: badge.place,
+        year: badge.year,
+        eventName: badge.name.slice(0, BADGE_TEXT_MAX_LENGTH),
+        bowType: null,
+        distance: null,
+        location: null,
+        team: null,
+        venue: null,
+        is3d: null,
+        ageCategory: null,
+      });
     }
   }
   return ids;
@@ -235,31 +242,6 @@ async function copyScores(
   return copied;
 }
 
-async function copyRequests(
-  manager: EntityManager,
-  requests: LegacyRequest[],
-  userIds: Map<number, string>,
-): Promise<number> {
-  let copied = 0;
-  for (const legacy of requests) {
-    const userId = userIds.get(legacy.userId);
-    const place = Number(legacy.rank);
-    if (!userId || !isBadgePlace(place)) {
-      warn(`badge request ${legacy.id}: unknown user or place "${legacy.rank}", skipped`);
-      continue;
-    }
-    await manager.insert(BadgeRequestEntity, {
-      id: randomUUID(),
-      userId,
-      name: legacy.name.trim(),
-      place,
-      createdAt: toDate(legacy.createdAt),
-    });
-    copied += 1;
-  }
-  return copied;
-}
-
 async function main(): Promise<void> {
   if (existsSync('.env')) process.loadEnvFile('.env');
   const mysqlUrl = process.env['LEGACY_MYSQL_URL'];
@@ -276,16 +258,11 @@ async function main(): Promise<void> {
 
     const [users] = await mysql.query<LegacyUser[]>('SELECT * FROM `user` ORDER BY id');
     const [scores] = await mysql.query<LegacyScore[]>('SELECT * FROM `score` ORDER BY id');
-    const [requests] = await mysql.query<LegacyRequest[]>('SELECT * FROM `request` ORDER BY id');
 
     await postgres.transaction(async (manager) => {
       const userIds = await copyUsers(manager, users);
       const copiedScores = await copyScores(manager, scores, userIds);
-      const copiedRequests = await copyRequests(manager, requests, userIds);
-      console.log(
-        `Copied ${userIds.size} users, ${copiedScores}/${scores.length} scores, ` +
-          `${copiedRequests}/${requests.length} badge requests.`,
-      );
+      console.log(`Copied ${userIds.size} users, ${copiedScores}/${scores.length} scores.`);
     });
     console.log(
       warnings.length === 0 ? 'No warnings.' : `${warnings.length} warning(s), see above.`,

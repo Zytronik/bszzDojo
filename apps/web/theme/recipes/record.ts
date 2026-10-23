@@ -1,6 +1,6 @@
 import { defineSlotRecipe } from '@pandacss/dev';
 
-/** A row in one of the lists: leaderboards, records, history, badges, users, requests. */
+/** A row in one of the lists: leaderboards, records, history, badges, users. */
 export const record = defineSlotRecipe({
   className: 'record',
   slots: [

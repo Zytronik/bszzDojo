@@ -16,13 +16,13 @@ import {
 } from '@bszz-dojo/shared';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
-import { record } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { failure, type Feedback } from '../core/feedback';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ScoresApiService } from '../core/scores-api.service';
 import { ProgressChart } from '../profile/progress-chart';
+import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { FeedbackMessage } from '../ui/feedback-message';
@@ -38,6 +38,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     Tabs,
     RankBadge,
     ScoreRow,
+    BadgeRow,
     ProgressChart,
     ConfirmDialog,
     FeedbackMessage,
@@ -80,7 +81,6 @@ export class ProfilePage {
     return error ? failure(error) : null;
   });
 
-  protected readonly recordStyles = record();
   protected readonly pageStyles = {
     rankRow: css({
       display: 'flex',

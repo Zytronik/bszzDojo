@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { usernameKey, type Profile } from '@bszz-dojo/shared';
 import { Repository } from 'typeorm';
-import { BadgeEntity } from '../badges/badge.entity';
 import { toBadge } from '../badges/badge-mapper';
+import { BadgeEntity } from '../badges/badge.entity';
 import { byShotOn, toScore } from '../scores/score-mapper';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
@@ -32,7 +32,10 @@ export class ProfilesService {
 
     const [scores, badges] = await Promise.all([
       this.scores.findBy({ userId: user.id }),
-      this.badges.find({ where: { userId: user.id }, order: { year: 'DESC', place: 'ASC' } }),
+      this.badges.find({
+        where: { userId: user.id },
+        order: { year: 'DESC', place: 'ASC', createdAt: 'DESC' },
+      }),
     ]);
     const rounds: ProfileRound[] = scores
       .toSorted(byShotOn)

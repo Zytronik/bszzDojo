@@ -8,8 +8,9 @@ Turborepo monorepo using npm workspaces, Node 22.
 
 BSZZ Dojo is the archery club's results app (German UI, Swiss spelling: "ss", never "ß"). Archers
 log in with username and password, record their rounds ("Scores"), compare themselves on the
-leaderboards and look at each other's profiles. Admins hand out club badges ("Abzeichen") and
-tournament placings ("Auszeichnungen") and manage users. It's an installable PWA.
+leaderboards and look at each other's profiles with their club badge ("Abzeichen") and
+tournament placings ("Auszeichnungen"), both recorded by the archers themselves. Admins manage
+users. It's an installable PWA.
 
 - `apps/api`: NestJS 11. REST under the global prefix `/api` (Swagger UI at `/api`, OpenAPI JSON
   at `/api-json`), Postgres through TypeORM. The database is Neon (Vercel Postgres).
@@ -75,15 +76,23 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `LEADERBOARD_DISTANCES` (18m, 8m) with exactly `LEADERBOARD_ARROWS` (30) arrows count. Each
   archer's best round by _adjusted_ result, top 10; ties go to whoever shot it first. "Monthly"
   is the current calendar month in `CLUB_TIME_ZONE` (Europe/Zurich), by the day it was shot.
-- **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`).
+- **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.
 - **Profiles** (`GET /api/profiles/:username`): stats, the top 3 rounds per distance, the progress
   chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds. Usernames in
   URLs are matched ignoring case.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
-- **Abzeichen** (`RANKS`): one per user, set by an admin. **Auszeichnungen** (`badges` table):
-  placings 1–3 with a name and year; users ask for them with a badge request, admins approve
-  (with a year), reject, or give and remove them directly.
+- **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
+  (`PATCH /api/users/me`), no admin approval.
+- **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record and
+  delete themselves (`/api/users/me/badges`), no admin approval and no requests. The kind (`SM`,
+  `Clubturnier`, `Turnier`) decides the fields (`BADGE_KIND_FIELDS`): SM has location, team and
+  indoor/outdoor; Clubturnier the event name; Turnier all of them. Year, bow type and distance are
+  always required, 3D only applies outdoors, the age category is optional free text until the
+  club defines a list. `normalizeBadgeInput` clears what the kind doesn't use and
+  `badgeFieldErrors` validates in the form and the API. Placings from the old app are a
+  "Turnier" with only the old name (as `eventName`), year and place, so the details are nullable.
+  Show them with `badgeTitle` / `badgeDetails` (`BadgeRow`).
 
 ## Auth
 
@@ -140,7 +149,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
   git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
 - One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
-  `badges/`, `admin/`, `mail/`, `health/`); cross-cutting helpers in `common/`.
+  `badges/`, `admin/`, `health/`); cross-cutting helpers in `common/`.
 - Errors are Nest HTTP exceptions with a German message the web app can show as is.
 - `src/main.ts` is the Vercel entrypoint (NestJS zero-config): it must call `app.listen`.
 
@@ -181,8 +190,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **PWA:** `ngsw-config.json` caches the app shell and assets; `/api` is never cached.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
   worker answers them with the app, which redirects to `/`.
-  `AppUpdateService` shows a banner when a new version is ready and backs the admins' "App
-  aktualisieren" button.
+  `AppUpdateService` shows a banner when a new version is ready. The footer shows `APP_VERSION`.
 
 ## Styling (Panda CSS)
 
@@ -200,7 +208,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop) and `global-css.ts`.
-  - `recipes/`: `button`, `container`, `input`, `medal`, `message`, `rankBadge` and the slot
+  - `recipes/`: `button`, `container`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
     recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
     `siteHeader`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
@@ -220,7 +228,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 
 Follow [Conventional Commits](https://www.conventionalcommits.org).
 
-- **Format:** `<type>(<scope>): <summary>`, e.g. `feat(api): add badge requests`
+- **Format:** `<type>(<scope>): <summary>`, e.g. `feat(api): add score export`
   - **Types:** `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`
   - **Scopes** (optional): `api`, `web`, `shared`, `ci`, `deps`. Leave the scope out for changes
     across the repo.
@@ -230,7 +238,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
     `BREAKING CHANGE:`.
 - **Commit body** (optional for trivial changes): **what** changed, **why** it was needed and
   **how** it was done if it isn't obvious from the diff, wrapped at ~72 characters.
-- **Branches:** `<type>/<short-kebab-description>`, e.g. `feat/badge-requests`.
+- **Branches:** `<type>/<short-kebab-description>`, e.g. `feat/score-export`.
 - **PRs:**
   - Always **squash-merged**: every PR becomes exactly one commit. Never use merge commits or
     rebase-merging, and never push to `main` directly.
@@ -241,7 +249,9 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
 ## Releases
 
 - Versioning is automated with release-please (`release-please-config.json`,
-  `.github/workflows/release-please.yml`): one version for the whole repo (root `package.json`).
+  `.github/workflows/release-please.yml`): one version for the whole repo, the root
+  `package.json` and `APP_VERSION` in `packages/shared/src/version.ts` (an `extra-files` entry
+  with the `x-release-please-version` marker).
   After every merge to `main` it updates a release PR with the version bump and `CHANGELOG.md`;
   merging that creates the `vX.Y.Z` tag and GitHub Release.
 - `fix` → patch, `feat` → minor, breaking (`!`) → major. That's why PR titles must follow
