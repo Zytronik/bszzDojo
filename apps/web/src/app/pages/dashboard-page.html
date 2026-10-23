@@ -1,0 +1,44 @@
+<app-page-title
+  [title]="'Willkommen, ' + auth.username()"
+  description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
+/>
+
+@if (loadError()) {
+  <app-section>
+    <app-feedback-message [feedback]="loadError()" />
+  </app-section>
+}
+
+<app-section>
+  <h2>Top 10 - Allzeit</h2>
+  <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
+  <app-tabs [tabs]="distanceTabs" [(selected)]="allTimeTab">
+    @if (rankings.hasValue()) {
+      <app-leaderboard-list [entries]="entries(rankings.value().allTime, allTimeTab())" />
+    } @else if (rankings.isLoading()) {
+      <p [class]="mutedStyles">Wird geladen…</p>
+    }
+  </app-tabs>
+</app-section>
+
+<app-section>
+  <h2>Top 10 - {{ rankings.hasValue() ? monthName(rankings.value().month.month) : 'Monat' }}</h2>
+  <p [class]="leadStyles">Die besten monatlichen Resultate, mit 30 Pfeilen und Faktor</p>
+  <app-tabs [tabs]="distanceTabs" [(selected)]="monthlyTab">
+    @if (rankings.hasValue()) {
+      <app-leaderboard-list [entries]="entries(rankings.value().monthly, monthlyTab())" />
+    } @else if (rankings.isLoading()) {
+      <p [class]="mutedStyles">Wird geladen…</p>
+    }
+  </app-tabs>
+</app-section>
+
+<app-section>
+  <h2>Top 10 - Auszeichnungen</h2>
+  <p [class]="leadStyles">Die Schützen mit den meisten Auszeichnungen</p>
+  @if (rankings.hasValue()) {
+    <app-medal-list [standings]="rankings.value().medals" />
+  } @else if (rankings.isLoading()) {
+    <p [class]="mutedStyles">Wird geladen…</p>
+  }
+</app-section>

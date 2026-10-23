@@ -1,0 +1,36 @@
+@let styles = state.open() ? openStyles : closedStyles;
+<div id="user-search" [class]="styles.root" [attr.aria-hidden]="!state.open()" [inert]="!state.open()">
+  <div [class]="panelStyles" role="search">
+    <div [class]="styles.topbar">
+      <h2>Suche</h2>
+      <button type="button" [class]="styles.close" aria-label="Suche schliessen" (click)="state.close()">
+        <app-icon [icon]="closeIcon" />
+      </button>
+    </div>
+    <input
+      #field
+      type="search"
+      [class]="inputStyles"
+      placeholder="Benutzername eingeben"
+      aria-label="Benutzername"
+      autocomplete="off"
+      [value]="query()"
+      (input)="query.set(field.value)"
+    />
+    <div [class]="styles.results" aria-live="polite">
+      @if (results(); as results) {
+        @for (result of results; track result.username) {
+          <a
+            [routerLink]="['/profile', result.username]"
+            [class]="styles.result"
+            (click)="state.close()"
+          >
+            {{ result.username }}
+          </a>
+        } @empty {
+          <p [class]="styles.empty">Keine Ergebnisse gefunden</p>
+        }
+      }
+    </div>
+  </div>
+</div>

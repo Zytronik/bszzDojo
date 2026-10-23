@@ -1,0 +1,26 @@
+{
+  "name": "BSZZ | Dojo",
+  "short_name": "BSZZ Dojo",
+  "description": "Resultate erfassen und vergleichen im BSZZ Dojo",
+  "lang": "de-CH",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "icons": [
+    {
+      "src": "img/fav/android-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/splash_screens/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

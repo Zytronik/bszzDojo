@@ -1,0 +1,27 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd ../.. && npm ci",
+  "buildCommand": "cd ../.. && npx turbo run build --filter=web",
+  "outputDirectory": "dist/web/browser",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "has": [{ "type": "host", "value": "bszz-dojo.vercel.app" }],
+      "destination": "https://bszz-dojo-api.vercel.app/api/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://bszz-dojo-api-dev.vercel.app/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(ngsw-worker.js|ngsw.json|safety-worker.js|manifest.webmanifest)",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    }
+  ]
+}
