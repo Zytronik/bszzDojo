@@ -115,12 +115,12 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   After changing an entity, run `npm run migration:generate -w api -- src/database/migrations/<Name>`,
   review the SQL, and commit it with the entity change.
 - Migrations never run on app startup (a serverless cold start must not migrate): `npm run dev`
-  runs them locally, and the Vercel build runs `migration:deploy` against the environment's
-  database before the deployment goes live.
+  runs them locally, and the Vercel build runs `migration:deploy` against the prod database
+  before the deployment goes live.
 - Give columns, indexes and constraints explicit snake_case names in the entity decorators.
 - Everything that belongs to a user references it with `ON DELETE CASCADE`.
-- There are two databases: **dev** (local development and Vercel preview deployments) and
-  **prod** (the production deployment). Never point local development at prod.
+- There are two databases: **dev** (local development) and **prod** (the production
+  deployment). Never point local development at prod.
 - `npm run legacy:import -w api` copies the old PHP app's MySQL data into an empty database once
   (`src/database/legacy-import.ts`).
 
@@ -219,8 +219,6 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
   - The title uses the commit message format; the description has **What**, **Why** and **How**
     sections plus how it was tested and any follow-up steps.
   - Keep one logical change per PR.
-- While the rewrite replaces the old PHP app, `next` is the integration branch: PRs target `next`
-  until it's merged into `main`.
 
 ## Releases
 
@@ -237,9 +235,8 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
 - Everything runs on Vercel in **one project** with two services (`vercel.json`): `web` (the
   Angular build, static) and `api` (NestJS as a Vercel Function). Requests to `/api/*` go to the
   API, everything else to the web app, so both share one domain and the refresh cookie is
-  first-party. Details and one-time setup in `docs/deployment.md`.
-- Vercel's Git integration deploys: `main` → production (prod database), every other branch and
-  PR → a preview deployment (dev database).
+  first-party. Details in `docs/deployment.md`.
+- Vercel deploys `main` to production (prod database). There are no preview deployments.
 - The API runs as a serverless function: keep it stateless (no in-memory sessions or caches that
   must survive a request), keep the connection pool small, and prefer pure-JS packages.
 - Production secrets live only in the Vercel project's environment variables.
