@@ -43,13 +43,17 @@ new PluginMetadataGenerator().generate({
   tsProgramRef: ts.createProgram(config.fileNames, config.options),
 });
 
-// The generator writes `await import("./x")` and `import("./x")`. The API compiles to CommonJS with `nodenext`
-// resolution, where such an import would need a `.js` extension, which only exists after
-// compiling; Vercel runs main.ts straight from TypeScript. `require` resolves in both cases.
+// The generator loads each file with `await import("./x")` or `import("./x")`. Those need a `.js`
+// extension under the API's `nodenext` resolution, and Vercel's bundler can't follow them, so
+// they become static imports, which both `nest build` and Vercel's bundler handle like any other.
 const outputFile = join(sourceDir, 'metadata.ts');
-writeFileSync(
-  outputFile,
-  readFileSync(outputFile, 'utf8')
-    .replace(/await import\("(\.\/[^"]+)"\)/g, 'require("$1")')
-    .replace(/import\("(\.\/[^"]+)"\)/g, 'Promise.resolve(require("$1"))'),
-);
+const generated = readFileSync(outputFile, 'utf8');
+const paths = [
+  ...new Set([...generated.matchAll(/import\("(\.\/[^"]+)"\)/g)].map((match) => match[1])),
+];
+const alias = (path: string | undefined): string => `m${paths.indexOf(path ?? '')}`;
+const body = generated
+  .replace(/await import\("(\.\/[^"]+)"\)/g, (_match, path: string) => alias(path))
+  .replace(/import\("(\.\/[^"]+)"\)/g, (_match, path: string) => `Promise.resolve(${alias(path)})`);
+const imports = paths.map((path) => `import * as ${alias(path)} from '${path}';`).join('\n');
+writeFileSync(outputFile, `${imports}\n\n${body}`);
