@@ -169,6 +169,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   localStorage only so `index.html` can apply it before the first paint; don't use localStorage
   for anything else tied to the user.
 - **PWA:** `ngsw-config.json` caches the app shell and assets; `/api` is never cached.
+  `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
+  worker answers them with the app, which redirects to `/`.
   `AppUpdateService` shows a banner when a new version is ready and backs the admins' "App
   aktualisieren" button.
 
