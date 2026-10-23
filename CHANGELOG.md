@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/Zytronik/bszzDojo/compare/v3.1.1...v3.2.0) (2026-10-23)
+
+
+### Features
+
+* **web:** show empty lists as a centered panel ([#37](https://github.com/Zytronik/bszzDojo/issues/37)) ([04fa94c](https://github.com/Zytronik/bszzDojo/commit/04fa94c7861233121d8c232b34114c532765ec7f))
+
 ## [3.1.1](https://github.com/Zytronik/bszzDojo/compare/v3.1.0...v3.1.1) (2026-10-23)
 
 
