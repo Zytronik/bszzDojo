@@ -53,6 +53,7 @@ export class BadgeResponse implements Badge {
   @ApiProperty({ type: Boolean, nullable: true })
   is3d: boolean | null;
 
+  /** `null` only for placings imported from the old app. @example 'U18' */
   @ApiProperty({ type: String, nullable: true })
   ageCategory: string | null;
 }

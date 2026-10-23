@@ -18,14 +18,6 @@ export class BadgesService {
     private readonly badges: Repository<BadgeEntity>,
   ) {}
 
-  async list(userId: string): Promise<Badge[]> {
-    const badges = await this.badges.find({
-      where: { userId },
-      order: { year: 'DESC', place: 'ASC', createdAt: 'DESC' },
-    });
-    return badges.map(toBadge);
-  }
-
   async create(userId: string, input: BadgeInput): Promise<Badge> {
     const badge = normalizeBadgeInput(input);
     const errors = Object.values(badgeFieldErrors(badge));

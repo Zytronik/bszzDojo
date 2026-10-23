@@ -83,7 +83,7 @@
       (checkedChange)="form.controls.team.setValue($event)"
     />
     }
-    <app-form-field label="Alterskategorie (optional):">
+    <app-form-field label="Alterskategorie:">
       <input
         appFieldControl
         formControlName="ageCategory"
@@ -93,23 +93,4 @@
     </app-form-field>
     <button type="submit" appButton [pending]="pending()">Erfassen</button>
   </form>
-</app-section>
-
-<app-section>
-  <app-feedback-message [feedback]="listFeedback()" />
-  <h2>Meine Auszeichnungen</h2>
-  @if (badges.hasValue()) { @for (badge of badges.value(); track badge.id) {
-  <app-badge-row [badge]="badge" [deletable]="true" (deleted)="badgeToDelete.set(badge.id)" />
-  } @empty {
-  <p>Keine Auszeichnungen vorhanden.</p>
-  } } @else if (badges.isLoading()) {
-  <p [class]="mutedStyles">Wird geladen…</p>
-  }
-  <app-confirm-dialog
-    [open]="badgeToDelete() !== null"
-    message="Bist du sicher, dass du die Auszeichnung löschen möchtest?"
-    [pending]="deleting()"
-    (confirmed)="deleteBadge()"
-    (cancelled)="badgeToDelete.set(null)"
-  />
 </app-section>

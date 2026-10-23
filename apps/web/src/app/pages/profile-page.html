@@ -60,9 +60,14 @@
 
 @if (p.badges.length > 0) {
 <app-section>
+  <app-feedback-message [feedback]="badgeDeleteFeedback()" />
   <h2>Auszeichnungen</h2>
   @for (badge of p.badges; track badge.id) {
-  <app-badge-row [badge]="badge" />
+  <app-badge-row
+    [badge]="badge"
+    [deletable]="isOwnProfile()"
+    (deleted)="badgeToDelete.set(badge.id)"
+  />
   }
 </app-section>
 }
@@ -80,6 +85,14 @@
   <p>Keine Historie vorhanden.</p>
   }
 </app-section>
+
+<app-confirm-dialog
+  [open]="badgeToDelete() !== null"
+  message="Bist du sicher, dass du die Auszeichnung löschen möchtest?"
+  [pending]="deleting()"
+  (confirmed)="deleteBadge()"
+  (cancelled)="badgeToDelete.set(null)"
+/>
 
 <app-confirm-dialog
   [open]="scoreToDelete() !== null"
