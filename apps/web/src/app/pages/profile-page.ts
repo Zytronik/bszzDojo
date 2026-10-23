@@ -52,7 +52,6 @@ import { Tabs, type TabItem } from '../ui/tabs';
   templateUrl: './profile-page.html',
 })
 export class ProfilePage {
-  /** Route param */
   readonly username = input.required<string>();
 
   private readonly auth = inject(AuthStore);

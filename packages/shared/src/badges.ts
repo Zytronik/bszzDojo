@@ -17,7 +17,6 @@ export const BADGE_PLACE_LABELS: Record<BadgePlace, string> = {
   3: 'Bronze',
 };
 
-/** Points per place in the medal table. */
 export const BADGE_PLACE_POINTS: Record<BadgePlace, number> = { 1: 3, 2: 2, 3: 1 };
 
 export const BADGE_KINDS = ['sm', 'club', 'tournament'] as const;
@@ -29,7 +28,6 @@ export const BADGE_KIND_LABELS: Record<BadgeKind, string> = {
   tournament: 'Nationales Turnier',
 };
 
-/** The discipline of an SM or a national tournament. */
 export const TOURNAMENT_TYPES = ['fita', 'indoor', '3d', 'field', 'team'] as const;
 export type TournamentType = (typeof TOURNAMENT_TYPES)[number];
 
@@ -41,7 +39,6 @@ export const TOURNAMENT_TYPE_LABELS: Record<TournamentType, string> = {
   team: 'Team',
 };
 
-/** The tournament types a kind offers: a national tournament has no team discipline. */
 export const BADGE_KIND_TOURNAMENT_TYPES: Record<BadgeKind, readonly TournamentType[]> = {
   sm: TOURNAMENT_TYPES,
   club: [],
@@ -54,10 +51,7 @@ export type AgeCategory = (typeof AGE_CATEGORIES)[number];
 export const BADGE_TEXT_MAX_LENGTH = 100;
 export const BADGE_EARLIEST_YEAR = 1950;
 
-/**
- * Which fields a kind asks for; the others are always `null`. The team flag isn't asked for when
- * the tournament type is "Team" already.
- */
+/** The others are always `null`; the team flag isn't asked for when the type is "Team". */
 export const BADGE_KIND_FIELDS: Record<
   BadgeKind,
   {
@@ -86,29 +80,21 @@ export interface BadgeInput {
   year: number;
   bowType: BowTypeId;
   ageCategory: AgeCategory;
-  /** SM and national tournament */
   tournamentType: TournamentType | null;
-  /** SM and national tournament */
   location: string | null;
-  /** Clubturnier and national tournament */
   eventName: string | null;
-  /** SM, unless the tournament type is "Team" */
   team: boolean | null;
-  /** Clubturnier only. Meters */
+  /** Meters */
   distance: number | null;
 }
 
-/**
- * A recorded placing. Placings imported from the old app only have a name (as `eventName`), year
- * and place, and earlier ones may lack newer details, so those can be `null`.
- */
+/** Placings imported from the old app only have a name (as `eventName`), year and place. */
 export interface Badge extends Omit<BadgeInput, 'bowType' | 'ageCategory'> {
   id: string;
   bowType: BowTypeId | null;
   ageCategory: AgeCategory | null;
 }
 
-/** A placing while it's being entered: anything can still be empty. */
 export type BadgeDraft = { [K in keyof BadgeInput]: BadgeInput[K] | null };
 
 export type BadgeFieldErrors = Partial<Record<keyof BadgeInput, string>>;
@@ -134,10 +120,7 @@ function trimmed(value: string | null): string | null {
   return text.length > 0 ? text : null;
 }
 
-/**
- * Clears what the kind doesn't ask for and trims the texts, so a form can keep hidden values
- * around while the kind is switched.
- */
+/** Clears what the kind doesn't ask for, so a form can keep hidden values while the kind changes. */
 export function normalizeBadgeInput<T extends BadgeDraft>(input: T): T {
   const fields = isBadgeKind(input.kind) ? BADGE_KIND_FIELDS[input.kind] : null;
   const tournamentType = fields?.tournamentType ? input.tournamentType : null;
@@ -151,10 +134,7 @@ export function normalizeBadgeInput<T extends BadgeDraft>(input: T): T {
   };
 }
 
-/**
- * What's wrong with a placing, by field, in German; empty if it's valid. Shared so the form shows
- * the same messages the API would answer with. Expects `normalizeBadgeInput` to have run.
- */
+/** Expects `normalizeBadgeInput` to have run. */
 export function badgeFieldErrors(
   badge: BadgeDraft,
   currentYear: number = currentClubMonth().year,
@@ -204,7 +184,7 @@ export function badgeTitle(badge: Badge): string {
   return badge.tournamentType ? `SM ${TOURNAMENT_TYPE_LABELS[badge.tournamentType]}` : 'SM';
 }
 
-/** The rest, for a line below the title: "Nationales Turnier · Field · Recurve · Bern · U18". */
+/** "Nationales Turnier · Field · Recurve · Bern · U18" */
 export function badgeDetails(badge: Badge): string {
   const parts = [
     badge.kind === 'sm' ? null : BADGE_KIND_LABELS[badge.kind],

@@ -1,6 +1,10 @@
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, type RegisterRequest } from '@bszz-dojo/shared';
+import {
+  ACCOUNT_FIELD_ERRORS,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  type RegisterRequest,
+} from '@bszz-dojo/shared';
 import { IsOptional, IsString, Length } from 'class-validator';
-import { VALIDATION_MESSAGES } from '../../common/validation-messages';
 import { IsDisplayName, IsUsername } from '../../common/validators';
 
 export class RegisterBody implements RegisterRequest {
@@ -8,7 +12,7 @@ export class RegisterBody implements RegisterRequest {
    * Letters, digits, `.`, `_` and `-`, no spaces. Unique, ignoring case; used to log in.
    * @example 'robin_hood'
    */
-  @IsUsername({ message: VALIDATION_MESSAGES.username })
+  @IsUsername({ message: ACCOUNT_FIELD_ERRORS.username })
   username: string;
 
   /**
@@ -16,10 +20,10 @@ export class RegisterBody implements RegisterRequest {
    * @example 'Robin Hood'
    */
   @IsOptional()
-  @IsDisplayName({ message: VALIDATION_MESSAGES.displayName })
+  @IsDisplayName({ message: ACCOUNT_FIELD_ERRORS.displayName })
   displayName?: string | null;
 
   @IsString()
-  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, { message: VALIDATION_MESSAGES.password })
+  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, { message: ACCOUNT_FIELD_ERRORS.password })
   password: string;
 }

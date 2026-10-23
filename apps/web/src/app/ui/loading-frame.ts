@@ -1,24 +1,25 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { css } from 'styled-system/css';
-import { SkeletonChart } from './skeleton-chart';
-import { SkeletonList } from './skeleton-list';
+import { Skeleton } from './skeleton';
 
 /**
- * A list's place on the page: the skeleton while `loading`, then the projected content. The
- * skeleton stays in the same grid cell afterwards, invisible, so the area keeps at least its
- * height and the page doesn't jump when the answer is short ("Keine … vorhanden.").
+ * The skeleton while `loading`, then the projected content. The skeleton stays in the same grid
+ * cell afterwards, invisible, so the area keeps its height and the page doesn't jump when the
+ * answer is short ("Keine … vorhanden.").
  */
 @Component({
   selector: 'app-loading-frame',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SkeletonList, SkeletonChart],
+  imports: [Skeleton],
   host: { '[class]': 'styles' },
   template: `
-    @if (chart()) {
-      <app-skeleton-chart [ghost]="!loading()" />
-    } @else {
-      <app-skeleton-list [rows]="rows()" [lines]="lines()" [rank]="rank()" [ghost]="!loading()" />
-    }
+    <app-skeleton
+      [rows]="rows()"
+      [lines]="lines()"
+      [rank]="rank()"
+      [chart]="chart()"
+      [ghost]="!loading()"
+    />
     <div [class]="contentStyles"><ng-content /></div>
   `,
 })
@@ -27,7 +28,6 @@ export class LoadingFrame {
   readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
-  /** The progress chart's block instead of rows */
   readonly chart = input(false);
 
   protected readonly styles = css({
@@ -35,6 +35,6 @@ export class LoadingFrame {
     // minWidth 0 so long names still wrap inside the cell.
     '& > *': { gridArea: '1 / 1', minW: '0' },
   });
-  // A column, so an empty state (or a list component holding one) can grow to the cell's height.
+  // A column, so an empty state can grow to the cell's height.
   protected readonly contentStyles = css({ display: 'flex', flexDir: 'column' });
 }

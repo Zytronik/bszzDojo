@@ -1,14 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import type { Score } from '@bszz-dojo/shared';
+import { BOW_TYPES, formatGermanDate, targetLabel, type Score } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
-import { bowTypeName, formatDate, targetText } from '../core/score-labels';
 import { Icon } from '../ui/icon';
 import { faDeleteLeft } from '../ui/icons';
 
-/**
- * A round in the profile: `records` (a personal best, with its place) or `history` (with the
- * distance, and a delete button on the user's own profile).
- */
+/** `records`: a personal best with its place; `history`: with the distance. */
 @Component({
   selector: 'app-score-row',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,12 +19,12 @@ import { faDeleteLeft } from '../ui/icons';
       <p [class]="styles.meta">{{ formatDate(score().shotOn) }}</p>
       <p [class]="styles.info">
         @if (variant() === 'history') {
-          {{ bowTypeName(score().bowType) }}: {{ score().arrows }}P. {{ score().distance }}m ({{
-            targetText(score())
+          {{ bowTypes[score().bowType].name }}: {{ score().arrows }}P. {{ score().distance }}m ({{
+            targetLabel(score())
           }})
         } @else {
-          {{ bowTypeName(score().bowType) }}: {{ score().arrows }} Pfeile ({{
-            targetText(score())
+          {{ bowTypes[score().bowType].name }}: {{ score().arrows }} Pfeile ({{
+            targetLabel(score())
           }})
         }
       </p>
@@ -61,7 +57,7 @@ export class ScoreRow {
 
   protected readonly styles = record();
   protected readonly deleteIcon = faDeleteLeft;
-  protected readonly formatDate = formatDate;
-  protected readonly bowTypeName = bowTypeName;
-  protected readonly targetText = targetText;
+  protected readonly formatDate = formatGermanDate;
+  protected readonly bowTypes = BOW_TYPES;
+  protected readonly targetLabel = targetLabel;
 }

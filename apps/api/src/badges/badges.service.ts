@@ -28,7 +28,6 @@ export class BadgesService {
     return toBadge(entity);
   }
 
-  /** Users can only delete their own placings. */
   async delete(userId: string, badgeId: string): Promise<void> {
     const result = await this.badges.delete({ id: badgeId, userId });
     if (result.affected === 0) throw new NotFoundException('Auszeichnung nicht gefunden.');

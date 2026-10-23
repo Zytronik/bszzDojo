@@ -14,9 +14,6 @@ export const textStyles = defineTextStyles({
     },
   },
   body: {
-    default: {
-      value: { fontSize: 'md', lineHeight: 'normal', fontWeight: 'normal' },
-    },
     small: {
       value: { fontSize: 'sm', lineHeight: 'normal' },
     },

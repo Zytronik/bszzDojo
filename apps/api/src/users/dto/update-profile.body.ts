@@ -1,4 +1,5 @@
 import {
+  ACCOUNT_FIELD_ERRORS,
   PASSWORD_MAX_LENGTH,
   RANK_IDS,
   PASSWORD_MIN_LENGTH,
@@ -7,17 +8,16 @@ import {
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsOptional, IsString, Length, MaxLength } from 'class-validator';
-import { VALIDATION_MESSAGES } from '../../common/validation-messages';
 import { IsDisplayName, IsUsername } from '../../common/validators';
 
 export class UpdateProfileBody implements UpdateProfileRequest {
   @IsOptional()
-  @IsUsername({ message: VALIDATION_MESSAGES.username })
+  @IsUsername({ message: ACCOUNT_FIELD_ERRORS.username })
   username?: string;
 
   /** `null` or empty removes it. */
   @IsOptional()
-  @IsDisplayName({ message: VALIDATION_MESSAGES.displayName })
+  @IsDisplayName({ message: ACCOUNT_FIELD_ERRORS.displayName })
   displayName?: string | null;
 
   /** Their Abzeichen; `null` removes it. */
@@ -29,7 +29,7 @@ export class UpdateProfileBody implements UpdateProfileRequest {
   /** New password */
   @IsOptional()
   @IsString()
-  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, { message: VALIDATION_MESSAGES.password })
+  @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, { message: ACCOUNT_FIELD_ERRORS.password })
   password?: string;
 
   /** Required to change the password. */

@@ -4,10 +4,8 @@ import { patchState, signalStore, withHooks, withMethods, withState } from '@ngr
 import { AuthStore } from '../auth/auth.store';
 import { UsersApiService } from '../core/users-api.service';
 
-export type SettingsSaveStatus = 'idle' | 'saving' | 'saved' | 'error';
-
 interface SettingsState extends UserSettings {
-  saveStatus: SettingsSaveStatus;
+  saveFailed: boolean;
 }
 
 /** Quick toggles fire several changes; only the last one in this window is saved. */
@@ -16,7 +14,7 @@ const SAVE_DEBOUNCE_MS = 400;
  * The last theme on this device, read by the inline script in index.html before Angular starts.
  * Only a paint cache: the account's setting is the source of truth.
  */
-export const THEME_CACHE_KEY = 'bszz-theme';
+const THEME_CACHE_KEY = 'bszz-theme';
 
 /** Until the account's settings arrive: what index.html applied from the cache. */
 function initialTheme(): Theme {
@@ -24,10 +22,9 @@ function initialTheme(): Theme {
   return isTheme(theme) ? theme : 'dark';
 }
 
-/** The logged-in user's settings, loaded from and saved to their account. */
 export const SettingsStore = signalStore(
   { providedIn: 'root' },
-  withState<SettingsState>(() => ({ theme: initialTheme(), saveStatus: 'idle' })),
+  withState<SettingsState>(() => ({ theme: initialTheme(), saveFailed: false })),
   withMethods((store, api = inject(UsersApiService)) => {
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -38,12 +35,11 @@ export const SettingsStore = signalStore(
 
     const save = async (): Promise<void> => {
       saveTimer = null;
-      patchState(store, { saveStatus: 'saving' });
       try {
         await api.saveSettings({ theme: store.theme() });
-        patchState(store, { saveStatus: 'saved' });
+        patchState(store, { saveFailed: false });
       } catch {
-        patchState(store, { saveStatus: 'error' });
+        patchState(store, { saveFailed: true });
       }
     };
 
@@ -51,7 +47,7 @@ export const SettingsStore = signalStore(
       /** Replaces the local settings with the account's, without saving them back. */
       load(settings: UserSettings): void {
         cancelPendingSave();
-        patchState(store, { ...settings, saveStatus: 'idle' });
+        patchState(store, { ...settings, saveFailed: false });
       },
 
       setTheme(theme: Theme): void {

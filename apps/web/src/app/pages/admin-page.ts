@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { shownName, type AdminUser } from '@bszz-dojo/shared';
+import { formatGermanDate, shownName, type AdminUser } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
 import { AdminApiService } from '../admin/admin-api.service';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
-import { formatDate } from '../core/score-labels';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { FeedbackMessage } from '../ui/feedback-message';
@@ -39,7 +38,7 @@ export class AdminPage {
 
   protected readonly recordStyles = record();
   protected readonly icons = { faDeleteLeft };
-  protected readonly formatDate = formatDate;
+  protected readonly formatDate = formatGermanDate;
 
   protected readonly users = resource({ loader: () => this.api.users() });
   protected readonly userToDelete = signal<AdminUser | null>(null);

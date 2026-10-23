@@ -10,7 +10,6 @@ export const PASSWORD_MIN_LENGTH = 8;
 /** bcrypt ignores everything after 72 bytes. */
 export const PASSWORD_MAX_LENGTH = 72;
 
-/** German messages for invalid account fields, the same in the forms and from the API. */
 export const ACCOUNT_FIELD_ERRORS = {
   username: `Der Benutzername muss ${USERNAME_MIN_LENGTH}–${USERNAME_MAX_LENGTH} Zeichen lang sein und darf nur Buchstaben, Zahlen, ".", "_" und "-" enthalten (keine Leerzeichen).`,
   displayName: `Der Anzeigename darf höchstens ${DISPLAY_NAME_MAX_LENGTH} Zeichen lang sein.`,
@@ -34,22 +33,17 @@ export interface RegisterRequest {
   password: string;
 }
 
-/** The logged-in user's own account. */
 export interface UserProfile {
   id: string;
   username: string;
   displayName: string | null;
-  /** Their Abzeichen, picked by themselves */
   rank: RankId | null;
   role: UserRole;
   settings: UserSettings;
 }
 
-/** Anyone shown in the app: identified by `username`, labelled with `shownName`. */
 export interface UserName {
-  /** For logging in and in profile URLs. */
   username: string;
-  /** Optional; shown instead of the username when set. */
   displayName: string | null;
 }
 
@@ -58,21 +52,8 @@ export interface UserName {
  * body: it's set as an httpOnly cookie scoped to `/api/auth`.
  */
 export interface AuthSession {
-  /** Short-lived JWT for `Authorization: Bearer`. */
   accessToken: string;
   user: UserProfile;
-}
-
-/** Confirmation text for actions without another result, shown to the user as is. */
-export interface MessageResponse {
-  message: string;
-}
-
-/** Error body NestJS returns for failed requests. */
-export interface ApiError {
-  statusCode: number;
-  message: string | string[];
-  error?: string;
 }
 
 export function normalizeUsername(value: string): string {
@@ -89,7 +70,6 @@ export function normalizeDisplayName(value: string | null | undefined): string |
   return name.length > 0 ? name : null;
 }
 
-/** The name to show for a user: the display name if set, else the username. */
 export function shownName(user: UserName): string {
   return user.displayName ?? user.username;
 }

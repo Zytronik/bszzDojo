@@ -42,7 +42,7 @@ export function currentClubMonth(now: Date = new Date()): CalendarMonth {
   return { year: year ?? 1970, month: month ?? 1 };
 }
 
-/** First and last day of the month, inclusive. */
+/** Inclusive */
 export function monthRange({ year, month }: CalendarMonth): { from: IsoDate; to: IsoDate } {
   const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const mm = String(month).padStart(2, '0');

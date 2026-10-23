@@ -17,11 +17,9 @@ import { toUserProfile } from '../users/user-profile';
 import { UserEntity } from '../users/user.entity';
 import { TokenService } from './token.service';
 
-export const BCRYPT_ROUNDS = 10;
+const BCRYPT_ROUNDS = 10;
 /** Compared against when the username doesn't exist, so both cases take as long. */
 const DUMMY_PASSWORD_HASH = hashSync('not-a-real-password', BCRYPT_ROUNDS);
-
-export const USERNAME_TAKEN = 'Benutzername ist bereits vergeben.';
 
 /**
  * Accounts imported from the old PHP app keep their `password_hash` hashes, which start with
@@ -39,15 +37,14 @@ export function passwordMatches(password: string, passwordHash: string): Promise
   return compare(password, compatibleHash(passwordHash));
 }
 
-/** Throws a 409 with a German message if the write hit the username index. */
 export function rethrowUniqueViolation(error: unknown): never {
   const constraint = uniqueViolation(error);
-  if (constraint === 'UQ_users_username_key') throw new ConflictException(USERNAME_TAKEN);
+  if (constraint === 'UQ_users_username_key')
+    throw new ConflictException('Benutzername ist bereits vergeben.');
   throw error;
 }
 
-/** A session plus the refresh token, which the controller puts in a cookie. */
-export interface IssuedSession {
+interface IssuedSession {
   session: AuthSession;
   refreshToken: string;
 }

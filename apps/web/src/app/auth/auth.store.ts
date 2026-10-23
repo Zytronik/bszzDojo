@@ -11,7 +11,7 @@ import { errorMessage } from '../core/error-message';
 import { AuthApiService } from './auth-api.service';
 
 /** `restoring` until the first refresh attempt at startup has finished. */
-export type AuthStatus = 'restoring' | 'authenticated' | 'anonymous';
+type AuthStatus = 'restoring' | 'authenticated' | 'anonymous';
 
 interface AuthState {
   user: UserProfile | null;

@@ -5,7 +5,6 @@ import { FormButton } from '../forms/form-button';
 
 let nextDialogId = 0;
 
-/** "Are you sure?" dialog; extra fields (e.g. a year) can be projected above the buttons. */
 @Component({
   selector: 'app-confirm-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,9 +29,8 @@ let nextDialogId = 0;
             &times;
           </button>
           <p [id]="textId" [class]="textStyles">{{ message() }}</p>
-          <ng-content />
           <button type="button" appButton [pending]="pending()" (click)="confirmed.emit()">
-            {{ confirmLabel() }}
+            Ja, löschen
           </button>
           <button type="button" appButton (click)="cancelled.emit()">Abbrechen</button>
         </div>
@@ -43,7 +41,6 @@ let nextDialogId = 0;
 export class ConfirmDialog {
   readonly open = input.required<boolean>();
   readonly message = input.required<string>();
-  readonly confirmLabel = input('Ja, löschen');
   readonly pending = input(false);
   readonly confirmed = output();
   readonly cancelled = output();

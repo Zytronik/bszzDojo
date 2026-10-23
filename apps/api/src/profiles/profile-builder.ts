@@ -8,7 +8,7 @@ import {
   type Score,
 } from '@bszz-dojo/shared';
 
-/** A user's round as the profile needs it; `scores` passed in are sorted oldest first. */
+/** Every function here expects the rounds oldest first. */
 export interface ProfileRound extends Score {
   createdAt: Date;
 }

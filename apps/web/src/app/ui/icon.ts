@@ -2,10 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { css } from 'styled-system/css';
 
-/**
- * A Font Awesome icon as inline SVG (the icons the old app loaded as a web font). Decorative by
- * default; give it a `label` when nothing else names what it does.
- */
+/** Decorative by default; give it a `label` when nothing else names what it does. */
 @Component({
   selector: 'app-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,7 +20,6 @@ import { css } from 'styled-system/css';
       }
     </svg>
   `,
-  host: { class: 'app-icon' },
 })
 export class Icon {
   readonly icon = input.required<IconDefinition>();

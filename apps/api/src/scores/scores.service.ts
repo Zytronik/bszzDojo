@@ -22,7 +22,6 @@ export class ScoresService {
     return toScore(score);
   }
 
-  /** Users can only delete their own rounds. */
   async delete(userId: string, scoreId: string): Promise<void> {
     const result = await this.scores.delete({ id: scoreId, userId });
     if (result.affected === 0) throw new NotFoundException('Eintrag nicht gefunden.');

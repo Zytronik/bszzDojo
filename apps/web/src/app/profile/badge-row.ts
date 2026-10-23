@@ -4,10 +4,7 @@ import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
 import { faDeleteLeft } from '../ui/icons';
 
-/**
- * A placing as the old app showed it ("#1 Chlausschiessen 2023"), with its details below and,
- * in the settings, a delete button.
- */
+/** As the old app showed it: "#1 Chlausschiessen 2023", the details below. */
 @Component({
   selector: 'app-badge-row',
   changeDetection: ChangeDetectionStrategy.OnPush,

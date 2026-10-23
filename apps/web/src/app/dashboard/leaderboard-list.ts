@@ -1,16 +1,14 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { LeaderboardEntry } from '@bszz-dojo/shared';
+import { BOW_TYPES, formatGermanDate, targetLabel, type LeaderboardEntry } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { EmptyState } from '../ui/empty-state';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
-import { bowTypeName, formatDate, targetText } from '../core/score-labels';
 
 @Component({
   selector: 'app-leaderboard-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // Grows inside a LoadingFrame, so the empty state can fill it.
   host: { '[class]': 'hostStyles' },
   imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `
@@ -27,7 +25,9 @@ import { bowTypeName, formatDate, targetText } from '../core/score-labels';
             <span [class]="styles.highlight">x{{ entry.nines }}</span>
           </p>
           <p [class]="styles.meta">{{ formatDate(entry.shotOn) }}</p>
-          <p [class]="styles.meta">{{ bowTypeName(entry.bowType) }}: ({{ targetText(entry) }})</p>
+          <p [class]="styles.meta">
+            {{ bowTypes[entry.bowType].name }}: ({{ targetLabel(entry) }})
+          </p>
         </div>
       </div>
     } @empty {
@@ -40,7 +40,7 @@ export class LeaderboardList {
   readonly entries = input.required<readonly LeaderboardEntry[]>();
 
   protected readonly styles = record();
-  protected readonly formatDate = formatDate;
-  protected readonly bowTypeName = bowTypeName;
-  protected readonly targetText = targetText;
+  protected readonly formatDate = formatGermanDate;
+  protected readonly bowTypes = BOW_TYPES;
+  protected readonly targetLabel = targetLabel;
 }

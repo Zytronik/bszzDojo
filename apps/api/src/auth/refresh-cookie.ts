@@ -11,7 +11,6 @@ function cookieOptions(config: ConfigService): CookieOptions {
     httpOnly: true,
     secure: config.get<string>('COOKIE_SECURE') !== 'false',
     sameSite: 'lax',
-    // Only sent to the auth endpoints, never with any other request.
     path: `/${API_PREFIX}/auth`,
   };
 }

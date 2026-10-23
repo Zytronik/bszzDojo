@@ -4,7 +4,6 @@ import type { Badge, BadgeInput } from '@bszz-dojo/shared';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from './api-url';
 
-/** The logged-in user's own placings ("Auszeichnungen"). */
 @Injectable({ providedIn: 'root' })
 export class BadgesApiService {
   private readonly http = inject(HttpClient);

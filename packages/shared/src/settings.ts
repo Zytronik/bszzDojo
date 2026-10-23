@@ -16,7 +16,7 @@ export function isTheme(value: unknown): value is Theme {
   return typeof value === 'string' && (THEMES as readonly string[]).includes(value);
 }
 
-/** Settings from the database or an old client: unknown or missing fields fall back to defaults. */
+/** Unknown or missing fields fall back to the defaults. */
 export function parseUserSettings(value: unknown): UserSettings {
   if (!isRecord(value)) return { ...DEFAULT_USER_SETTINGS };
   return {

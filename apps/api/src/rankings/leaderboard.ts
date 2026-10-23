@@ -70,7 +70,7 @@ export function buildLeaderboard(rounds: readonly LeaderboardRound[]): Leaderboa
     }));
 }
 
-export interface BadgeHolder {
+interface BadgeHolder {
   userId: string;
   username: string;
   displayName: string | null;

@@ -1,13 +1,11 @@
 import type { RankId, UserRole, UserSettings } from '@bszz-dojo/shared';
 import { Column, CreateDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
-// Column and constraint names are explicit so they match the hand-written initial migration.
 @Entity('users')
 export class UserEntity {
   @PrimaryColumn({ type: 'uuid', primaryKeyConstraintName: 'PK_users' })
   id: string;
 
-  /** As typed at registration; for logging in and in profile URLs. */
   @Column({ type: 'varchar', length: 30 })
   username: string;
 
@@ -16,7 +14,6 @@ export class UserEntity {
   @Column({ name: 'username_key', type: 'varchar', length: 30 })
   usernameKey: string;
 
-  /** Shown instead of the username when set. */
   @Column({ name: 'display_name', type: 'varchar', length: 40, nullable: true })
   displayName: string | null;
 
@@ -26,7 +23,6 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 10, default: 'user' })
   role: UserRole;
 
-  /** Their club badge ("Abzeichen"), picked in the settings. */
   @Column({ type: 'varchar', length: 20, nullable: true })
   rank: RankId | null;
 
