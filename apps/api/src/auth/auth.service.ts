@@ -123,7 +123,7 @@ export class AuthService {
       expiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MS),
     });
 
-    const appUrl = this.config.get<string>('APP_URL') ?? 'http://localhost:4200';
+    const appUrl = this.appUrl();
     const link = `${appUrl}/reset-password?token=${encodeURIComponent(created.token)}`;
     try {
       await this.mail.send({
@@ -161,6 +161,17 @@ export class AuthService {
     await this.users.update(reset.userId, { passwordHash: await hashPassword(password) });
     await this.passwordResets.delete({ userId: reset.userId });
     await this.tokens.revokeAllRefreshTokens(reset.userId);
+  }
+
+  /**
+   * Where reset links point. `APP_URL` in production; preview deployments fall back to their own
+   * URL, which Vercel sets, since web and API share it.
+   */
+  private appUrl(): string {
+    const configured = this.config.get<string>('APP_URL');
+    if (configured) return configured.replace(/\/$/, '');
+    const vercelUrl = this.config.get<string>('VERCEL_BRANCH_URL') ?? this.config.get<string>('VERCEL_URL');
+    return vercelUrl ? `https://${vercelUrl}` : 'http://localhost:4200';
   }
 
   private async issue(user: UserEntity): Promise<IssuedSession> {
