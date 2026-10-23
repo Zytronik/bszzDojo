@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Zytronik/bszzDojo/compare/v2.0.0...v3.0.0) (2026-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* /api/badge-requests, /api/admin/badge-requests, /api/admin/badges and /api/admin/users/rank are removed, Profile has no badges and Rankings no medals; existing placings and requests are deleted by the migration.
+
+### Features
+
+* let users record their own auszeichnungen and abzeichen ([#27](https://github.com/Zytronik/bszzDojo/issues/27)) ([24e9932](https://github.com/Zytronik/bszzDojo/commit/24e9932e7420f9ec2a6f08006fb19103c29b653f))
+
 ## [2.0.0](https://github.com/Zytronik/bszzDojo/compare/v1.1.0...v2.0.0) (2026-10-23)
 
 
