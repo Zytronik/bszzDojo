@@ -7,7 +7,7 @@ import {
   type ApiResponseOptions,
   type SwaggerCustomOptions,
 } from '@nestjs/swagger';
-import { API_PREFIX, APP_NAME, isRecord } from '@bszz-dojo/shared';
+import { API_PREFIX, APP_NAME, APP_VERSION, isRecord } from '@bszz-dojo/shared';
 import { REFRESH_COOKIE } from './auth/refresh-cookie';
 import metadata from './metadata';
 
@@ -81,6 +81,7 @@ export async function setupSwagger(app: INestApplication): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle(`${APP_NAME} API`)
     .setDescription(`REST API for ${APP_NAME}`)
+    .setVersion(APP_VERSION)
     .addBearerAuth()
     .addCookieAuth(REFRESH_COOKIE)
     .build();
