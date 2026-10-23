@@ -1,12 +1,11 @@
+import type { UserName } from './auth';
 import type { RankId } from './ranks';
 
 export const USER_SEARCH_MIN_LENGTH = 1;
 export const USER_SEARCH_LIMIT = 10;
 
-/** Item of `GET /api/users/search?q=` */
-export interface UserSearchResult {
-  username: string;
-}
+/** Item of `GET /api/users/search?q=`, which matches usernames and display names. */
+export type UserSearchResult = UserName;
 
 /** Query of `GET /api/users/search` */
 export interface UserSearchQuery {
@@ -16,17 +15,17 @@ export interface UserSearchQuery {
 /** Body of `PATCH /api/users/me`; fields left out stay as they are. */
 export interface UpdateProfileRequest {
   username?: string;
-  email?: string;
+  /** `null` or empty removes it. */
+  displayName?: string | null;
   /** New password */
   password?: string;
-  /** Required to change the email or the password. */
+  /** Required to change the password. */
   currentPassword?: string;
 }
 
 /** Item of `GET /api/admin/users` */
-export interface AdminUser {
+export interface AdminUser extends UserName {
   id: string;
-  username: string;
   /** ISO 8601 timestamp */
   createdAt: string;
 }

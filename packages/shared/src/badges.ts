@@ -1,3 +1,5 @@
+import type { UserName } from './auth';
+
 /** Tournament placings ("Auszeichnungen"); only podium places are recorded. */
 export const BADGE_PLACES = [1, 2, 3] as const;
 export type BadgePlace = (typeof BADGE_PLACES)[number];
@@ -32,9 +34,8 @@ export interface BadgeRequestInput {
   place: BadgePlace;
 }
 
-export interface BadgeRequest extends BadgeRequestInput {
+export interface BadgeRequest extends BadgeRequestInput, UserName {
   id: string;
-  username: string;
   /** ISO 8601 timestamp */
   createdAt: string;
 }

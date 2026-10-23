@@ -7,7 +7,7 @@ export class UserEntity {
   @PrimaryColumn({ type: 'uuid', primaryKeyConstraintName: 'PK_users' })
   id: string;
 
-  /** As typed at registration; shown everywhere and used in profile URLs. */
+  /** As typed at registration; for logging in and in profile URLs. */
   @Column({ type: 'varchar', length: 30 })
   username: string;
 
@@ -16,10 +16,9 @@ export class UserEntity {
   @Column({ name: 'username_key', type: 'varchar', length: 30 })
   usernameKey: string;
 
-  /** Lowercased */
-  @Index('UQ_users_email', { unique: true })
-  @Column({ type: 'varchar', length: 254 })
-  email: string;
+  /** Shown instead of the username when set. */
+  @Column({ name: 'display_name', type: 'varchar', length: 40, nullable: true })
+  displayName: string | null;
 
   @Column({ name: 'password_hash', type: 'varchar' })
   passwordHash: string;

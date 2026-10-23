@@ -1,5 +1,11 @@
 import { computed, inject } from '@angular/core';
-import type { AuthSession, LoginRequest, RegisterRequest, UserProfile } from '@bszz-dojo/shared';
+import {
+  shownName,
+  type AuthSession,
+  type LoginRequest,
+  type RegisterRequest,
+  type UserProfile,
+} from '@bszz-dojo/shared';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { errorMessage } from '../core/error-message';
 import { AuthApiService } from './auth-api.service';
@@ -31,6 +37,10 @@ export const AuthStore = signalStore(
     isAuthenticated: computed(() => status() === 'authenticated'),
     isAdmin: computed(() => user()?.role === 'admin'),
     username: computed(() => user()?.username ?? ''),
+    shownName: computed(() => {
+      const current = user();
+      return current ? shownName(current) : '';
+    }),
   })),
   withMethods((store, api = inject(AuthApiService)) => {
     let refreshing: Promise<string | null> | null = null;

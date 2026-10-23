@@ -22,7 +22,7 @@
   <div [class]="recordStyles.root">
     <div [class]="recordStyles.body">
       <p [class]="recordStyles.meta">{{ formatDate(request.createdAt) }}</p>
-      <p [class]="recordStyles.title">{{ request.username }}</p>
+      <p [class]="recordStyles.title">{{ request | shownName }}</p>
       <p>Name: <span [class]="recordStyles.highlight">{{ request.name }}</span></p>
       <p>Platzierung: <span [class]="recordStyles.highlight">#{{ request.place }}</span></p>
     </div>
@@ -53,7 +53,7 @@
 
   <app-confirm-dialog
     [open]="requestToApprove() !== null"
-    [message]="'Auszeichnung «' + (requestToApprove()?.name ?? '') + '» an ' + (requestToApprove()?.username ?? '') + ' vergeben?'"
+    [message]="'Auszeichnung «' + (requestToApprove()?.name ?? '') + '» an ' + (requestToApprove() | shownName) + ' vergeben?'"
     confirmLabel="Ja, vergeben"
     [pending]="requestPending()"
     (confirmed)="approve()"
@@ -186,7 +186,7 @@
     <div [class]="recordStyles.body">
       <p [class]="recordStyles.meta">{{ formatDate(user.createdAt) }}</p>
       <a [routerLink]="['/profile', user.username]" [class]="recordStyles.title"
-        >{{ user.username }}</a
+        >{{ user | shownName }}</a
       >
     </div>
     @if (user.id !== auth.user()?.id) {
@@ -194,7 +194,7 @@
       <button
         type="button"
         [class]="recordStyles.action"
-        [attr.aria-label]="user.username + ' löschen'"
+        [attr.aria-label]="(user | shownName) + ' löschen'"
         (click)="userToDelete.set(user)"
       >
         <app-icon [icon]="icons.faDeleteLeft" />
@@ -209,7 +209,7 @@
   }
   <app-confirm-dialog
     [open]="userToDelete() !== null"
-    [message]="'Bist du sicher, dass du ' + (userToDelete()?.username ?? '') + ' mit allen Scores und Auszeichnungen löschen möchtest?'"
+    [message]="'Bist du sicher, dass du ' + (userToDelete() | shownName) + ' mit allen Scores und Auszeichnungen löschen möchtest?'"
     [pending]="deletingUser()"
     (confirmed)="deleteUser()"
     (cancelled)="userToDelete.set(null)"

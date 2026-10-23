@@ -11,6 +11,7 @@ export function toBadgeRequest(request: BadgeRequestEntity): BadgeRequest {
   return {
     id: request.id,
     username: request.user.username,
+    displayName: request.user.displayName,
     name: request.name,
     place: request.place,
     createdAt: request.createdAt.toISOString(),

@@ -2,19 +2,20 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { LeaderboardEntry } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
+import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { bowTypeName, formatDate, targetText } from '../core/score-labels';
 
 @Component({
   selector: 'app-leaderboard-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, ShownNamePipe],
   template: `
     @for (entry of entries(); track entry.username) {
       <div [class]="styles.root">
         <p [class]="styles.rank">#{{ entry.rank }}</p>
         <div [class]="styles.body">
           <a [routerLink]="['/profile', entry.username]" [class]="styles.title">{{
-            entry.username
+            entry | shownName
           }}</a>
           <p [class]="styles.results">
             <span [class]="styles.highlight">{{ entry.adjustedResult }}</span> ({{ entry.result }})

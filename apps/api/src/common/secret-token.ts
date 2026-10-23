@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 
 /**
- * Tokens handed to the browser or sent by mail are `<id>.<secret>`: the id finds the row, and only
+ * Tokens handed to the browser are `<id>.<secret>`: the id finds the row, and only
  * a sha256 of the secret is stored, so a database leak can't be replayed.
  */
 export interface SecretToken {

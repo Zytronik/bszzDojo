@@ -8,13 +8,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
-import { MessageResult } from '../common/message.response';
 import { AuthService } from './auth.service';
 import { AuthSessionResponse } from './dto/auth-session.response';
-import { ForgotPasswordBody } from './dto/forgot-password.body';
 import { LoginBody } from './dto/login.body';
 import { RegisterBody } from './dto/register.body';
-import { ResetPasswordBody } from './dto/reset-password.body';
 import { clearRefreshCookie, readRefreshCookie, setRefreshCookie } from './refresh-cookie';
 
 @ApiTags('auth')
@@ -27,7 +24,7 @@ export class AuthController {
 
   /** Creates an account and logs in. Sets the refresh token cookie. */
   @Post('register')
-  @ApiConflictResponse({ description: 'Username or email already used' })
+  @ApiConflictResponse({ description: 'Username already taken' })
   async register(
     @Body() body: RegisterBody,
     @Res({ passthrough: true }) response: Response,
@@ -83,25 +80,5 @@ export class AuthController {
     const refreshToken = readRefreshCookie(request);
     if (refreshToken !== null) await this.auth.logout(refreshToken);
     clearRefreshCookie(response, this.config);
-  }
-
-  /** Mails a reset link if an account uses that address; the answer is the same either way. */
-  @Post('forgot-password')
-  @HttpCode(200)
-  async forgotPassword(@Body() body: ForgotPasswordBody): Promise<MessageResult> {
-    await this.auth.requestPasswordReset(body.email);
-    return {
-      message:
-        'Falls ein Konto mit dieser E-Mail-Adresse existiert, haben wir dir einen Link zum Zurücksetzen geschickt.',
-    };
-  }
-
-  /** Sets a new password from a reset link and logs out every device. */
-  @Post('reset-password')
-  @HttpCode(200)
-  @ApiUnauthorizedResponse({ description: 'Invalid or expired link' })
-  async resetPassword(@Body() body: ResetPasswordBody): Promise<MessageResult> {
-    await this.auth.resetPassword(body.token, body.password);
-    return { message: 'Passwort erfolgreich zurückgesetzt. Du kannst dich jetzt einloggen.' };
   }
 }

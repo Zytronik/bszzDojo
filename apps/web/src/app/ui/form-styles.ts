@@ -6,8 +6,6 @@ export const formStyles = {
   field: field(),
   input: input(),
   button: button(),
-  /** The link under a form, e.g. "Passwort vergessen?" */
-  bottomLink: css({ display: 'block', mt: '15' }),
   lead: css({ mb: '10' }),
 };
 

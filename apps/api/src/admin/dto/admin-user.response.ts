@@ -5,6 +5,12 @@ export class AdminUserResponse implements AdminUser {
 
   username: string;
 
+  /**
+   * Shown instead of the username when set.
+   * @example 'Robin Hood'
+   */
+  displayName: string | null;
+
   /** ISO 8601 timestamp */
   createdAt: string;
 }

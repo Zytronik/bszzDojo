@@ -21,8 +21,8 @@
       #field
       type="search"
       [class]="inputStyles"
-      placeholder="Benutzername eingeben"
-      aria-label="Benutzername"
+      placeholder="Name eingeben"
+      aria-label="Benutzer suchen"
       autocomplete="off"
       [value]="query()"
       (input)="query.set(field.value)"
@@ -34,7 +34,7 @@
         [class]="styles.result"
         (click)="state.close()"
       >
-        {{ result.username }}
+        {{ result | shownName }}
       </a>
       } @empty {
       <p [class]="styles.empty">Keine Ergebnisse gefunden</p>

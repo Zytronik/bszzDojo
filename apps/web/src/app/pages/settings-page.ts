@@ -15,13 +15,13 @@ import {
   BADGE_NAME_MAX_LENGTH,
   BADGE_PLACES,
   BADGE_PLACE_LABELS,
-  EMAIL_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
-  isValidEmail,
+  isValidDisplayName,
   isValidPassword,
   isValidUsername,
-  normalizeEmail,
+  normalizeDisplayName,
   normalizeUsername,
   type BadgePlace,
   type UpdateProfileRequest,
@@ -54,7 +54,7 @@ export class SettingsPage {
 
   protected readonly styles = formStyles;
   protected readonly badgeNameMaxLength = BADGE_NAME_MAX_LENGTH;
-  protected readonly limits = { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH, PASSWORD_MAX_LENGTH };
+  protected readonly limits = { USERNAME_MAX_LENGTH, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH };
   protected readonly places = BADGE_PLACES.map((value) => ({
     value,
     label: `${value} (${BADGE_PLACE_LABELS[value]})`,
@@ -70,7 +70,7 @@ export class SettingsPage {
 
   protected readonly profileForm = this.forms.group({
     username: '',
-    email: '',
+    displayName: '',
     password: '',
     currentPassword: '',
   });
@@ -80,12 +80,10 @@ export class SettingsPage {
     initialValue: this.profileForm.getRawValue(),
   });
 
-  /** The API only asks for it when the email or the password changes. */
-  protected readonly needsCurrentPassword = computed(() => {
-    const user = this.auth.user();
-    const { email = '', password = '' } = this.profileValue();
-    return password.length > 0 || (user !== null && normalizeEmail(email) !== user.email);
-  });
+  /** The API only asks for it when the password changes. */
+  protected readonly needsCurrentPassword = computed(
+    () => (this.profileValue().password ?? '').length > 0,
+  );
 
   constructor() {
     // Filled with the account's values, again after a save changed them.
@@ -95,7 +93,7 @@ export class SettingsPage {
       untracked(() =>
         this.profileForm.reset({
           username: user.username,
-          email: user.email,
+          displayName: user.displayName ?? '',
           password: '',
           currentPassword: '',
         }),
@@ -124,19 +122,20 @@ export class SettingsPage {
   protected async saveProfile(): Promise<void> {
     const user = this.auth.user();
     if (!user) return;
-    const { username, email, password, currentPassword } = this.profileForm.getRawValue();
+    const { username, displayName, password, currentPassword } = this.profileForm.getRawValue();
 
     // Only what changed is sent, like the old form, which skipped empty fields.
     const changes: UpdateProfileRequest = {};
     if (normalizeUsername(username) !== user.username) changes.username = username;
-    if (normalizeEmail(email) !== user.email) changes.email = email;
+    const newDisplayName = normalizeDisplayName(displayName);
+    if (newDisplayName !== user.displayName) changes.displayName = newDisplayName;
     if (password.length > 0) changes.password = password;
 
     const error =
       changes.username !== undefined && !isValidUsername(changes.username)
         ? ACCOUNT_FIELD_ERRORS.username
-        : changes.email !== undefined && !isValidEmail(changes.email)
-          ? ACCOUNT_FIELD_ERRORS.email
+        : !isValidDisplayName(displayName)
+          ? ACCOUNT_FIELD_ERRORS.displayName
           : changes.password !== undefined && !isValidPassword(changes.password)
             ? ACCOUNT_FIELD_ERRORS.password
             : this.needsCurrentPassword() && currentPassword.length === 0
