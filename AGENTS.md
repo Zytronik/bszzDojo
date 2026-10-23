@@ -222,8 +222,6 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
   - The title uses the commit message format; the description has **What**, **Why** and **How**
     sections plus how it was tested and any follow-up steps.
   - Keep one logical change per PR.
-- While the rewrite replaces the old PHP app, `next` is the integration branch: PRs target `next`
-  until it's merged into `main`.
 
 ## Releases
 
@@ -240,7 +238,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org).
 - Everything runs on Vercel in **one project** with two services (`vercel.json`): `web` (the
   Angular build, static) and `api` (NestJS as a Vercel Function). Requests to `/api/*` go to the
   API, everything else to the web app, so both share one domain and the refresh cookie is
-  first-party. Details and one-time setup in `docs/deployment.md`.
+  first-party. Details in `docs/deployment.md`.
 - Vercel's Git integration deploys: `main` → production (prod database), every other branch and
   PR → a preview deployment (dev database).
 - The API runs as a serverless function: keep it stateless (no in-memory sessions or caches that
