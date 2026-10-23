@@ -10,8 +10,9 @@ import { rankBadge } from './rank-badge';
 import { record } from './record';
 import { searchOverlay } from './search-overlay';
 import { siteHeader } from './site-header';
+import { spinner } from './spinner';
 import { tabs } from './tabs';
 
-export const recipes = { button, pageContainer, input, medal, message, rankBadge };
+export const recipes = { button, pageContainer, input, medal, message, rankBadge, spinner };
 
 export const slotRecipes = { checkbox, field, modal, record, searchOverlay, siteHeader, tabs };

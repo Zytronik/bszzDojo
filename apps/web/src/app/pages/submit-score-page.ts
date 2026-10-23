@@ -1,5 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  type AbstractControl,
+  type ValidatorFn,
+} from '@angular/forms';
 import {
   BOW_TYPES,
   BOW_TYPE_IDS,
@@ -7,9 +15,10 @@ import {
   MAX_ARROWS,
   MAX_DISTANCE,
   TARGET_SIZES,
-  scoreErrors,
+  scoreFieldErrors,
   todayInClub,
   type BowTypeId,
+  type ScoreDraft,
   type ScoreInput,
   type TargetSize,
 } from '@bszz-dojo/shared';
@@ -19,6 +28,9 @@ import { failure, success, type Feedback } from '../core/feedback';
 import { ScoresApiService } from '../core/scores-api.service';
 import { TargetCanvas } from '../scores/target-canvas';
 import { CheckboxField } from '../ui/checkbox-field';
+import { FormButton } from '../forms/form-button';
+import { FieldControl, FormField } from '../forms/form-field';
+import { INVALID_FORM, checkForm, messageFrom, required } from '../forms/validators';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { formStyles } from '../ui/form-styles';
 import { PageTitle } from '../ui/page-title';
@@ -26,10 +38,30 @@ import { Section } from '../ui/section';
 
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
+/** The shared rules for one field, run on the whole form since some compare fields. */
+function scoreRule(field: keyof ScoreInput): ValidatorFn {
+  return messageFrom((control: AbstractControl) => {
+    const form = control.parent;
+    if (!(form instanceof FormGroup)) return undefined;
+    const draft: ScoreDraft = form.getRawValue();
+    return scoreFieldErrors(draft)[field];
+  });
+}
+
 @Component({
   selector: 'app-submit-score-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, PageTitle, Section, FeedbackMessage, CheckboxField, TargetCanvas],
+  imports: [
+    ReactiveFormsModule,
+    PageTitle,
+    Section,
+    FeedbackMessage,
+    CheckboxField,
+    TargetCanvas,
+    FormField,
+    FieldControl,
+    FormButton,
+  ],
   templateUrl: './submit-score-page.html',
 })
 export class SubmitScorePage {
@@ -55,48 +87,60 @@ export class SubmitScorePage {
     bowType: this.forms.control<BowTypeId>('r'),
     targetSize: this.forms.control<TargetSize>(TARGET_SIZES[0]),
     isSpot: false,
-    shotOn: this.today,
+    shotOn: [this.today, [required(), scoreRule('shotOn')]],
     // null while the field is empty
-    distance: this.forms.control<number | null>(null),
-    tens: this.forms.control<number | null>(null),
-    nines: this.forms.control<number | null>(null),
-    arrows: this.forms.control<number | null>(null),
-    result: this.forms.control<number | null>(null),
+    distance: this.numberControl('distance'),
+    tens: this.numberControl('tens'),
+    nines: this.numberControl('nines'),
+    arrows: this.numberControl('arrows'),
+    result: this.numberControl('result'),
   });
 
   protected readonly pending = signal(false);
   protected readonly feedback = signal<Feedback | null>(null);
 
+  constructor() {
+    // A change can make another field (in)valid, e.g. more arrows allow a higher result.
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      for (const control of Object.values(this.form.controls)) {
+        control.updateValueAndValidity({ onlySelf: true });
+      }
+      this.form.updateValueAndValidity({ emitEvent: false });
+    });
+  }
+
   protected async submit(): Promise<void> {
     const value = this.form.getRawValue();
     const { distance, tens, nines, arrows, result } = value;
     if (
+      !checkForm(this.form) ||
       distance === null ||
       tens === null ||
       nines === null ||
       arrows === null ||
       result === null
     ) {
-      this.feedback.set(failure('Bitte fülle alle Felder aus.'));
+      this.feedback.set(INVALID_FORM);
       return;
     }
     const score: ScoreInput = { ...value, distance, tens, nines, arrows, result };
-    const errors = scoreErrors(score);
-    if (errors.length > 0) {
-      this.feedback.set(failure(errors.join(' ')));
-      return;
-    }
 
     this.pending.set(true);
     try {
       await this.api.create(score);
       this.feedback.set(success('Score erfolgreich eingetragen.'));
       // Bow, target, date and distance usually stay the same for the next round.
-      this.form.patchValue({ tens: null, nines: null, arrows: null, result: null });
+      for (const field of ['tens', 'nines', 'arrows', 'result'] as const) {
+        this.form.controls[field].reset(null);
+      }
     } catch (error: unknown) {
       this.feedback.set(failure(errorMessage(error)));
     } finally {
       this.pending.set(false);
     }
+  }
+
+  private numberControl(field: NumberField): FormControl<number | null> {
+    return this.forms.control<number | null>(null, [required(), scoreRule(field)]);
   }
 }

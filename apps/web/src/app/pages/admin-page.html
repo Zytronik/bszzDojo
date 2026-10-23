@@ -2,9 +2,7 @@
 
 <app-section>
   <h2>App Aktualisieren</h2>
-  <button type="button" [class]="styles.button" (click)="updateDialogOpen.set(true)">
-    App aktualisieren
-  </button>
+  <button type="button" appButton (click)="updateDialogOpen.set(true)">App aktualisieren</button>
   <app-confirm-dialog
     [open]="updateDialogOpen()"
     message="Möchtest du die App aktualisieren?"
@@ -59,19 +57,15 @@
     (confirmed)="approve()"
     (cancelled)="requestToApprove.set(null)"
   >
-    <div [class]="styles.field.root">
-      <label for="approve-year" [class]="styles.field.label">Jahr:</label>
+    <app-form-field label="Jahr:">
       <input
-        #approveYearInput
-        id="approve-year"
+        appFieldControl
         type="number"
-        [class]="styles.input"
+        [formControl]="approveYear"
         [min]="earliestYear"
         [max]="currentYear"
-        [value]="approveYear()"
-        (input)="approveYear.set(approveYearInput.valueAsNumber)"
       />
-    </div>
+    </app-form-field>
   </app-confirm-dialog>
   <app-confirm-dialog
     [open]="requestToReject() !== null"
@@ -88,87 +82,82 @@
   <app-tabs [tabs]="editTabs" [(selected)]="editTab">
     <app-feedback-message [feedback]="editFeedback()" />
     @if (editTab() === 'rank') {
-    <form [formGroup]="rankForm" (ngSubmit)="$event.preventDefault()">
-      <div [class]="styles.field.root">
-        <label for="rank-name" [class]="styles.field.label">Abzeichen Name:</label>
-        <select id="rank-name" [class]="styles.input" formControlName="rank">
+    <form [formGroup]="rankForm" (ngSubmit)="giveRank()" novalidate>
+      <app-form-field label="Abzeichen Name:">
+        <select appFieldControl formControlName="rank">
           @for (rank of ranks; track rank.id) {
           <option [ngValue]="rank.id">{{ rank.name }}</option>
           }
         </select>
-      </div>
-      <div [class]="styles.field.root">
-        <label for="rank-username" [class]="styles.field.label">Benutzername:</label>
+      </app-form-field>
+      <app-form-field label="Benutzername:">
         <input
-          id="rank-username"
-          [class]="styles.input"
+          appFieldControl
           formControlName="username"
           autocomplete="off"
+          autocapitalize="none"
         />
-      </div>
-      <button type="button" [class]="styles.button" [disabled]="editPending()" (click)="giveRank()">
+      </app-form-field>
+      <button
+        type="submit"
+        appButton
+        [pending]="editPending() === 'give'"
+        [disabled]="editPending() !== null"
+      >
         Geben
       </button>
       <button
         type="button"
-        [class]="styles.button"
-        [disabled]="editPending()"
+        appButton
+        [pending]="editPending() === 'remove'"
+        [disabled]="editPending() !== null"
         (click)="removeRank()"
       >
         Entfernen
       </button>
     </form>
     } @else {
-    <form [formGroup]="badgeForm" (ngSubmit)="$event.preventDefault()">
-      <div [class]="styles.field.root">
-        <label for="badge-name" [class]="styles.field.label">Auszeichnungs Name:</label>
+    <form [formGroup]="badgeForm" (ngSubmit)="giveBadge()" novalidate>
+      <app-form-field label="Auszeichnungs Name:">
+        <input appFieldControl formControlName="name" [maxLength]="badgeNameMaxLength" />
+      </app-form-field>
+      <app-form-field label="Benutzername:">
         <input
-          id="badge-name"
-          [class]="styles.input"
-          formControlName="name"
-          [maxLength]="badgeNameMaxLength"
-        />
-      </div>
-      <div [class]="styles.field.root">
-        <label for="badge-username" [class]="styles.field.label">Benutzername:</label>
-        <input
-          id="badge-username"
-          [class]="styles.input"
+          appFieldControl
           formControlName="username"
           autocomplete="off"
+          autocapitalize="none"
         />
-      </div>
-      <div [class]="styles.field.root">
-        <label for="badge-year" [class]="styles.field.label">Jahr:</label>
+      </app-form-field>
+      <app-form-field label="Jahr:">
         <input
-          id="badge-year"
+          appFieldControl
           type="number"
-          [class]="styles.input"
           formControlName="year"
           [min]="earliestYear"
           [max]="currentYear"
         />
-      </div>
-      <div [class]="styles.field.root">
-        <label for="badge-place" [class]="styles.field.label">Platzierung:</label>
-        <select id="badge-place" [class]="styles.input" formControlName="place">
+      </app-form-field>
+      <app-form-field label="Platzierung:">
+        <select appFieldControl formControlName="place">
           @for (place of places; track place.value) {
           <option [ngValue]="place.value">{{ place.label }}</option>
           }
         </select>
-      </div>
+      </app-form-field>
       <button
-        type="button"
-        [class]="styles.button"
-        [disabled]="editPending()"
-        (click)="giveBadge()"
+        type="submit"
+        appButton
+        [pending]="editPending() === 'give'"
+        [disabled]="editPending() !== null"
       >
         Geben
       </button>
       <button
         type="button"
-        [class]="styles.button"
-        [disabled]="editPending()"
+        appButton
+        [pending]="editPending() === 'remove'"
+        [disabled]="editPending() !== null"
         (click)="removeBadge()"
       >
         Entfernen

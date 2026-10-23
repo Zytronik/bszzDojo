@@ -158,8 +158,18 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   banner) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
 - **Networking:** HTTP goes through a `*-api.service.ts` using `HttpClient` with `apiUrl()`
   (relative `/api/...`), typed with the shared types, returning Promises (`firstValueFrom`).
-- **Forms:** reactive forms (`NonNullableFormBuilder`). Validate with the shared rules before
-  sending and show the result with `<app-feedback-message>`, the old app's message line.
+- **Forms** (`app/forms/`): reactive forms (`NonNullableFormBuilder`) with `novalidate`.
+  - Every input or select sits in `<app-form-field label="…">` and carries `appFieldControl`:
+    that links the label, styles it and shows the control's error below it (otherwise the
+    `hint`) once the field was touched.
+  - Validators come from `forms/validators.ts` (`required`, `rule`, `messageFrom`) and answer
+    with the German message to show; wrap the shared rules (`isValidUsername`,
+    `scoreFieldErrors`, …) instead of writing new ones. Rules that compare fields re-validate
+    their siblings on changes.
+  - On submit, `checkForm(form)` marks everything touched; if it's invalid, show `INVALID_FORM`
+    in the form's `<app-feedback-message>`, which also shows the API's answer (success or error).
+  - Buttons are `<button appButton [pending]="…">`: disabled with a spinner while their request
+    runs (also the confirm button of `<app-confirm-dialog>`).
 - **Icons:** Font Awesome solid icons as inline SVG through `<app-icon>`; re-export new ones from
   `ui/icons.ts`. Interactive icons need an accessible name (`label` or the button's `aria-label`).
 - **Assets** in `public/` (logo, rank icons, favicons, iOS splash screens, the Avenir font) are
