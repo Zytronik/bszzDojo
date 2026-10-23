@@ -41,6 +41,13 @@ export const TOURNAMENT_TYPE_LABELS: Record<TournamentType, string> = {
   team: 'Team',
 };
 
+/** The tournament types a kind offers: a national tournament has no team discipline. */
+export const BADGE_KIND_TOURNAMENT_TYPES: Record<BadgeKind, readonly TournamentType[]> = {
+  sm: TOURNAMENT_TYPES,
+  club: [],
+  tournament: TOURNAMENT_TYPES.filter((type) => type !== 'team'),
+};
+
 export const AGE_CATEGORIES = ['U11', 'U13', 'U15', 'U18', 'U21', 'U50', '50+'] as const;
 export type AgeCategory = (typeof AGE_CATEGORIES)[number];
 
@@ -165,7 +172,13 @@ export function badgeFieldErrors(
   }
   if (!isBowTypeId(badge.bowType)) errors.bowType = 'Bitte wähle eine Bogenkategorie.';
   if (!isAgeCategory(badge.ageCategory)) errors.ageCategory = 'Bitte wähle eine Alterskategorie.';
-  if (fields.tournamentType && !isTournamentType(badge.tournamentType)) {
+  if (
+    fields.tournamentType &&
+    !(
+      isTournamentType(badge.tournamentType) &&
+      BADGE_KIND_TOURNAMENT_TYPES[badge.kind].includes(badge.tournamentType)
+    )
+  ) {
     errors.tournamentType = 'Bitte wähle die Turnierart.';
   }
   if (

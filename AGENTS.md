@@ -90,7 +90,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   The kind decides the rest (`BADGE_KIND_FIELDS`):
   - **SM**: tournament type (`TOURNAMENT_TYPES`: FITA, Indoor, 3D, Field, Team), location and a
     team flag, which isn't asked for when the type is "Team".
-  - **Nationales Turnier** (`tournament`): like SM plus the event name, without the team flag.
+  - **Nationales Turnier** (`tournament`): like SM plus the event name, without the team flag
+    and without the "Team" type (`BADGE_KIND_TOURNAMENT_TYPES`).
   - **Clubturnier**: event name and distance.
 
   `normalizeBadgeInput` clears what the kind doesn't use and `badgeFieldErrors` validates in the

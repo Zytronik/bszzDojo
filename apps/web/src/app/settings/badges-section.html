@@ -38,11 +38,17 @@
     } @if (fields().tournamentType) {
     <app-form-field label="Turnierart:">
       <select appFieldControl formControlName="tournamentType">
-        @for (type of tournamentTypes; track type.id) {
+        @for (type of tournamentTypes(); track type.id) {
         <option [ngValue]="type.id">{{ type.label }}</option>
         }
       </select>
     </app-form-field>
+    } @if (askTeam()) {
+    <app-checkbox-field
+      label="Team:"
+      [checked]="form.controls.team.value"
+      (checkedChange)="form.controls.team.setValue($event)"
+    />
     } @if (fields().location) {
     <app-form-field label="Ort:">
       <input
@@ -71,12 +77,6 @@
         formControlName="distance"
       />
     </app-form-field>
-    } @if (askTeam()) {
-    <app-checkbox-field
-      label="Team:"
-      [checked]="form.controls.team.value"
-      (checkedChange)="form.controls.team.setValue($event)"
-    />
     }
     <app-form-field label="Alterskategorie:">
       <select appFieldControl formControlName="ageCategory">
