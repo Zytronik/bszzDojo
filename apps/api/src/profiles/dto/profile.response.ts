@@ -51,6 +51,12 @@ export class DistanceProgressResponse implements DistanceProgress {
 export class ProfileResponse implements Profile {
   username: string;
 
+  /**
+   * Shown instead of the username when set.
+   * @example 'Robin Hood'
+   */
+  displayName: string | null;
+
   /** Club badge ("Abzeichen") */
   @ApiProperty({ enum: RANK_IDS, nullable: true })
   rank: RankId | null;

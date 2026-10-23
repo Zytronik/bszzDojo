@@ -3,18 +3,19 @@ import { RouterLink } from '@angular/router';
 import type { MedalStanding } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { medal, record } from 'styled-system/recipes';
+import { ShownNamePipe } from '../ui/shown-name.pipe';
 
 @Component({
   selector: 'app-medal-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, ShownNamePipe],
   template: `
     @for (standing of standings(); track standing.username) {
       <div [class]="styles.root">
         <p [class]="styles.rank">#{{ standing.rank }}</p>
         <div [class]="rowStyles">
           <a [routerLink]="['/profile', standing.username]" [class]="styles.title">
-            {{ standing.username }}
+            {{ standing | shownName }}
           </a>
           <div [class]="medalsStyles">
             <p [class]="medalStyles.gold" [attr.aria-label]="standing.gold + ' Gold'">

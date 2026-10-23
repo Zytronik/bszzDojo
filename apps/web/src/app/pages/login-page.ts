@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   ACCOUNT_FIELD_ERRORS,
-  EMAIL_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
-  isValidEmail,
+  isValidDisplayName,
   isValidPassword,
   isValidUsername,
 } from '@bszz-dojo/shared';
@@ -29,7 +29,7 @@ function safeReturnUrl(url: string | undefined): string {
 @Component({
   selector: 'app-login-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, PageTitle, Section, Tabs, FeedbackMessage],
+  imports: [ReactiveFormsModule, PageTitle, Section, Tabs, FeedbackMessage],
   templateUrl: './login-page.html',
 })
 export class LoginPage {
@@ -43,7 +43,7 @@ export class LoginPage {
   protected readonly styles = formStyles;
   protected readonly limits = {
     USERNAME_MAX_LENGTH,
-    EMAIL_MAX_LENGTH,
+    DISPLAY_NAME_MAX_LENGTH,
     PASSWORD_MAX_LENGTH,
     PASSWORD_MIN_LENGTH,
   };
@@ -60,7 +60,7 @@ export class LoginPage {
   });
   protected readonly register = this.forms.group({
     username: ['', Validators.required],
-    email: ['', Validators.required],
+    displayName: '',
     password: ['', Validators.required],
   });
 
@@ -85,17 +85,17 @@ export class LoginPage {
   }
 
   protected async submitRegister(): Promise<void> {
-    const { username, email, password } = this.register.getRawValue();
+    const { username, displayName, password } = this.register.getRawValue();
     const error = !isValidUsername(username)
       ? ACCOUNT_FIELD_ERRORS.username
-      : !isValidEmail(email)
-        ? ACCOUNT_FIELD_ERRORS.email
+      : !isValidDisplayName(displayName)
+        ? ACCOUNT_FIELD_ERRORS.displayName
         : !isValidPassword(password)
           ? ACCOUNT_FIELD_ERRORS.password
           : null;
     this.localError.set(error);
     if (error) return;
-    if (await this.auth.register({ username, email, password })) await this.done();
+    if (await this.auth.register({ username, displayName, password })) await this.done();
   }
 
   private async done(): Promise<void> {

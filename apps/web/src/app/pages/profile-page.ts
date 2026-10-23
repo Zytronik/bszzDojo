@@ -14,6 +14,7 @@ import {
   type PersonalBests,
   type RankedScore,
 } from '@bszz-dojo/shared';
+import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
@@ -32,7 +33,16 @@ import { Tabs, type TabItem } from '../ui/tabs';
 @Component({
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Section, Tabs, RankBadge, ScoreRow, ProgressChart, ConfirmDialog, FeedbackMessage],
+  imports: [
+    Section,
+    Tabs,
+    RankBadge,
+    ScoreRow,
+    ProgressChart,
+    ConfirmDialog,
+    FeedbackMessage,
+    ShownNamePipe,
+  ],
   templateUrl: './profile-page.html',
 })
 export class ProfilePage {

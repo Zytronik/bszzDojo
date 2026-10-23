@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   USER_SEARCH_LIMIT,
-  normalizeEmail,
+  normalizeDisplayName,
   normalizeUsername,
   usernameKey,
   type UpdateProfileRequest,
@@ -31,23 +31,22 @@ export class UsersService {
 
   async updateProfile(userId: string, changes: UpdateProfileRequest): Promise<UserProfile> {
     const user = await this.findById(userId);
-    const email = changes.email === undefined ? undefined : normalizeEmail(changes.email);
-    const emailChanged = email !== undefined && email !== user.email;
     const passwordChanged = changes.password !== undefined;
 
-    // A session someone else got hold of must not be enough to take over the account.
-    if (emailChanged || passwordChanged) {
-      const current = changes.currentPassword ?? '';
-      if (!(await passwordMatches(current, user.passwordHash))) {
-        throw new BadRequestException('Das aktuelle Passwort ist falsch.');
-      }
+    // A session someone else got hold of must not be enough to lock the owner out.
+    if (
+      passwordChanged &&
+      !(await passwordMatches(changes.currentPassword ?? '', user.passwordHash))
+    ) {
+      throw new BadRequestException('Das aktuelle Passwort ist falsch.');
     }
 
     if (changes.username !== undefined) {
       user.username = normalizeUsername(changes.username);
       user.usernameKey = usernameKey(changes.username);
     }
-    if (email !== undefined) user.email = email;
+    if (changes.displayName !== undefined)
+      user.displayName = normalizeDisplayName(changes.displayName);
     if (changes.password !== undefined) user.passwordHash = await hashPassword(changes.password);
 
     try {
@@ -65,14 +64,16 @@ export class UsersService {
     return settings;
   }
 
+  /** Matches the username or the display name, ignoring case. */
   async search(query: string): Promise<UserSearchResult[]> {
+    const pattern = `%${escapeLike(query.trim())}%`;
     const users = await this.users.find({
-      select: { username: true },
-      where: { usernameKey: ILike(`%${escapeLike(usernameKey(query))}%`) },
+      select: { username: true, displayName: true },
+      where: [{ usernameKey: ILike(pattern) }, { displayName: ILike(pattern) }],
       order: { usernameKey: 'ASC' },
       take: USER_SEARCH_LIMIT,
     });
-    return users.map(({ username }) => ({ username }));
+    return users.map(({ username, displayName }) => ({ username, displayName }));
   }
 
   private async findById(userId: string): Promise<UserEntity> {

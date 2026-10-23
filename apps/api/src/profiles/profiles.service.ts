@@ -40,6 +40,7 @@ export class ProfilesService {
 
     return {
       username: user.username,
+      displayName: user.displayName,
       rank: user.rank,
       stats: profileStats(rounds),
       badges: badges.map(toBadge),

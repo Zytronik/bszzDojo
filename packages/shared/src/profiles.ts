@@ -1,3 +1,4 @@
+import type { UserName } from './auth';
 import type { Badge } from './badges';
 import type { BowTypeId } from './bow-types';
 import type { IsoDate } from './dates';
@@ -35,8 +36,7 @@ export interface DistanceProgress {
 }
 
 /** Response of `GET /api/profiles/:username`, visible to every logged-in user. */
-export interface Profile {
-  username: string;
+export interface Profile extends UserName {
   rank: RankId | null;
   stats: ProfileStats;
   badges: Badge[];

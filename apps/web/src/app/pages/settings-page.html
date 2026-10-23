@@ -41,19 +41,23 @@
         [class]="styles.input"
         formControlName="username"
         autocomplete="username"
+        autocapitalize="none"
         [maxLength]="limits.USERNAME_MAX_LENGTH"
       />
+      <span [class]="styles.field.hint">Zum Einloggen. Ohne Leerzeichen.</span>
     </div>
     <div [class]="styles.field.root">
-      <label for="profile-email" [class]="styles.field.label">E-Mail:</label>
+      <label for="profile-display-name" [class]="styles.field.label">Anzeigename (optional):</label>
       <input
-        id="profile-email"
-        type="email"
+        id="profile-display-name"
         [class]="styles.input"
-        formControlName="email"
-        autocomplete="email"
-        [maxLength]="limits.EMAIL_MAX_LENGTH"
+        formControlName="displayName"
+        autocomplete="name"
+        [maxLength]="limits.DISPLAY_NAME_MAX_LENGTH"
       />
+      <span [class]="styles.field.hint"
+        >Wird statt des Benutzernamens angezeigt. Leer für keinen.</span
+      >
     </div>
     <div [class]="styles.field.root">
       <label for="profile-new-password" [class]="styles.field.label">Neues Passwort:</label>
@@ -78,7 +82,7 @@
         autocomplete="current-password"
         [maxLength]="limits.PASSWORD_MAX_LENGTH"
       />
-      <span [class]="styles.field.hint">Nötig, um E-Mail oder Passwort zu ändern.</span>
+      <span [class]="styles.field.hint">Nötig, um das Passwort zu ändern.</span>
     </div>
     }
     <button type="submit" [class]="styles.button" [disabled]="profilePending()">Speichern</button>

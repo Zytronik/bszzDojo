@@ -31,6 +31,7 @@ export class AdminService {
     return users.map((user) => ({
       id: user.id,
       username: user.username,
+      displayName: user.displayName,
       createdAt: user.createdAt.toISOString(),
     }));
   }

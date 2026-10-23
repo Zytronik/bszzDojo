@@ -5,7 +5,7 @@
 } @else if (profile.hasValue()) { @let p = profile.value();
 
 <app-section>
-  <h1>{{ p.username }}</h1>
+  <h1>{{ p | shownName }}</h1>
   <div [class]="pageStyles.rankRow">
     <p>Abzeichen:</p>
     @if (p.rank) {

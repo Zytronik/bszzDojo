@@ -2,6 +2,7 @@ import {
   BADGE_PLACE_POINTS,
   LEADERBOARD_SIZE,
   adjustedResult,
+  shownName,
   type BadgePlace,
   type BowTypeId,
   type IsoDate,
@@ -13,6 +14,7 @@ import {
 export interface LeaderboardRound {
   userId: string;
   username: string;
+  displayName: string | null;
   bowType: BowTypeId;
   targetSize: TargetSize;
   isSpot: boolean;
@@ -56,6 +58,7 @@ export function buildLeaderboard(rounds: readonly LeaderboardRound[]): Leaderboa
     .map((round, index) => ({
       rank: index + 1,
       username: round.username,
+      displayName: round.displayName,
       adjustedResult: round.adjusted,
       result: round.result,
       tens: round.tens,
@@ -70,15 +73,17 @@ export function buildLeaderboard(rounds: readonly LeaderboardRound[]): Leaderboa
 export interface BadgeHolder {
   userId: string;
   username: string;
+  displayName: string | null;
   place: BadgePlace;
 }
 
 /** Gold 3, silver 2, bronze 1 point; ties by more golds, then silvers, then name. */
 export function buildMedalStandings(badges: readonly BadgeHolder[]): MedalStanding[] {
   const standings = new Map<string, Omit<MedalStanding, 'rank'>>();
-  for (const { userId, username, place } of badges) {
+  for (const { userId, username, displayName, place } of badges) {
     const standing = standings.get(userId) ?? {
       username,
+      displayName,
       gold: 0,
       silver: 0,
       bronze: 0,
@@ -96,7 +101,7 @@ export function buildMedalStandings(badges: readonly BadgeHolder[]): MedalStandi
         b.points - a.points ||
         b.gold - a.gold ||
         b.silver - a.silver ||
-        a.username.localeCompare(b.username, 'de-CH'),
+        shownName(a).localeCompare(shownName(b), 'de-CH'),
     )
     .slice(0, LEADERBOARD_SIZE)
     .map((standing, index) => ({ rank: index + 1, ...standing }));

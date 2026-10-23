@@ -37,6 +37,7 @@ export class RankingsService {
     const rounds = scores.map((score): LeaderboardRound & { distance: number } => ({
       ...score,
       username: score.user.username,
+      displayName: score.user.displayName,
     }));
 
     const boards = (inMonth: boolean): DistanceLeaderboard[] =>
@@ -56,6 +57,7 @@ export class RankingsService {
       badges.map((badge) => ({
         userId: badge.userId,
         username: badge.user.username,
+        displayName: badge.user.displayName,
         place: badge.place,
       })),
     );

@@ -1,4 +1,4 @@
-import { isValidEmail, isValidUsername } from '@bszz-dojo/shared';
+import { isValidDisplayName, isValidUsername } from '@bszz-dojo/shared';
 import { ValidateBy, type ValidationOptions } from 'class-validator';
 
 /** The shared username rules, so the API and the forms can't drift apart. */
@@ -14,12 +14,14 @@ export function IsUsername(options?: ValidationOptions): PropertyDecorator {
   );
 }
 
-export function IsEmailAddress(options?: ValidationOptions): PropertyDecorator {
+/** A display name, or `null` / empty for none. */
+export function IsDisplayName(options?: ValidationOptions): PropertyDecorator {
   return ValidateBy(
     {
-      name: 'isEmailAddress',
+      name: 'isDisplayName',
       validator: {
-        validate: (value: unknown): boolean => typeof value === 'string' && isValidEmail(value),
+        validate: (value: unknown): boolean =>
+          value === null || (typeof value === 'string' && isValidDisplayName(value)),
       },
     },
     options,

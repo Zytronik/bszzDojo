@@ -1,6 +1,5 @@
 import { join } from 'node:path';
 import type { DataSourceOptions } from 'typeorm';
-import { PasswordResetEntity } from '../auth/password-reset.entity';
 import { RefreshTokenEntity } from '../auth/refresh-token.entity';
 import { BadgeRequestEntity } from '../badges/badge-request.entity';
 import { BadgeEntity } from '../badges/badge.entity';
@@ -10,7 +9,6 @@ import { UserEntity } from '../users/user.entity';
 export const ENTITIES = [
   UserEntity,
   RefreshTokenEntity,
-  PasswordResetEntity,
   ScoreEntity,
   BadgeEntity,
   BadgeRequestEntity,

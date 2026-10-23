@@ -24,7 +24,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 
-  /** Usernames containing the query, for the search in the header. */
+  /** Users whose username or display name contains the query, for the search in the header. */
   @Get('search')
   search(@Query() query: UserSearchQueryParams): Promise<UserSearchResultResponse[]> {
     return this.users.search(query.q);
@@ -35,10 +35,10 @@ export class UsersController {
     return this.users.getProfile(user.id);
   }
 
-  /** Changes username, email and/or password; email and password need the current password. */
+  /** Changes username, display name and/or password; a new password needs the current one. */
   @Patch('me')
   @ApiBadRequestResponse({ description: 'Invalid value or wrong current password' })
-  @ApiConflictResponse({ description: 'Username or email already used' })
+  @ApiConflictResponse({ description: 'Username already taken' })
   updateMe(
     @CurrentUser() user: AuthUser,
     @Body() body: UpdateProfileBody,
