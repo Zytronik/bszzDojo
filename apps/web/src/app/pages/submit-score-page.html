@@ -6,54 +6,48 @@
 <app-section>
   <app-feedback-message [feedback]="feedback()" />
   <h2>Erfasse einen neuen Score</h2>
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <div [class]="styles.field.root">
-      <label for="score-bow-type" [class]="styles.field.label">Bogenart:</label>
-      <select id="score-bow-type" [class]="styles.input" formControlName="bowType">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-form-field label="Bogenart:">
+      <select appFieldControl formControlName="bowType">
         @for (bowType of bowTypes; track bowType.id) {
         <option [ngValue]="bowType.id">{{ bowType.name }}</option>
         }
       </select>
-    </div>
-    <div [class]="styles.field.root">
-      <label for="score-target-size" [class]="styles.field.label">Scheibengrösse:</label>
-      <select id="score-target-size" [class]="styles.input" formControlName="targetSize">
+    </app-form-field>
+    <app-form-field label="Scheibengrösse:">
+      <select appFieldControl formControlName="targetSize">
         @for (size of targetSizes; track size) {
         <option [ngValue]="size">{{ size }}cm</option>
         }
       </select>
-    </div>
+    </app-form-field>
     <app-checkbox-field
       label="Spot:"
       [checked]="form.controls.isSpot.value"
       (checkedChange)="form.controls.isSpot.setValue($event)"
     />
-    <div [class]="styles.field.root">
-      <label for="score-date" [class]="styles.field.label">Datum:</label>
+    <app-form-field label="Datum:">
       <input
-        id="score-date"
+        appFieldControl
         type="date"
-        [class]="styles.input"
         formControlName="shotOn"
         [max]="today"
         [min]="earliestDate"
       />
-    </div>
+    </app-form-field>
     @for (field of numberFields; track field.name) {
-    <div [class]="styles.field.root">
-      <label [for]="'score-' + field.name" [class]="styles.field.label">{{ field.label }}</label>
+    <app-form-field [label]="field.label">
       <input
-        [id]="'score-' + field.name"
+        appFieldControl
         type="number"
         inputmode="numeric"
         min="0"
         [max]="field.max"
-        [class]="styles.input"
         [formControlName]="field.name"
       />
-    </div>
+    </app-form-field>
     }
-    <button type="submit" [class]="styles.button" [disabled]="pending()">Speichern</button>
+    <button type="submit" appButton [pending]="pending()">Speichern</button>
   </form>
 </app-section>
 

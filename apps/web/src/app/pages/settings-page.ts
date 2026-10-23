@@ -7,7 +7,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -33,6 +33,9 @@ import { failure, success, type Feedback } from '../core/feedback';
 import { UsersApiService } from '../core/users-api.service';
 import { SettingsStore } from '../settings/settings.store';
 import { CheckboxField } from '../ui/checkbox-field';
+import { FormButton } from '../forms/form-button';
+import { FieldControl, FormField } from '../forms/form-field';
+import { INVALID_FORM, checkForm, messageFrom, required, rule } from '../forms/validators';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { formStyles } from '../ui/form-styles';
 import { PageTitle } from '../ui/page-title';
@@ -41,7 +44,16 @@ import { Section } from '../ui/section';
 @Component({
   selector: 'app-settings-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, PageTitle, Section, FeedbackMessage, CheckboxField],
+  imports: [
+    ReactiveFormsModule,
+    PageTitle,
+    Section,
+    FeedbackMessage,
+    CheckboxField,
+    FormField,
+    FieldControl,
+    FormButton,
+  ],
   templateUrl: './settings-page.html',
 })
 export class SettingsPage {
@@ -62,20 +74,35 @@ export class SettingsPage {
   protected readonly themeError = failure('Das Theme konnte nicht gespeichert werden.');
 
   protected readonly badgeForm = this.forms.group({
-    name: '',
+    name: ['', required('Bitte gib einen Namen ein.')],
     place: this.forms.control<BadgePlace>(1),
   });
   protected readonly badgePending = signal(false);
   protected readonly badgeFeedback = signal<Feedback | null>(null);
 
   protected readonly profileForm = this.forms.group({
-    username: '',
-    displayName: '',
-    password: '',
-    currentPassword: '',
+    username: ['', [required(), rule(isValidUsername, ACCOUNT_FIELD_ERRORS.username)]],
+    displayName: ['', rule(isValidDisplayName, ACCOUNT_FIELD_ERRORS.displayName)],
+    password: [
+      '',
+      rule(
+        (value: string) => value.length === 0 || isValidPassword(value),
+        ACCOUNT_FIELD_ERRORS.password,
+      ),
+    ],
+    // Only needed with a new password, so it depends on its sibling.
+    currentPassword: [
+      '',
+      messageFrom((control) => {
+        const newPassword: unknown = control.parent?.get('password')?.value;
+        const current: unknown = control.value;
+        return newPassword && !current ? 'Bitte gib dein aktuelles Passwort ein.' : undefined;
+      }),
+    ],
   });
   protected readonly profilePending = signal(false);
   protected readonly profileFeedback = signal<Feedback | null>(null);
+  protected readonly loggingOut = signal(false);
   private readonly profileValue = toSignal(this.profileForm.valueChanges, {
     initialValue: this.profileForm.getRawValue(),
   });
@@ -86,6 +113,9 @@ export class SettingsPage {
   );
 
   constructor() {
+    this.profileForm.controls.password.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.profileForm.controls.currentPassword.updateValueAndValidity());
     // Filled with the account's values, again after a save changed them.
     effect(() => {
       const user = this.auth.user();
@@ -102,11 +132,11 @@ export class SettingsPage {
   }
 
   protected async requestBadge(): Promise<void> {
-    const { name, place } = this.badgeForm.getRawValue();
-    if (name.trim().length === 0) {
-      this.badgeFeedback.set(failure('Bitte gib einen Namen ein.'));
+    if (!checkForm(this.badgeForm)) {
+      this.badgeFeedback.set(INVALID_FORM);
       return;
     }
+    const { name, place } = this.badgeForm.getRawValue();
     this.badgePending.set(true);
     try {
       const response = await this.badges.request({ name: name.trim(), place });
@@ -122,6 +152,10 @@ export class SettingsPage {
   protected async saveProfile(): Promise<void> {
     const user = this.auth.user();
     if (!user) return;
+    if (!checkForm(this.profileForm)) {
+      this.profileFeedback.set(INVALID_FORM);
+      return;
+    }
     const { username, displayName, password, currentPassword } = this.profileForm.getRawValue();
 
     // Only what changed is sent, like the old form, which skipped empty fields.
@@ -131,25 +165,11 @@ export class SettingsPage {
     if (newDisplayName !== user.displayName) changes.displayName = newDisplayName;
     if (password.length > 0) changes.password = password;
 
-    const error =
-      changes.username !== undefined && !isValidUsername(changes.username)
-        ? ACCOUNT_FIELD_ERRORS.username
-        : !isValidDisplayName(displayName)
-          ? ACCOUNT_FIELD_ERRORS.displayName
-          : changes.password !== undefined && !isValidPassword(changes.password)
-            ? ACCOUNT_FIELD_ERRORS.password
-            : this.needsCurrentPassword() && currentPassword.length === 0
-              ? 'Bitte gib dein aktuelles Passwort ein.'
-              : null;
-    if (error) {
-      this.profileFeedback.set(failure(error));
-      return;
-    }
     if (Object.keys(changes).length === 0) {
       this.profileFeedback.set(success('Profil erfolgreich aktualisiert.'));
       return;
     }
-    if (this.needsCurrentPassword()) changes.currentPassword = currentPassword;
+    if (changes.password !== undefined) changes.currentPassword = currentPassword;
 
     this.profilePending.set(true);
     try {
@@ -168,7 +188,12 @@ export class SettingsPage {
   }
 
   protected async logout(): Promise<void> {
-    await this.auth.logout();
-    await this.router.navigate(['/login']);
+    this.loggingOut.set(true);
+    try {
+      await this.auth.logout();
+      await this.router.navigate(['/login']);
+    } finally {
+      this.loggingOut.set(false);
+    }
   }
 }

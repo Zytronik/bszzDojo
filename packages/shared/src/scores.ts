@@ -43,44 +43,67 @@ export interface RankedScore extends Score {
   rank: number;
 }
 
-/**
- * German messages for everything wrong with a score, empty if it's valid. Shared so the form shows
- * the same errors the API would answer with.
- */
-export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): string[] {
-  const errors: string[] = [];
-  const { arrows, tens, nines, result, distance } = score;
+/** A score while it's being entered: number fields are `null` while empty. */
+export type ScoreDraft = {
+  [K in keyof ScoreInput]: ScoreInput[K] | null;
+};
 
-  if (!isBowTypeId(score.bowType)) errors.push('Ungültige Bogenart.');
-  if (!isTargetSize(score.targetSize)) errors.push('Ungültige Scheibengrösse.');
-  if (!isValidIsoDate(score.shotOn)) {
-    errors.push('Ungültiges Datum.');
-  } else if (score.shotOn > today) {
-    errors.push('Das Datum darf nicht in der Zukunft liegen.');
-  } else if (score.shotOn < EARLIEST_SCORE_DATE) {
-    errors.push('Das Datum ist zu weit in der Vergangenheit.');
+/** One German message per invalid field. */
+export type ScoreFieldErrors = Partial<Record<keyof ScoreInput, string>>;
+
+/**
+ * What's wrong with a score, by field; empty if it's valid. Empty fields get no message here (the
+ * form says they're required). Shared so the form shows the same errors the API would answer with;
+ * cross-field rules go on the field that's usually entered last (more tens and nines than arrows
+ * goes on `arrows`).
+ */
+export function scoreFieldErrors(
+  score: ScoreDraft,
+  today: IsoDate = todayInClub(),
+): ScoreFieldErrors {
+  const errors: ScoreFieldErrors = {};
+  const { arrows, tens, nines, result, distance, shotOn } = score;
+
+  if (!isBowTypeId(score.bowType)) errors.bowType = 'Ungültige Bogenart.';
+  if (!isTargetSize(score.targetSize)) errors.targetSize = 'Ungültige Scheibengrösse.';
+  if (typeof shotOn !== 'string' || !isValidIsoDate(shotOn)) {
+    errors.shotOn = 'Ungültiges Datum.';
+  } else if (shotOn > today) {
+    errors.shotOn = 'Das Datum darf nicht in der Zukunft liegen.';
+  } else if (shotOn < EARLIEST_SCORE_DATE) {
+    errors.shotOn = 'Das Datum ist zu weit in der Vergangenheit.';
   }
-  if (!isInteger(distance) || distance < 1 || distance > MAX_DISTANCE) {
-    errors.push(`Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`);
+  if (distance !== null && (!isInteger(distance) || distance < 1 || distance > MAX_DISTANCE)) {
+    errors.distance = `Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`;
   }
-  if (!isInteger(arrows) || arrows < 1 || arrows > MAX_ARROWS) {
-    errors.push(`Die Anzahl Pfeile muss zwischen 1 und ${MAX_ARROWS} liegen.`);
+  if (tens !== null && (!isInteger(tens) || tens < 0)) {
+    errors.tens = 'Die Anzahl 10er darf nicht negativ sein.';
   }
-  if (!isInteger(tens) || tens < 0 || !isInteger(nines) || nines < 0) {
-    errors.push('10er und 9er dürfen nicht negativ sein.');
-  } else if (isInteger(arrows) && tens + nines > arrows) {
-    errors.push('Es gibt mehr 10er und 9er als Pfeile.');
+  if (nines !== null && (!isInteger(nines) || nines < 0)) {
+    errors.nines = 'Die Anzahl 9er darf nicht negativ sein.';
   }
-  if (!isInteger(result) || result < 0) {
-    errors.push('Das Resultat darf nicht negativ sein.');
-  } else if (isInteger(arrows) && result > arrows * POINTS_PER_ARROW) {
-    errors.push(
-      `Mit ${arrows} Pfeilen sind höchstens ${arrows * POINTS_PER_ARROW} Punkte möglich.`,
-    );
-  } else if (isInteger(tens) && isInteger(nines) && result < tens * 10 + nines * 9) {
-    errors.push('Das Resultat ist kleiner als die Punkte der 10er und 9er.');
+  if (arrows !== null) {
+    if (!isInteger(arrows) || arrows < 1 || arrows > MAX_ARROWS) {
+      errors.arrows = `Die Anzahl Pfeile muss zwischen 1 und ${MAX_ARROWS} liegen.`;
+    } else if (isInteger(tens) && isInteger(nines) && tens + nines > arrows) {
+      errors.arrows = 'Es gibt mehr 10er und 9er als Pfeile.';
+    }
+  }
+  if (result !== null) {
+    if (!isInteger(result) || result < 0) {
+      errors.result = 'Das Resultat darf nicht negativ sein.';
+    } else if (isInteger(arrows) && arrows > 0 && result > arrows * POINTS_PER_ARROW) {
+      errors.result = `Mit ${arrows} Pfeilen sind höchstens ${arrows * POINTS_PER_ARROW} Punkte möglich.`;
+    } else if (isInteger(tens) && isInteger(nines) && result < tens * 10 + nines * 9) {
+      errors.result = 'Das Resultat ist kleiner als die Punkte der 10er und 9er.';
+    }
   }
   return errors;
+}
+
+/** Every message for a complete score, empty if it's valid. */
+export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): string[] {
+  return Object.values(scoreFieldErrors(score, today));
 }
 
 /** "40cm Spot" */

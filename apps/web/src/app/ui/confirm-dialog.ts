@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { css } from 'styled-system/css';
-import { button, modal } from 'styled-system/recipes';
+import { modal } from 'styled-system/recipes';
+import { FormButton } from '../forms/form-button';
 
 let nextDialogId = 0;
 
@@ -8,6 +9,7 @@ let nextDialogId = 0;
 @Component({
   selector: 'app-confirm-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormButton],
   host: { '(document:keydown.escape)': 'open() && cancelled.emit()' },
   template: `
     @if (open()) {
@@ -29,15 +31,10 @@ let nextDialogId = 0;
           </button>
           <p [id]="textId" [class]="textStyles">{{ message() }}</p>
           <ng-content />
-          <button
-            type="button"
-            [class]="buttonStyles"
-            [disabled]="pending()"
-            (click)="confirmed.emit()"
-          >
+          <button type="button" appButton [pending]="pending()" (click)="confirmed.emit()">
             {{ confirmLabel() }}
           </button>
-          <button type="button" [class]="buttonStyles" (click)="cancelled.emit()">Abbrechen</button>
+          <button type="button" appButton (click)="cancelled.emit()">Abbrechen</button>
         </div>
       </div>
     }
@@ -52,7 +49,6 @@ export class ConfirmDialog {
   readonly cancelled = output();
 
   protected readonly styles = modal();
-  protected readonly buttonStyles = button();
   protected readonly textStyles = css({ pr: '25', mb: '10' });
   protected readonly textId = `confirm-dialog-${nextDialogId++}`;
 }

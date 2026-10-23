@@ -7,85 +7,71 @@
     Da ich keinen Zugriff auf SM/Clubturnier Titel oder Abzeichen habe, kannst du hier deine
     anfordern.
   </p>
-  <form [formGroup]="badgeForm" (ngSubmit)="requestBadge()">
-    <div [class]="styles.field.root">
-      <label for="badge-name" [class]="styles.field.label">Name:</label>
+  <form [formGroup]="badgeForm" (ngSubmit)="requestBadge()" novalidate>
+    <app-form-field label="Name:">
       <input
-        id="badge-name"
-        [class]="styles.input"
+        appFieldControl
         formControlName="name"
         placeholder="bsp: Chlausschüsse 2023"
         [maxLength]="badgeNameMaxLength"
       />
-    </div>
-    <div [class]="styles.field.root">
-      <label for="badge-place" [class]="styles.field.label">Platzierung:</label>
-      <select id="badge-place" [class]="styles.input" formControlName="place">
+    </app-form-field>
+    <app-form-field label="Platzierung:">
+      <select appFieldControl formControlName="place">
         @for (place of places; track place.value) {
         <option [ngValue]="place.value">{{ place.label }}</option>
         }
       </select>
-    </div>
-    <button type="submit" [class]="styles.button" [disabled]="badgePending()">Anfordern</button>
+    </app-form-field>
+    <button type="submit" appButton [pending]="badgePending()">Anfordern</button>
   </form>
 </app-section>
 
 <app-section>
   <app-feedback-message [feedback]="profileFeedback()" />
   <h2>Profil bearbeiten</h2>
-  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-    <div [class]="styles.field.root">
-      <label for="profile-username" [class]="styles.field.label">Benutzername:</label>
+  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+    <app-form-field label="Benutzername:" hint="Zum Einloggen. Ohne Leerzeichen.">
       <input
-        id="profile-username"
-        [class]="styles.input"
+        appFieldControl
         formControlName="username"
         autocomplete="username"
         autocapitalize="none"
         [maxLength]="limits.USERNAME_MAX_LENGTH"
       />
-      <span [class]="styles.field.hint">Zum Einloggen. Ohne Leerzeichen.</span>
-    </div>
-    <div [class]="styles.field.root">
-      <label for="profile-display-name" [class]="styles.field.label">Anzeigename (optional):</label>
+    </app-form-field>
+    <app-form-field
+      label="Anzeigename (optional):"
+      hint="Wird statt des Benutzernamens angezeigt. Leer für keinen."
+    >
       <input
-        id="profile-display-name"
-        [class]="styles.input"
+        appFieldControl
         formControlName="displayName"
         autocomplete="name"
         [maxLength]="limits.DISPLAY_NAME_MAX_LENGTH"
       />
-      <span [class]="styles.field.hint"
-        >Wird statt des Benutzernamens angezeigt. Leer für keinen.</span
-      >
-    </div>
-    <div [class]="styles.field.root">
-      <label for="profile-new-password" [class]="styles.field.label">Neues Passwort:</label>
+    </app-form-field>
+    <app-form-field label="Neues Passwort:" hint="Leer lassen, um es nicht zu ändern.">
       <input
-        id="profile-new-password"
+        appFieldControl
         type="password"
-        [class]="styles.input"
         formControlName="password"
         autocomplete="new-password"
         [maxLength]="limits.PASSWORD_MAX_LENGTH"
       />
-      <span [class]="styles.field.hint">Leer lassen, um es nicht zu ändern.</span>
-    </div>
+    </app-form-field>
     @if (needsCurrentPassword()) {
-    <div [class]="styles.field.root">
-      <label for="profile-current-password" [class]="styles.field.label">Aktuelles Passwort:</label>
+    <app-form-field label="Aktuelles Passwort:" hint="Nötig, um das Passwort zu ändern.">
       <input
-        id="profile-current-password"
+        appFieldControl
         type="password"
-        [class]="styles.input"
         formControlName="currentPassword"
         autocomplete="current-password"
         [maxLength]="limits.PASSWORD_MAX_LENGTH"
       />
-      <span [class]="styles.field.hint">Nötig, um das Passwort zu ändern.</span>
-    </div>
+    </app-form-field>
     }
-    <button type="submit" [class]="styles.button" [disabled]="profilePending()">Speichern</button>
+    <button type="submit" appButton [pending]="profilePending()">Speichern</button>
   </form>
 </app-section>
 
@@ -104,5 +90,5 @@
 <app-section>
   <h2>Ausloggen</h2>
   <p [class]="styles.lead">Möchtest du dich wirklich ausloggen?</p>
-  <button type="button" [class]="styles.button" (click)="logout()">Logout</button>
+  <button type="button" appButton [pending]="loggingOut()" (click)="logout()">Logout</button>
 </app-section>

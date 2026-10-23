@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, type AbstractControl } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   BADGE_EARLIEST_YEAR,
@@ -24,9 +24,11 @@ import { AppUpdateService } from '../core/app-update.service';
 import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
 import { formatDate } from '../core/score-labels';
+import { FormButton } from '../forms/form-button';
+import { FieldControl, FormField } from '../forms/form-field';
+import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { FeedbackMessage } from '../ui/feedback-message';
-import { formStyles } from '../ui/form-styles';
 import { Icon } from '../ui/icon';
 import { faCheck, faDeleteLeft } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
@@ -35,6 +37,19 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { Tabs, type TabItem } from '../ui/tabs';
 
 /** A year in the request's name ("Chlausschüsse 2023"), else the current one. */
+type EditAction = 'give' | 'remove';
+
+function isBadgeYear(year: number | null): boolean {
+  return (
+    year !== null &&
+    Number.isInteger(year) &&
+    year >= BADGE_EARLIEST_YEAR &&
+    year <= currentClubMonth().year
+  );
+}
+
+const YEAR_ERROR = 'Bitte gib ein gültiges Jahr ein.';
+
 function yearFromName(name: string, fallback: number): number {
   const match = /\b(19|20)\d{2}\b/.exec(name);
   return match ? Number(match[0]) : fallback;
@@ -53,6 +68,9 @@ function yearFromName(name: string, fallback: number): number {
     ConfirmDialog,
     Icon,
     ShownNamePipe,
+    FormField,
+    FieldControl,
+    FormButton,
   ],
   templateUrl: './admin-page.html',
 })
@@ -62,7 +80,6 @@ export class AdminPage {
   private readonly appUpdate = inject(AppUpdateService);
   private readonly forms = inject(NonNullableFormBuilder);
 
-  protected readonly styles = formStyles;
   protected readonly recordStyles = record();
   protected readonly mutedStyles = css({ layerStyle: 'muted' });
   protected readonly icons = { faCheck, faDeleteLeft };
@@ -84,7 +101,10 @@ export class AdminPage {
   protected readonly requests = resource({ loader: () => this.api.badgeRequests() });
   protected readonly requestToApprove = signal<BadgeRequest | null>(null);
   protected readonly requestToReject = signal<BadgeRequest | null>(null);
-  protected readonly approveYear = signal(this.currentYear);
+  protected readonly approveYear = this.forms.control<number | null>(this.currentYear, [
+    required(),
+    rule(isBadgeYear, YEAR_ERROR),
+  ]);
   protected readonly requestPending = signal(false);
   protected readonly requestsFeedback = signal<Feedback | null>(null);
 
@@ -94,16 +114,19 @@ export class AdminPage {
     { id: 'badge', label: 'Auszeichnung' },
   ];
   protected readonly editTab = signal('rank');
-  protected readonly editPending = signal(false);
+  protected readonly editPending = signal<EditAction | null>(null);
   protected readonly editFeedback = signal<Feedback | null>(null);
   protected readonly rankForm = this.forms.group({
     rank: this.forms.control<RankId>(RANK_IDS[0]),
-    username: '',
+    username: ['', required('Bitte gib einen Benutzernamen ein.')],
   });
   protected readonly badgeForm = this.forms.group({
-    name: '',
-    username: '',
-    year: this.forms.control<number | null>(this.currentYear),
+    name: ['', required('Bitte gib einen Namen ein.')],
+    username: ['', required('Bitte gib einen Benutzernamen ein.')],
+    year: this.forms.control<number | null>(this.currentYear, [
+      required(),
+      rule(isBadgeYear, YEAR_ERROR),
+    ]),
     place: this.forms.control<BadgePlace>(1),
   });
 
@@ -119,18 +142,14 @@ export class AdminPage {
   }
 
   protected openApprove(request: BadgeRequest): void {
-    this.approveYear.set(yearFromName(request.name, this.currentYear));
+    this.approveYear.reset(yearFromName(request.name, this.currentYear));
     this.requestToApprove.set(request);
   }
 
   protected async approve(): Promise<void> {
     const request = this.requestToApprove();
-    const year = this.approveYear();
-    if (!request) return;
-    if (!Number.isInteger(year) || year < BADGE_EARLIEST_YEAR || year > this.currentYear) {
-      this.requestsFeedback.set(failure('Bitte gib ein gültiges Jahr ein.'));
-      return;
-    }
+    const year = this.approveYear.value;
+    if (!request || !checkForm(this.approveYear) || year === null) return;
     await this.runRequestAction(() => this.api.approveBadgeRequest(request.id, { year }));
     this.requestToApprove.set(null);
   }
@@ -147,26 +166,28 @@ export class AdminPage {
 
   protected giveRank(): Promise<void> {
     const { rank, username } = this.rankForm.getRawValue();
-    return this.runEdit(username, () => this.api.setRank({ username: username.trim(), rank }));
+    return this.runEdit(this.rankForm, 'give', () =>
+      this.api.setRank({ username: username.trim(), rank }),
+    );
   }
 
   protected removeRank(): Promise<void> {
     const { username } = this.rankForm.getRawValue();
-    return this.runEdit(username, () => this.api.removeRank({ username: username.trim() }));
+    return this.runEdit(this.rankForm, 'remove', () =>
+      this.api.removeRank({ username: username.trim() }),
+    );
   }
 
   protected giveBadge(): Promise<void> {
     const { name, username, year, place } = this.badgeForm.getRawValue();
-    if (!this.validBadge(name, year)) return Promise.resolve();
-    return this.runEdit(username, () =>
+    return this.runEdit(this.badgeForm, 'give', () =>
       this.api.giveBadge({ username: username.trim(), name: name.trim(), year: year ?? 0, place }),
     );
   }
 
   protected removeBadge(): Promise<void> {
     const { name, username, year } = this.badgeForm.getRawValue();
-    if (!this.validBadge(name, year)) return Promise.resolve();
-    return this.runEdit(username, () =>
+    return this.runEdit(this.badgeForm, 'remove', () =>
       this.api.removeBadge({ username: username.trim(), name: name.trim(), year: year ?? 0 }),
     );
   }
@@ -188,35 +209,22 @@ export class AdminPage {
     }
   }
 
-  private validBadge(name: string, year: number | null): boolean {
-    if (name.trim().length === 0) {
-      this.editFeedback.set(failure('Bitte gib einen Namen ein.'));
-      return false;
-    }
-    if (
-      year === null ||
-      !Number.isInteger(year) ||
-      year < BADGE_EARLIEST_YEAR ||
-      year > this.currentYear
-    ) {
-      this.editFeedback.set(failure('Bitte gib ein gültiges Jahr ein.'));
-      return false;
-    }
-    return true;
-  }
-
-  private async runEdit(username: string, action: () => Promise<MessageResponse>): Promise<void> {
-    if (username.trim().length === 0) {
-      this.editFeedback.set(failure('Bitte gib einen Benutzernamen ein.'));
+  private async runEdit(
+    form: AbstractControl,
+    action: EditAction,
+    send: () => Promise<MessageResponse>,
+  ): Promise<void> {
+    if (!checkForm(form)) {
+      this.editFeedback.set(INVALID_FORM);
       return;
     }
-    this.editPending.set(true);
+    this.editPending.set(action);
     try {
-      this.editFeedback.set(success((await action()).message));
+      this.editFeedback.set(success((await send()).message));
     } catch (error: unknown) {
       this.editFeedback.set(failure(errorMessage(error)));
     } finally {
-      this.editPending.set(false);
+      this.editPending.set(null);
     }
   }
 
