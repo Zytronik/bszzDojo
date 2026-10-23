@@ -12,6 +12,7 @@ import { BOW_TYPES, formatGermanDate, type DistanceProgress } from '@bszz-dojo/s
 import {
   CategoryScale,
   Chart,
+  type ChartData,
   Legend,
   LineController,
   LineElement,
@@ -27,8 +28,10 @@ Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryS
  * One line per bow type over every day any of them was shot. The old chart labelled the x axis
  * with the first bow type's dates only, so the other lines were drawn against the wrong days.
  */
-function chartData(progress: DistanceProgress): { labels: string[]; datasets: Chart<'line'>['data']['datasets'] } {
-  const days = [...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn)))].sort();
+type ProgressChartData = ChartData<'line', (number | null)[], string>;
+
+function chartData(progress: DistanceProgress): ProgressChartData {
+  const days = [...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn)))].toSorted();
   // Several rounds on one day: one x position each, in the order they were entered.
   const slots: string[] = [];
   for (const day of days) {
@@ -72,7 +75,7 @@ export class ProgressChart {
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly settings = inject(SettingsStore);
-  private chart: Chart<'line'> | null = null;
+  private chart: Chart<'line', (number | null)[], string> | null = null;
 
   constructor() {
     afterRenderEffect(() => {
@@ -82,7 +85,7 @@ export class ProgressChart {
       const color = getComputedStyle(this.host.nativeElement).color;
 
       this.chart?.destroy();
-      this.chart = new Chart(this.canvas().nativeElement, {
+      this.chart = new Chart<'line', (number | null)[], string>(this.canvas().nativeElement, {
         type: 'line',
         data: chartData(progress),
         options: {

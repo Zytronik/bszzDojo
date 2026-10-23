@@ -29,7 +29,7 @@ export class ProfilesService {
       this.badges.find({ where: { userId: user.id }, order: { year: 'DESC', place: 'ASC' } }),
     ]);
     const rounds: ProfileRound[] = scores
-      .sort(byShotOn)
+      .toSorted(byShotOn)
       .map((score) => ({ ...toScore(score), createdAt: score.createdAt }));
 
     return {

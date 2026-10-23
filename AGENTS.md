@@ -194,6 +194,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 
 - Oxlint everywhere (root `.oxlintrc.json`, extended per workspace). The web app also loads
   `@pandacss/eslint-plugin` as an Oxlint JS plugin (`apps/web/.oxlintrc.json`).
+- The web lint runs single-threaded: every Oxlint thread would load its own Panda context.
 - CI runs `npx turbo run lint -- --deny-warnings`: warnings fail the build too.
 - Prettier formats (`npm run format`): single quotes, 100 columns.
 

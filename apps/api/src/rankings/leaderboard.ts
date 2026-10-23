@@ -47,7 +47,7 @@ export function buildLeaderboard(rounds: readonly LeaderboardRound[]): Leaderboa
     if (best === undefined || compareRounds(adjusted, best) < 0) bestPerUser.set(round.userId, adjusted);
   }
   return [...bestPerUser.values()]
-    .sort(compareRounds)
+    .toSorted(compareRounds)
     .slice(0, LEADERBOARD_SIZE)
     .map((round, index) => ({
       rank: index + 1,
@@ -81,7 +81,7 @@ export function buildMedalStandings(badges: readonly BadgeHolder[]): MedalStandi
     standings.set(userId, standing);
   }
   return [...standings.values()]
-    .sort(
+    .toSorted(
       (a, b) =>
         b.points - a.points ||
         b.gold - a.gold ||

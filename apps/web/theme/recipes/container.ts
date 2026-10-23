@@ -1,8 +1,8 @@
 import { defineRecipe } from '@pandacss/dev';
 
 /** The centered column every page section and the header sit in (Bootstrap 3 widths). */
-export const container = defineRecipe({
-  className: 'container',
+export const pageContainer = defineRecipe({
+  className: 'page-container',
   base: {
     width: 'full',
     mx: 'auto',

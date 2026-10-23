@@ -11,7 +11,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import type { UserSearchResult } from '@bszz-dojo/shared';
 import { cx } from 'styled-system/css';
-import { container, input, searchOverlay } from 'styled-system/recipes';
+import { pageContainer, input, searchOverlay } from 'styled-system/recipes';
 import { catchError, debounceTime, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
 import { UsersApiService } from '../core/users-api.service';
 import { Icon } from '../ui/icon';
@@ -56,7 +56,7 @@ export class SearchOverlay {
   protected readonly closeIcon = faXmark;
   protected readonly closedStyles = searchOverlay({ open: false });
   protected readonly openStyles = searchOverlay({ open: true });
-  protected readonly panelStyles = cx(container(), this.openStyles.panel);
+  protected readonly panelStyles = cx(pageContainer(), this.openStyles.panel);
   protected readonly inputStyles = input();
 
   constructor() {

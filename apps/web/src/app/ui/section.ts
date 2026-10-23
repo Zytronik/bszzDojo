@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { css, cx } from 'styled-system/css';
-import { container } from 'styled-system/recipes';
+import { pageContainer } from 'styled-system/recipes';
 
 /** One block of a page in the centered column, like every `<section>` of the old app. */
 @Component({
@@ -9,5 +9,5 @@ import { container } from 'styled-system/recipes';
   template: `<section [class]="styles"><ng-content /></section>`,
 })
 export class Section {
-  protected readonly styles = cx(container(), css({ py: 'section' }));
+  protected readonly styles = cx(pageContainer(), css({ py: 'section' }));
 }

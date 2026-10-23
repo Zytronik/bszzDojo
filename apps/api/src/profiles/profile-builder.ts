@@ -27,7 +27,7 @@ function strip({ createdAt: _createdAt, ...score }: ProfileRound): Score {
 }
 
 function distances(rounds: readonly ProfileRound[]): number[] {
-  return [...new Set(rounds.map((round) => round.distance))].sort((a, b) => a - b);
+  return [...new Set(rounds.map((round) => round.distance))].toSorted((a, b) => a - b);
 }
 
 /** Top results per distance, any number of arrows; on a tie the earlier round first. */
@@ -36,7 +36,7 @@ export function personalBests(rounds: readonly ProfileRound[]): PersonalBests[] 
     distance,
     scores: rounds
       .filter((round) => round.distance === distance)
-      .sort((a, b) => b.result - a.result)
+      .toSorted((a, b) => b.result - a.result)
       .slice(0, PERSONAL_BESTS_PER_DISTANCE)
       .map((round, index) => ({ ...strip(round), rank: index + 1 })),
   }));
@@ -48,7 +48,7 @@ export function progress(rounds: readonly ProfileRound[]): DistanceProgress[] {
     return {
       distance,
       series: BOW_TYPE_IDS.filter((bowType) => atDistance.some((round) => round.bowType === bowType))
-        .sort()
+        .toSorted()
         .map((bowType) => ({
           bowType,
           points: atDistance
@@ -60,5 +60,5 @@ export function progress(rounds: readonly ProfileRound[]): DistanceProgress[] {
 }
 
 export function history(rounds: readonly ProfileRound[]): Score[] {
-  return rounds.slice(-PROFILE_HISTORY_SIZE).reverse().map(strip);
+  return rounds.slice(-PROFILE_HISTORY_SIZE).toReversed().map(strip);
 }
