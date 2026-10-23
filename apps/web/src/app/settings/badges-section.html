@@ -35,6 +35,14 @@
         [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
       />
     </app-form-field>
+    } @if (fields().tournamentType) {
+    <app-form-field label="Turnierart:">
+      <select appFieldControl formControlName="tournamentType">
+        @for (type of tournamentTypes; track type.id) {
+        <option [ngValue]="type.id">{{ type.label }}</option>
+        }
+      </select>
+    </app-form-field>
     } @if (fields().location) {
     <app-form-field label="Ort:">
       <input
@@ -52,6 +60,7 @@
         }
       </select>
     </app-form-field>
+    @if (fields().distance) {
     <app-form-field label="Distanz (m):">
       <input
         appFieldControl
@@ -62,21 +71,7 @@
         formControlName="distance"
       />
     </app-form-field>
-    @if (fields().venue) {
-    <app-form-field label="Indoor / Outdoor:">
-      <select appFieldControl formControlName="venue">
-        @for (venue of venues; track venue.id) {
-        <option [ngValue]="venue.id">{{ venue.label }}</option>
-        }
-      </select>
-    </app-form-field>
-    } @if (outdoor()) {
-    <app-checkbox-field
-      label="3D:"
-      [checked]="form.controls.is3d.value"
-      (checkedChange)="form.controls.is3d.setValue($event)"
-    />
-    } @if (fields().team) {
+    } @if (askTeam()) {
     <app-checkbox-field
       label="Team:"
       [checked]="form.controls.team.value"
@@ -84,12 +79,12 @@
     />
     }
     <app-form-field label="Alterskategorie:">
-      <input
-        appFieldControl
-        formControlName="ageCategory"
-        placeholder="bsp: U18"
-        [maxLength]="limits.AGE_CATEGORY_MAX_LENGTH"
-      />
+      <select appFieldControl formControlName="ageCategory">
+        <option [ngValue]="null" disabled>Bitte wählen</option>
+        @for (category of ageCategories; track category) {
+        <option [ngValue]="category">{{ category }}</option>
+        }
+      </select>
     </app-form-field>
     <button type="submit" appButton [pending]="pending()">Erfassen</button>
   </form>

@@ -8,7 +8,7 @@ import {
   type ValidatorFn,
 } from '@angular/forms';
 import {
-  AGE_CATEGORY_MAX_LENGTH,
+  AGE_CATEGORIES,
   BADGE_EARLIEST_YEAR,
   BADGE_KINDS,
   BADGE_KIND_FIELDS,
@@ -16,20 +16,21 @@ import {
   BADGE_PLACES,
   BADGE_PLACE_LABELS,
   BADGE_TEXT_MAX_LENGTH,
-  BADGE_VENUES,
-  BADGE_VENUE_LABELS,
   BOW_TYPES,
   BOW_TYPE_IDS,
   MAX_DISTANCE,
+  TOURNAMENT_TYPES,
+  TOURNAMENT_TYPE_LABELS,
   badgeFieldErrors,
   currentClubMonth,
   normalizeBadgeInput,
+  type AgeCategory,
   type BadgeDraft,
   type BadgeInput,
   type BadgeKind,
   type BadgePlace,
-  type BadgeVenue,
   type BowTypeId,
+  type TournamentType,
 } from '@bszz-dojo/shared';
 import { BadgesApiService } from '../core/badges-api.service';
 import { errorMessage } from '../core/error-message';
@@ -74,7 +75,6 @@ export class BadgesSection {
   protected readonly limits = {
     BADGE_EARLIEST_YEAR,
     BADGE_TEXT_MAX_LENGTH,
-    AGE_CATEGORY_MAX_LENGTH,
     MAX_DISTANCE,
   };
   protected readonly kinds = BADGE_KINDS.map((id) => ({ id, label: BADGE_KIND_LABELS[id] }));
@@ -82,7 +82,11 @@ export class BadgesSection {
     value,
     label: `${value} (${BADGE_PLACE_LABELS[value]})`,
   }));
-  protected readonly venues = BADGE_VENUES.map((id) => ({ id, label: BADGE_VENUE_LABELS[id] }));
+  protected readonly tournamentTypes = TOURNAMENT_TYPES.map((id) => ({
+    id,
+    label: TOURNAMENT_TYPE_LABELS[id],
+  }));
+  protected readonly ageCategories = AGE_CATEGORIES;
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
 
   protected readonly form = this.forms.group({
@@ -90,28 +94,29 @@ export class BadgesSection {
     place: this.forms.control<BadgePlace>(1, badgeRule('place')),
     year: this.forms.control<number | null>(this.currentYear, [required(), badgeRule('year')]),
     eventName: ['', badgeRule('eventName')],
+    tournamentType: this.forms.control<TournamentType | null>('fita', badgeRule('tournamentType')),
     location: ['', badgeRule('location')],
     bowType: this.forms.control<BowTypeId>('r', badgeRule('bowType')),
-    distance: this.forms.control<number | null>(null, [required(), badgeRule('distance')]),
-    venue: this.forms.control<BadgeVenue | null>('indoor', badgeRule('venue')),
-    is3d: false,
+    // Only the Clubturnier asks for it, so `badgeRule` (not `required`) decides.
+    distance: this.forms.control<number | null>(null, badgeRule('distance')),
     team: false,
-    ageCategory: ['', [required(), badgeRule('ageCategory')]],
+    ageCategory: this.forms.control<AgeCategory | null>(null, badgeRule('ageCategory')),
   });
   private readonly value = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
   /** What the picked kind asks for, so the template only shows those fields. */
   protected readonly fields = computed(() => BADGE_KIND_FIELDS[this.value().kind ?? 'tournament']);
-  protected readonly outdoor = computed(
-    () => this.fields().venue && this.value().venue === 'outdoor',
+  /** A "Team" tournament type says it already. */
+  protected readonly askTeam = computed(
+    () => this.fields().team && this.value().tournamentType !== 'team',
   );
 
   protected readonly pending = signal(false);
   protected readonly feedback = signal<Feedback | null>(null);
 
   constructor() {
-    // Switching the kind changes what's required, and e.g. the venue decides about 3D.
+    // Switching the kind changes what's required.
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       for (const control of Object.values(this.form.controls)) {
         control.updateValueAndValidity({ onlySelf: true });
@@ -122,14 +127,13 @@ export class BadgesSection {
 
   protected async submit(): Promise<void> {
     const draft = normalizeBadgeInput(this.form.getRawValue());
-    const { kind, place, year, bowType, distance, ageCategory } = draft;
+    const { kind, place, year, bowType, ageCategory } = draft;
     if (
       !checkForm(this.form) ||
       kind === null ||
       place === null ||
       year === null ||
       bowType === null ||
-      distance === null ||
       ageCategory === null
     ) {
       this.feedback.set(INVALID_FORM);
@@ -138,10 +142,10 @@ export class BadgesSection {
 
     this.pending.set(true);
     try {
-      await this.api.create({ ...draft, kind, place, year, bowType, distance, ageCategory });
+      await this.api.create({ ...draft, kind, place, year, bowType, ageCategory });
       this.feedback.set(success('Auszeichnung erfasst. Du findest sie in deinem Profil.'));
-      // Kind, year and bow type usually stay the same for the next one.
-      for (const field of ['place', 'eventName', 'location', 'distance', 'is3d', 'team'] as const) {
+      // Kind, year, bow type, tournament type and age category usually stay the same.
+      for (const field of ['place', 'eventName', 'location', 'distance', 'team'] as const) {
         this.form.controls[field].reset();
       }
     } catch (error: unknown) {

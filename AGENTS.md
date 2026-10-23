@@ -85,14 +85,18 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
   (`PATCH /api/users/me`), no admin approval.
 - **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record in the
-  settings and delete on their own profile (`/api/users/me/badges`), no admin approval and no requests. The kind (`SM`,
-  `Clubturnier`, `Turnier`) decides the fields (`BADGE_KIND_FIELDS`): SM has location, team and
-  indoor/outdoor; Clubturnier the event name; Turnier all of them. Year, bow type, distance and the
-  age category (free text until the club defines a list) are always required, 3D only applies
-  outdoors. `normalizeBadgeInput` clears what the kind doesn't use and
-  `badgeFieldErrors` validates in the form and the API. Placings from the old app are a
-  "Turnier" with only the old name (as `eventName`), year and place, so the details are nullable.
-  Show them with `badgeTitle` / `badgeDetails` (`BadgeRow`).
+  settings and delete on their own profile (`/api/users/me/badges`), no admin approval and no
+  requests. Every placing has a year, bow type and age category (`AGE_CATEGORIES`: U11 … 50+).
+  The kind decides the rest (`BADGE_KIND_FIELDS`):
+  - **SM**: tournament type (`TOURNAMENT_TYPES`: FITA, Indoor, 3D, Field, Team), location and a
+    team flag, which isn't asked for when the type is "Team".
+  - **Nationales Turnier** (`tournament`): like SM plus the event name, without the team flag.
+  - **Clubturnier**: event name and distance.
+
+  `normalizeBadgeInput` clears what the kind doesn't use and `badgeFieldErrors` validates in the
+  form and the API. Placings from the old app are a "Nationales Turnier" with only the old name
+  (as `eventName`), year and place, so the details are nullable. Show them with `badgeTitle` /
+  `badgeDetails` (`BadgeRow`).
 
 ## Auth
 

@@ -26,60 +26,79 @@ export type BadgeKind = (typeof BADGE_KINDS)[number];
 export const BADGE_KIND_LABELS: Record<BadgeKind, string> = {
   sm: 'SM',
   club: 'Clubturnier',
-  tournament: 'Turnier',
+  tournament: 'Nationales Turnier',
 };
 
-export const BADGE_VENUES = ['indoor', 'outdoor'] as const;
-export type BadgeVenue = (typeof BADGE_VENUES)[number];
+/** The discipline of an SM or a national tournament. */
+export const TOURNAMENT_TYPES = ['fita', 'indoor', '3d', 'field', 'team'] as const;
+export type TournamentType = (typeof TOURNAMENT_TYPES)[number];
 
-export const BADGE_VENUE_LABELS: Record<BadgeVenue, string> = {
+export const TOURNAMENT_TYPE_LABELS: Record<TournamentType, string> = {
+  fita: 'FITA',
   indoor: 'Indoor',
-  outdoor: 'Outdoor',
+  '3d': '3D',
+  field: 'Field',
+  team: 'Team',
 };
+
+export const AGE_CATEGORIES = ['U11', 'U13', 'U15', 'U18', 'U21', 'U50', '50+'] as const;
+export type AgeCategory = (typeof AGE_CATEGORIES)[number];
 
 export const BADGE_TEXT_MAX_LENGTH = 100;
-export const AGE_CATEGORY_MAX_LENGTH = 40;
 export const BADGE_EARLIEST_YEAR = 1950;
 
-/** Which fields a kind asks for; the others are always `null`. */
+/**
+ * Which fields a kind asks for; the others are always `null`. The team flag isn't asked for when
+ * the tournament type is "Team" already.
+ */
 export const BADGE_KIND_FIELDS: Record<
   BadgeKind,
-  { location: boolean; eventName: boolean; team: boolean; venue: boolean }
+  {
+    location: boolean;
+    eventName: boolean;
+    tournamentType: boolean;
+    team: boolean;
+    distance: boolean;
+  }
 > = {
-  sm: { location: true, eventName: false, team: true, venue: true },
-  club: { location: false, eventName: true, team: false, venue: false },
-  tournament: { location: true, eventName: true, team: true, venue: true },
+  sm: { location: true, eventName: false, tournamentType: true, team: true, distance: false },
+  club: { location: false, eventName: true, tournamentType: false, team: false, distance: true },
+  tournament: {
+    location: true,
+    eventName: true,
+    tournamentType: true,
+    team: false,
+    distance: false,
+  },
 };
 
-/**
- * Body of `POST /api/users/me/badges`. Fields a kind doesn't ask for (`BADGE_KIND_FIELDS`) are
- * `null`; `is3d` only for outdoor placings. The age category is required free text until the club
- * settles on a list.
- */
+/** Body of `POST /api/users/me/badges`. Fields a kind doesn't ask for are `null`. */
 export interface BadgeInput {
   kind: BadgeKind;
   place: BadgePlace;
   year: number;
   bowType: BowTypeId;
-  /** Meters */
-  distance: number;
+  ageCategory: AgeCategory;
+  /** SM and national tournament */
+  tournamentType: TournamentType | null;
+  /** SM and national tournament */
   location: string | null;
+  /** Clubturnier and national tournament */
   eventName: string | null;
+  /** SM, unless the tournament type is "Team" */
   team: boolean | null;
-  venue: BadgeVenue | null;
-  is3d: boolean | null;
-  ageCategory: string;
+  /** Clubturnier only. Meters */
+  distance: number | null;
 }
 
 /**
  * A recorded placing. Placings imported from the old app only have a name (as `eventName`), year
- * and place, so the other details can be `null`.
+ * and place, and earlier ones may lack newer details, so those can be `null`.
  */
-export interface Badge extends Omit<BadgeInput, 'bowType' | 'distance' | 'ageCategory'> {
+export interface Badge extends Omit<BadgeInput, 'bowType' | 'ageCategory'> {
   id: string;
   bowType: BowTypeId | null;
-  distance: number | null;
-  ageCategory: string | null;
+  ageCategory: AgeCategory | null;
 }
 
 /** A placing while it's being entered: anything can still be empty. */
@@ -95,8 +114,12 @@ export function isBadgeKind(value: unknown): value is BadgeKind {
   return typeof value === 'string' && (BADGE_KINDS as readonly string[]).includes(value);
 }
 
-export function isBadgeVenue(value: unknown): value is BadgeVenue {
-  return typeof value === 'string' && (BADGE_VENUES as readonly string[]).includes(value);
+export function isTournamentType(value: unknown): value is TournamentType {
+  return typeof value === 'string' && (TOURNAMENT_TYPES as readonly string[]).includes(value);
+}
+
+export function isAgeCategory(value: unknown): value is AgeCategory {
+  return typeof value === 'string' && (AGE_CATEGORIES as readonly string[]).includes(value);
 }
 
 function trimmed(value: string | null): string | null {
@@ -110,15 +133,14 @@ function trimmed(value: string | null): string | null {
  */
 export function normalizeBadgeInput<T extends BadgeDraft>(input: T): T {
   const fields = isBadgeKind(input.kind) ? BADGE_KIND_FIELDS[input.kind] : null;
-  const venue = fields?.venue ? input.venue : null;
+  const tournamentType = fields?.tournamentType ? input.tournamentType : null;
   return {
     ...input,
+    tournamentType,
     location: fields?.location ? trimmed(input.location) : null,
     eventName: fields?.eventName ? trimmed(input.eventName) : null,
-    team: fields?.team ? (input.team ?? false) : null,
-    venue,
-    is3d: venue === 'outdoor' ? (input.is3d ?? false) : null,
-    ageCategory: trimmed(input.ageCategory),
+    team: fields?.team && tournamentType !== 'team' ? (input.team ?? false) : null,
+    distance: fields?.distance ? input.distance : null,
   };
 }
 
@@ -142,39 +164,39 @@ export function badgeFieldErrors(
     errors.year = `Das Jahr muss zwischen ${BADGE_EARLIEST_YEAR} und ${currentYear} liegen.`;
   }
   if (!isBowTypeId(badge.bowType)) errors.bowType = 'Bitte wähle eine Bogenkategorie.';
-  if (!isInteger(badge.distance) || badge.distance < 1 || badge.distance > MAX_DISTANCE) {
+  if (!isAgeCategory(badge.ageCategory)) errors.ageCategory = 'Bitte wähle eine Alterskategorie.';
+  if (fields.tournamentType && !isTournamentType(badge.tournamentType)) {
+    errors.tournamentType = 'Bitte wähle die Turnierart.';
+  }
+  if (
+    fields.distance &&
+    (!isInteger(badge.distance) || badge.distance < 1 || badge.distance > MAX_DISTANCE)
+  ) {
     errors.distance = `Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`;
   }
   if (fields.location && !badge.location) errors.location = 'Bitte gib den Ort ein.';
   if (fields.eventName && !badge.eventName)
     errors.eventName = 'Bitte gib den Namen des Events ein.';
-  if (fields.venue && !isBadgeVenue(badge.venue)) errors.venue = 'Bitte wähle Indoor oder Outdoor.';
   for (const field of ['location', 'eventName'] as const) {
     if ((badge[field]?.length ?? 0) > BADGE_TEXT_MAX_LENGTH) {
       errors[field] = `Höchstens ${BADGE_TEXT_MAX_LENGTH} Zeichen.`;
     }
   }
-  if (!badge.ageCategory) {
-    errors.ageCategory = 'Bitte gib die Alterskategorie ein.';
-  } else if (badge.ageCategory.length > AGE_CATEGORY_MAX_LENGTH) {
-    errors.ageCategory = `Höchstens ${AGE_CATEGORY_MAX_LENGTH} Zeichen.`;
-  }
   return errors;
 }
 
-/** The headline of a placing: "SM Outdoor 3D", "Chlausschiessen". */
+/** The headline of a placing: "SM FITA", "Chlausschiessen". */
 export function badgeTitle(badge: Badge): string {
   if (badge.kind !== 'sm') return badge.eventName ?? BADGE_KIND_LABELS[badge.kind];
-  const venue = badge.venue ? ` ${BADGE_VENUE_LABELS[badge.venue]}` : '';
-  return `SM${venue}${badge.is3d ? ' 3D' : ''}`;
+  return badge.tournamentType ? `SM ${TOURNAMENT_TYPE_LABELS[badge.tournamentType]}` : 'SM';
 }
 
-/** The rest, for a line below the title: "Turnier · Recurve · 70m · Team · Bern · U18". */
+/** The rest, for a line below the title: "Nationales Turnier · Field · Recurve · Bern · U18". */
 export function badgeDetails(badge: Badge): string {
   const parts = [
     badge.kind === 'sm' ? null : BADGE_KIND_LABELS[badge.kind],
-    badge.kind === 'tournament' && badge.venue
-      ? `${BADGE_VENUE_LABELS[badge.venue]}${badge.is3d ? ' 3D' : ''}`
+    badge.kind === 'tournament' && badge.tournamentType
+      ? TOURNAMENT_TYPE_LABELS[badge.tournamentType]
       : null,
     badge.bowType ? BOW_TYPES[badge.bowType].name : null,
     badge.distance === null ? null : `${badge.distance}m`,
