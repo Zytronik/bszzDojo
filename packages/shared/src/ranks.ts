@@ -1,4 +1,4 @@
-/** Club badges ("Abzeichen") an admin assigns; a user has at most one. */
+/** Club badges ("Abzeichen"); every user picks their own in the settings, at most one. */
 export const RANK_IDS = [
   'roteFeder',
   'goldeneFeder',

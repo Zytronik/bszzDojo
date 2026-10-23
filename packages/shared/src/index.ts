@@ -1,5 +1,4 @@
 export * from './auth';
-export * from './badges';
 export * from './bow-types';
 export * from './constants';
 export * from './dates';
@@ -11,3 +10,4 @@ export * from './ranks';
 export * from './scores';
 export * from './settings';
 export * from './users';
+export * from './version';

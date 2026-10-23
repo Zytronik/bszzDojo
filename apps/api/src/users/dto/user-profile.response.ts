@@ -1,4 +1,10 @@
-import { USER_ROLES, type UserProfile, type UserRole } from '@bszz-dojo/shared';
+import {
+  RANK_IDS,
+  USER_ROLES,
+  type RankId,
+  type UserProfile,
+  type UserRole,
+} from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserSettingsBody } from './user-settings.body';
 
@@ -14,6 +20,10 @@ export class UserProfileResponse implements UserProfile {
    * @example 'Robin Hood'
    */
   displayName: string | null;
+
+  /** Their club badge ("Abzeichen"), picked by themselves */
+  @ApiProperty({ enum: RANK_IDS, nullable: true })
+  rank: RankId | null;
 
   @ApiProperty({ enum: USER_ROLES })
   role: UserRole;

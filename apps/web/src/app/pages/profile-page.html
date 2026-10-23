@@ -23,12 +23,6 @@
       <p>Anzahl Scores:</p>
       <p>{{ p.stats.totalScores }}</p>
     </div>
-    @if (p.badges.length > 0) {
-    <div [class]="pageStyles.stat">
-      <p>Anzahl Auszeichnungen:</p>
-      <p>{{ p.badges.length }}</p>
-    </div>
-    }
   </div>
 </app-section>
 
@@ -57,20 +51,6 @@
   </app-tabs>
   }
 </app-section>
-
-@if (p.badges.length > 0) {
-<app-section>
-  <h2>Auszeichnungen</h2>
-  @for (badge of p.badges; track badge.id) {
-  <div [class]="recordStyles.root">
-    <p>
-      <span [class]="recordStyles.highlight">#{{ badge.place }}</span> {{ badge.name }} {{
-      badge.year }}
-    </p>
-  </div>
-  }
-</app-section>
-}
 
 <app-section>
   <app-feedback-message [feedback]="deleteFeedback()" />

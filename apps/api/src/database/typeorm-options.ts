@@ -1,18 +1,10 @@
 import { join } from 'node:path';
 import type { DataSourceOptions } from 'typeorm';
 import { RefreshTokenEntity } from '../auth/refresh-token.entity';
-import { BadgeRequestEntity } from '../badges/badge-request.entity';
-import { BadgeEntity } from '../badges/badge.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
 
-export const ENTITIES = [
-  UserEntity,
-  RefreshTokenEntity,
-  ScoreEntity,
-  BadgeEntity,
-  BadgeRequestEntity,
-];
+export const ENTITIES = [UserEntity, RefreshTokenEntity, ScoreEntity];
 
 /**
  * Shared by the Nest app and the TypeORM CLI. Entities are listed, not globbed, so Vercel's

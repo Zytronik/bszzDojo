@@ -19,13 +19,12 @@ packages/
 - Accounts with a username (case-insensitive, no spaces) and password, plus an optional display
   name shown instead of the username; stays logged in for 30 days.
 - Record rounds (bow type, target face, spot, date, distance, arrows, 10s, 9s, result).
-- Leaderboards: all time and this month at 18m and 8m (30 arrows, with the bow type's handicap),
-  and the medal table of tournament placings.
-- Profiles with average per arrow, personal bests per distance, a progress chart per bow type,
-  placings and the latest rounds (deletable on your own profile).
-- User search, light and dark theme (saved in the account).
-- Request a placing from the admins. Admins approve or reject requests, hand out club badges
-  ("Abzeichen") and placings, delete users and can force an app update.
+- Leaderboards: all time and this month at 18m and 8m (30 arrows, with the bow type's handicap).
+- Profiles with your club badge ("Abzeichen"), average per arrow, personal bests per distance,
+  a progress chart per bow type and the latest rounds (deletable on your own profile).
+- Settings: username, display name, Abzeichen, password, light and dark theme (saved in the
+  account).
+- User search. Admins can delete users.
 
 ## Getting started
 

@@ -8,7 +8,6 @@ import {
   type IsoDate,
   type LeaderboardDistance,
   type LeaderboardEntry,
-  type MedalStanding,
   type Rankings,
   type TargetSize,
 } from '@bszz-dojo/shared';
@@ -60,27 +59,6 @@ export class DistanceLeaderboardResponse implements DistanceLeaderboard {
   entries: LeaderboardEntryResponse[];
 }
 
-export class MedalStandingResponse implements MedalStanding {
-  rank: number;
-
-  username: string;
-
-  /**
-   * Shown instead of the username when set.
-   * @example 'Robin Hood'
-   */
-  displayName: string | null;
-
-  gold: number;
-
-  silver: number;
-
-  bronze: number;
-
-  /** Gold 3, silver 2, bronze 1 */
-  points: number;
-}
-
 export class RankingsResponse implements Rankings {
   /** The month of `monthly`, in the club's time zone. */
   month: CalendarMonthResponse;
@@ -90,6 +68,4 @@ export class RankingsResponse implements Rankings {
 
   /** Best round per user this month, 30 arrows, with handicap. */
   monthly: DistanceLeaderboardResponse[];
-
-  medals: MedalStandingResponse[];
 }

@@ -1,3 +1,4 @@
+import type { RankId } from './ranks';
 import type { UserSettings } from './settings';
 
 export const USERNAME_MIN_LENGTH = 3;
@@ -38,6 +39,8 @@ export interface UserProfile {
   id: string;
   username: string;
   displayName: string | null;
+  /** Their Abzeichen, picked by themselves */
+  rank: RankId | null;
   role: UserRole;
   settings: UserSettings;
 }

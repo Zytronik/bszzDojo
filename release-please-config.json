@@ -18,7 +18,8 @@
   ],
   "packages": {
     ".": {
-      "package-name": "bszz-dojo"
+      "package-name": "bszz-dojo",
+      "extra-files": ["packages/shared/src/version.ts"]
     }
   }
 }

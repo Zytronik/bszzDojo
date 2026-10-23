@@ -17,7 +17,7 @@ import { ProfilesService } from './profiles.service';
 export class ProfilesController {
   constructor(private readonly profiles: ProfilesService) {}
 
-  /** A user's public profile: stats, records, progress, badges and recent rounds. */
+  /** A user's public profile: stats, records, progress and recent rounds. */
   @Get(':username')
   @ApiNotFoundResponse({ description: 'No user with that name' })
   get(@Param('username') username: string): Promise<ProfileResponse> {

@@ -32,13 +32,3 @@
     }
   </app-tabs>
 </app-section>
-
-<app-section>
-  <h2>Top 10 - Auszeichnungen</h2>
-  <p [class]="leadStyles">Die Schützen mit den meisten Auszeichnungen</p>
-  @if (rankings.hasValue()) {
-  <app-medal-list [standings]="rankings.value().medals" />
-  } @else if (rankings.isLoading()) {
-  <p [class]="mutedStyles">Wird geladen…</p>
-  }
-</app-section>

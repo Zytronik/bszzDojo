@@ -47,6 +47,7 @@ export class UsersService {
     }
     if (changes.displayName !== undefined)
       user.displayName = normalizeDisplayName(changes.displayName);
+    if (changes.rank !== undefined) user.rank = changes.rank;
     if (changes.password !== undefined) user.passwordHash = await hashPassword(changes.password);
 
     try {

@@ -6,6 +6,7 @@ export function toUserProfile(user: UserEntity): UserProfile {
     id: user.id,
     username: user.username,
     displayName: user.displayName,
+    rank: user.rank,
     role: user.role,
     settings: parseUserSettings(user.settings),
   };

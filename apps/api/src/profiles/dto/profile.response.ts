@@ -12,7 +12,6 @@ import {
   type RankId,
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
-import { BadgeResponse } from '../../badges/dto/badge.response';
 import { RankedScoreResponse, ScoreResponse } from '../../scores/dto/score.response';
 
 export class ProfileStatsResponse implements ProfileStats {
@@ -62,9 +61,6 @@ export class ProfileResponse implements Profile {
   rank: RankId | null;
 
   stats: ProfileStatsResponse;
-
-  /** Tournament placings, newest year first */
-  badges: BadgeResponse[];
 
   /** Top 3 per distance, ordered by distance */
   personalBests: PersonalBestsResponse[];

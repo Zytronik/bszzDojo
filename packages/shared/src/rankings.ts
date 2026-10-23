@@ -29,18 +29,9 @@ export interface DistanceLeaderboard {
   entries: LeaderboardEntry[];
 }
 
-export interface MedalStanding extends UserName {
-  rank: number;
-  gold: number;
-  silver: number;
-  bronze: number;
-  points: number;
-}
-
 /** Response of `GET /api/rankings` */
 export interface Rankings {
   month: CalendarMonth;
   allTime: DistanceLeaderboard[];
   monthly: DistanceLeaderboard[];
-  medals: MedalStanding[];
 }

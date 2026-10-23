@@ -16,7 +16,6 @@ import {
 } from '@bszz-dojo/shared';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
-import { record } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { failure, type Feedback } from '../core/feedback';
@@ -80,7 +79,6 @@ export class ProfilePage {
     return error ? failure(error) : null;
   });
 
-  protected readonly recordStyles = record();
   protected readonly pageStyles = {
     rankRow: css({
       display: 'flex',
