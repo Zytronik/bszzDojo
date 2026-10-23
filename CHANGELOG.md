@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Zytronik/bszzDojo/compare/v3.2.0...v3.3.0) (2026-10-23)
+
+
+### Features
+
+* give sm and national tournaments a tournament type ([#40](https://github.com/Zytronik/bszzDojo/issues/40)) ([59a9f1a](https://github.com/Zytronik/bszzDojo/commit/59a9f1ad73bb8213b24ee584565f8f2fda97309f))
+
 ## [3.2.0](https://github.com/Zytronik/bszzDojo/compare/v3.1.1...v3.2.0) (2026-10-23)
 
 
