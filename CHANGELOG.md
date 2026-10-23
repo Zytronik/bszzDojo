@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.1](https://github.com/Zytronik/bszzDojo/compare/v3.1.0...v3.1.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* **api:** show the app version in the swagger docs ([#34](https://github.com/Zytronik/bszzDojo/issues/34)) ([3f987c3](https://github.com/Zytronik/bszzDojo/commit/3f987c382209b5added63f2e07e19fc8d76de793))
+* **web:** keep list areas as tall as their skeletons ([#35](https://github.com/Zytronik/bszzDojo/issues/35)) ([91ccb52](https://github.com/Zytronik/bszzDojo/commit/91ccb524cd2c3a6a4f7c29a5c47e6a8db3ee65fe))
+* **web:** run the panda lint rules on every file ([#33](https://github.com/Zytronik/bszzDojo/issues/33)) ([6844197](https://github.com/Zytronik/bszzDojo/commit/6844197aa0c8cfcaa2ddf91676df5bd789b42b64))
+
 ## [3.1.0](https://github.com/Zytronik/bszzDojo/compare/v3.0.0...v3.1.0) (2026-10-23)
 
 
