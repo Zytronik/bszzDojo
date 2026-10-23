@@ -41,7 +41,7 @@ export class MedalList {
   protected readonly styles = record();
   protected readonly rowStyles = css({
     flex: '1',
-    minWidth: '0',
+    minW: '0',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',

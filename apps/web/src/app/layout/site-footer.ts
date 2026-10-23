@@ -18,7 +18,7 @@ export class SiteFooter {
   protected readonly version = APP_VERSION;
   protected readonly styles = css({
     layerStyle: 'surface',
-    height: 'footer',
+    h: 'footer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

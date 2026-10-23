@@ -39,7 +39,7 @@ export class DashboardPage {
   protected readonly allTimeTab = signal(this.distanceTabs[0]?.id ?? '');
   protected readonly monthlyTab = signal(this.distanceTabs[0]?.id ?? '');
 
-  protected readonly leadStyles = css({ mb: '10' });
+  protected readonly leadStyles = css({ marginBlockEnd: '10' });
 
   protected monthName(month: number): string {
     return MONTH_NAMES[month - 1] ?? '';

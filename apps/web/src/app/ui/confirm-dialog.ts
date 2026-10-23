@@ -49,6 +49,6 @@ export class ConfirmDialog {
   readonly cancelled = output();
 
   protected readonly styles = modal();
-  protected readonly textStyles = css({ pr: '25', mb: '10' });
+  protected readonly textStyles = css({ pe: '25', marginBlockEnd: '10' });
   protected readonly textId = `confirm-dialog-${nextDialogId++}`;
 }

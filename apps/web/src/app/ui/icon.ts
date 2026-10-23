@@ -31,8 +31,8 @@ export class Icon {
 
   protected readonly styles = css({
     display: 'inline-block',
-    height: '1em',
-    width: 'auto',
+    h: '1em',
+    w: 'auto',
     overflow: 'visible',
   });
   protected readonly viewBox = computed(() => {
