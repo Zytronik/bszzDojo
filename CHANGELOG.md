@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0](https://github.com/Zytronik/bszzDojo/compare/v3.0.0...v3.1.0) (2026-10-23)
+
+
+### Features
+
+* list placings on the profile and require the age category ([#29](https://github.com/Zytronik/bszzDojo/issues/29)) ([3d60b52](https://github.com/Zytronik/bszzDojo/commit/3d60b52331cfd1ca1604b1debe07b76ecf722418))
+* **web:** show skeletons while lists load ([#31](https://github.com/Zytronik/bszzDojo/issues/31)) ([4854a4b](https://github.com/Zytronik/bszzDojo/commit/4854a4bf7b24a06fb21cc7a9f9aa5ebe8e30b39e))
+
+
+### Bug Fixes
+
+* **web:** set the update banner apart from the footer ([#30](https://github.com/Zytronik/bszzDojo/issues/30)) ([018d212](https://github.com/Zytronik/bszzDojo/commit/018d2125a50ff1dda7280fa831749a639ef69ebe))
+
 ## [3.0.0](https://github.com/Zytronik/bszzDojo/compare/v2.0.0...v3.0.0) (2026-10-23)
 
 
