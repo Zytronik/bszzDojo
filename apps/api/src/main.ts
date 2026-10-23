@@ -1,11 +1,10 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { API_PREFIX, APP_NAME } from '@bszz-dojo/shared';
+import { API_PREFIX } from '@bszz-dojo/shared';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { REFRESH_COOKIE } from './auth/refresh-cookie';
 import { corsOrigins } from './cors';
+import { setupSwagger } from './swagger';
 
 // Vercel deploys this file as a single function (NestJS zero-config): it must call `listen`.
 async function bootstrap(): Promise<void> {
@@ -17,23 +16,11 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
   );
-
-  // Local only: on Vercel the Nest CLI's Swagger plugin doesn't run, so the docs would be empty.
-  if (process.env['VERCEL'] !== '1') {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle(`${APP_NAME} API`)
-      .setDescription(`REST API for ${APP_NAME}`)
-      .addBearerAuth()
-      .addCookieAuth(REFRESH_COOKIE)
-      .build();
-    SwaggerModule.setup(`${API_PREFIX}/docs`, app, () =>
-      SwaggerModule.createDocument(app, swaggerConfig),
-    );
-  }
+  await setupSwagger(app);
 
   const port = Number(process.env['PORT'] ?? 3000);
   await app.listen(port);
-  console.log(`API running on http://localhost:${port}/${API_PREFIX}`);
+  console.log(`API running on http://localhost:${port}/${API_PREFIX} (Swagger UI)`);
 }
 
 void bootstrap();

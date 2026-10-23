@@ -8,7 +8,7 @@ Angular frontend styled with Panda CSS, and a shared package for types and domai
 
 ```
 apps/
-  api/        NestJS 11 + TypeORM          → http://localhost:3000/api (Swagger UI at /api/docs)
+  api/        NestJS 11 + TypeORM          → http://localhost:3000/api (Swagger UI)
   web/        Angular 21 + Panda CSS, PWA  → http://localhost:4200
 packages/
   shared/     @bszz-dojo/shared — types, DTOs, bow types, score rules, dates

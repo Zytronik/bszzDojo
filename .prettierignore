@@ -4,3 +4,4 @@ dist
 .turbo
 apps/web/styled-system
 package-lock.json
+apps/api/src/metadata.ts
