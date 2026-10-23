@@ -9,7 +9,26 @@ export class SelfRecordedBadges1792900000000 implements MigrationInterface {
   name = 'SelfRecordedBadges1792900000000';
 
   async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "badge_requests"`);
+    // An earlier draft of this change (`RemoveBadges`) ran on the dev database and dropped both
+    // tables; bring `badges` back in its old shape there so both databases end up the same.
+    await queryRunner.query(`DELETE FROM "migrations" WHERE "name" = 'RemoveBadges1792900000000'`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "badge_requests"`);
+    if (!(await queryRunner.hasTable('badges'))) {
+      await queryRunner.query(`
+        CREATE TABLE "badges" (
+          "id" uuid NOT NULL,
+          "user_id" uuid NOT NULL,
+          "name" character varying(100) NOT NULL,
+          "year" smallint NOT NULL,
+          "place" smallint NOT NULL,
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+          CONSTRAINT "PK_badges" PRIMARY KEY ("id"),
+          CONSTRAINT "FK_badges_user" FOREIGN KEY ("user_id")
+            REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        )
+      `);
+      await queryRunner.query(`CREATE INDEX "IDX_badges_user_id" ON "badges" ("user_id")`);
+    }
     await queryRunner.query(`ALTER TABLE "badges" RENAME COLUMN "name" TO "event_name"`);
     await queryRunner.query(`ALTER TABLE "badges" ALTER COLUMN "event_name" DROP NOT NULL`);
     await queryRunner.query(`
