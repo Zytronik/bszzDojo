@@ -19,12 +19,12 @@ import { SkeletonList } from './skeleton-list';
     } @else {
       <app-skeleton-list [rows]="rows()" [lines]="lines()" [rank]="rank()" [ghost]="!loading()" />
     }
-    <div><ng-content /></div>
+    <div [class]="contentStyles"><ng-content /></div>
   `,
 })
 export class LoadingFrame {
   readonly loading = input.required<boolean>();
-  readonly rows = input(5);
+  readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
   /** The progress chart's block instead of rows */
@@ -35,4 +35,6 @@ export class LoadingFrame {
     // minWidth 0 so long names still wrap inside the cell.
     '& > *': { gridArea: '1 / 1', minW: '0' },
   });
+  // A column, so an empty state (or a list component holding one) can grow to the cell's height.
+  protected readonly contentStyles = css({ display: 'flex', flexDir: 'column' });
 }

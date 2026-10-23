@@ -3,12 +3,15 @@ import { RouterLink } from '@angular/router';
 import type { MedalStanding } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { medal, record } from 'styled-system/recipes';
+import { EmptyState } from '../ui/empty-state';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
 @Component({
   selector: 'app-medal-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ShownNamePipe],
+  // Grows inside a LoadingFrame, so the empty state can fill it.
+  host: { '[class]': 'hostStyles' },
+  imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `
     @for (standing of standings(); track standing.username) {
       <div [class]="styles.root">
@@ -31,11 +34,12 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
         </div>
       </div>
     } @empty {
-      <p>Keine Rekorde vorhanden.</p>
+      <app-empty-state>Keine Auszeichnungen vorhanden.</app-empty-state>
     }
   `,
 })
 export class MedalList {
+  protected readonly hostStyles = css({ flex: '1', display: 'flex', flexDir: 'column' });
   readonly standings = input.required<readonly MedalStanding[]>();
 
   protected readonly styles = record();

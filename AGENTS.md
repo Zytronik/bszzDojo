@@ -163,7 +163,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   call `patchState`. Page data is loaded with `resource()` in the page; lists sit in
   `<app-loading-frame>`, which shows a skeleton shaped like their rows while loading (`chart` for
   the progress chart) and keeps it invisible afterwards, so the area never shrinks below it and
-  the page doesn't jump. Never a plain "Wird geladen…".
+  the page doesn't jump. Never a plain "Wird geladen…". An empty list shows
+  `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
   `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, update
@@ -211,7 +212,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop, skeleton) and `global-css.ts`.
-  - `recipes/`: `button`, `container`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
+  - `recipes/`: `button`, `container`, `emptyState`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
     recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
     `siteHeader`, `skeleton`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules

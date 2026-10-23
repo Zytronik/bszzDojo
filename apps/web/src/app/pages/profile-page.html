@@ -40,7 +40,7 @@
   <h2>Rekorde</h2>
   <app-loading-frame [loading]="!p" [rows]="3" [lines]="3" [rank]="true">
     @if (p) { @if (p.personalBests.length === 0) {
-    <p>Keine Rekorde vorhanden.</p>
+    <app-empty-state>Keine Rekorde vorhanden.</app-empty-state>
     } @else {
     <app-tabs [tabs]="distanceTabs(p.personalBests)" [(selected)]="recordsTab">
       @for (score of bestsFor(p.personalBests); track score.id) {
@@ -55,7 +55,7 @@
   <h2>Entwicklung</h2>
   <app-loading-frame [loading]="!p" [chart]="true">
     @if (p) { @if (p.progress.length === 0) {
-    <p>Keine Rekorde vorhanden.</p>
+    <app-empty-state>Keine Rekorde vorhanden.</app-empty-state>
     } @else {
     <app-tabs [tabs]="distanceTabs(p.progress)" [(selected)]="chartTab">
       @if (progressFor(p.progress); as progress) {
@@ -77,7 +77,7 @@
       (deleted)="badgeToDelete.set(badge.id)"
     />
     } @empty {
-    <p>Keine Auszeichnungen vorhanden.</p>
+    <app-empty-state>Keine Auszeichnungen vorhanden.</app-empty-state>
     } }
   </app-loading-frame>
 </app-section>
@@ -85,7 +85,7 @@
 <app-section>
   <app-feedback-message [feedback]="deleteFeedback()" />
   <h2>Historie</h2>
-  <app-loading-frame [loading]="!p" [rows]="5" [lines]="3">
+  <app-loading-frame [loading]="!p" [rows]="3" [lines]="3">
     @if (p) { @for (score of p.history; track score.id) {
     <app-score-row
       [score]="score"
@@ -93,7 +93,7 @@
       (deleted)="scoreToDelete.set(score.id)"
     />
     } @empty {
-    <p>Keine Historie vorhanden.</p>
+    <app-empty-state>Keine Historie vorhanden.</app-empty-state>
     } }
   </app-loading-frame>
 </app-section>
