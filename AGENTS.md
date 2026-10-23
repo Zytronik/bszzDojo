@@ -93,16 +93,19 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Refresh token: random `<id>.<secret>` (`common/secret-token.ts`), stored as a sha256 hash in
   `refresh_tokens` (one row per device, 30 days), sent only as the httpOnly cookie
   `bszz_refresh` scoped to `/api/auth`. It's rotated on every `POST /api/auth/refresh`; logout
-  deletes that device's row; a password change or reset deletes all of them. Never expose it to
+  deletes that device's row; a password change deletes all of them. Never expose it to
   JavaScript.
-- Password reset: `POST /api/auth/forgot-password` mails a one-hour link (same answer whether the
-  address exists or not), `POST /api/auth/reset-password` sets the new password. Mails go through
-  `MailService` (SMTP from `SMTP_URL`; without it the mail is logged).
 - Protect REST routes with `@UseGuards(JwtAuthGuard)` and read the user with `@CurrentUser()`.
   Admin routes add `AdminGuard`, which reads the role from the database, not the token.
-- Usernames are unique ignoring case (`username_key`), emails are stored lowercased and unique.
-  Passwords are bcrypt hashes; `$2y$` hashes from the old PHP app are accepted (`compatibleHash`).
-- Changing the email or password needs the current password.
+- No email addresses: an account is a **username** and a password. The username is for logging in
+  and profile URLs: 3–30 characters of letters, digits, `.`, `_` and `-` (`USERNAME_PATTERN`),
+  unique ignoring case (`username_key` = `usernameKey()`), so `Zytronik` and `zYtRoNik` are the
+  same account. The optional **display name** (`displayName`, up to 40 characters, spaces allowed)
+  is shown instead wherever it's set: always render names with `shownName()` (the `shownName`
+  pipe in templates) and link with `username`. Every shared type with a user name extends
+  `UserName`.
+- Passwords are bcrypt hashes; `$2y$` hashes from the old PHP app are accepted (`compatibleHash`).
+  There's no self-service reset (no mail); changing the password needs the current one.
 - The session is restored at startup (`provideAppInitializer`) before guards run. Routes that need
   a user use `authGuard`, which redirects to `/login?returnUrl=…`; `adminGuard` only hides pages.
 

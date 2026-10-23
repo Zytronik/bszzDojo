@@ -6,18 +6,22 @@
  * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
  * pending migrations and copies users, scores, badges and badge requests. It refuses to run if the
  * Postgres database already has users, so it can't import twice. Passwords keep working: the old
- * bcrypt hashes are copied. Open password reset links and "auto login" cookies are not copied.
+ * bcrypt hashes are copied. Emails, open password reset links and "auto login" cookies are not
+ * copied. Usernames with characters that aren't allowed any more (spaces, umlauts) get them
+ * replaced by `_` and keep their old spelling as display name; the warnings list who logs in how.
  */
 import {
   DEFAULT_USER_SETTINGS,
+  DISPLAY_NAME_MAX_LENGTH,
   USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  isValidUsername,
   isBadgePlace,
   isBowTypeId,
   isRankId,
   isRecord,
   isTargetSize,
-  normalizeEmail,
-  normalizeUsername,
+  normalizeDisplayName,
   usernameKey,
   type BadgePlace,
   type TargetSize,
@@ -36,7 +40,6 @@ import { typeOrmOptions } from './typeorm-options';
 interface LegacyUser extends RowDataPacket {
   id: number;
   username: string;
-  email: string | null;
   passwordHash: string;
   role: string | null;
   rank: string | null;
@@ -128,19 +131,31 @@ function parseBadges(raw: string | null, username: string): LegacyBadge[] {
   return badges;
 }
 
+/** A valid username from an old one: disallowed characters become `_`. */
+function legacyUsername(original: string, legacyId: number): string {
+  const username = original
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .slice(0, USERNAME_MAX_LENGTH);
+  return isValidUsername(username) && username.length >= USERNAME_MIN_LENGTH
+    ? username
+    : `user_${legacyId}`;
+}
+
 async function copyUsers(
   manager: EntityManager,
   users: LegacyUser[],
 ): Promise<Map<number, string>> {
   const ids = new Map<number, string>();
   const takenKeys = new Set<string>();
-  const takenEmails = new Set<string>();
 
   for (const legacy of users) {
-    let username = normalizeUsername(legacy.username).slice(0, USERNAME_MAX_LENGTH);
+    const original = normalizeDisplayName(legacy.username) ?? `user${legacy.id}`;
+    let username = legacyUsername(original, legacy.id);
     let key = usernameKey(username);
     if (takenKeys.has(key)) {
-      const renamed = `${username.slice(0, USERNAME_MAX_LENGTH - 4)} ${legacy.id}`;
+      const renamed = `${username.slice(0, USERNAME_MAX_LENGTH - 6)}_${legacy.id}`;
       warn(
         `username "${username}" exists twice ignoring case; user ${legacy.id} is now "${renamed}"`,
       );
@@ -148,14 +163,9 @@ async function copyUsers(
       key = usernameKey(renamed);
     }
     takenKeys.add(key);
-
-    let email = normalizeEmail(legacy.email ?? '');
-    if (!email || takenEmails.has(email)) {
-      const placeholder = `legacy-${legacy.id}@invalid.local`;
-      warn(`${username}: email "${email}" missing or used twice, set to ${placeholder}`);
-      email = placeholder;
-    }
-    takenEmails.add(email);
+    // The old spelling (with spaces, umlauts, …) stays visible as the display name.
+    const displayName = original === username ? null : original.slice(0, DISPLAY_NAME_MAX_LENGTH);
+    if (displayName !== null) warn(`"${original}" logs in as "${username}" now`);
 
     const rank = legacy.rank && isRankId(legacy.rank) ? legacy.rank : null;
     if (legacy.rank && rank === null) warn(`${username}: unknown rank "${legacy.rank}" dropped`);
@@ -167,7 +177,7 @@ async function copyUsers(
       id,
       username,
       usernameKey: key,
-      email,
+      displayName,
       passwordHash: compatibleHash(legacy.passwordHash),
       role: legacy.role === 'admin' ? 'admin' : 'user',
       rank,

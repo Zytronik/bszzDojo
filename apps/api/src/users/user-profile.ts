@@ -5,7 +5,7 @@ export function toUserProfile(user: UserEntity): UserProfile {
   return {
     id: user.id,
     username: user.username,
-    email: user.email,
+    displayName: user.displayName,
     role: user.role,
     settings: parseUserSettings(user.settings),
   };

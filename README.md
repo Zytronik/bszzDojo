@@ -16,7 +16,8 @@ packages/
 
 ## Features
 
-- Accounts with username, email and password; password reset by email; stays logged in for 30 days.
+- Accounts with a username (case-insensitive, no spaces) and password, plus an optional display
+  name shown instead of the username; stays logged in for 30 days.
 - Record rounds (bow type, target face, spot, date, distance, arrows, 10s, 9s, result).
 - Leaderboards: all time and this month at 18m and 8m (30 arrows, with the bow type's handicap),
   and the medal table of tournament placings.

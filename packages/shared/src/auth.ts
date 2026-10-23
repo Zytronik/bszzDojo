@@ -2,19 +2,17 @@ import type { UserSettings } from './settings';
 
 export const USERNAME_MIN_LENGTH = 3;
 export const USERNAME_MAX_LENGTH = 30;
-/** Letters (including umlauts), digits, spaces, `.`, `_` and `-`; starts with a letter or digit. */
-export const USERNAME_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} ._-]*$/u;
+/** Letters, digits, `.`, `_` and `-`: no spaces, so it works in profile URLs as it is. */
+export const USERNAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
+export const DISPLAY_NAME_MAX_LENGTH = 40;
 export const PASSWORD_MIN_LENGTH = 8;
 /** bcrypt ignores everything after 72 bytes. */
 export const PASSWORD_MAX_LENGTH = 72;
-export const EMAIL_MAX_LENGTH = 254;
-/** Deliberately loose: the real check is whether the reset mail arrives. */
-export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** German messages for invalid account fields, the same in the forms and from the API. */
 export const ACCOUNT_FIELD_ERRORS = {
-  username: `Der Benutzername muss ${USERNAME_MIN_LENGTH}–${USERNAME_MAX_LENGTH} Zeichen lang sein und darf nur Buchstaben, Zahlen, Leerzeichen, ".", "_" und "-" enthalten.`,
-  email: 'Bitte gib eine gültige E-Mail-Adresse ein.',
+  username: `Der Benutzername muss ${USERNAME_MIN_LENGTH}–${USERNAME_MAX_LENGTH} Zeichen lang sein und darf nur Buchstaben, Zahlen, ".", "_" und "-" enthalten (keine Leerzeichen).`,
+  displayName: `Der Anzeigename darf höchstens ${DISPLAY_NAME_MAX_LENGTH} Zeichen lang sein.`,
   password: `Das Passwort muss ${PASSWORD_MIN_LENGTH}–${PASSWORD_MAX_LENGTH} Zeichen lang sein.`,
 } as const;
 
@@ -30,18 +28,8 @@ export interface LoginRequest {
 /** Body of `POST /api/auth/register` */
 export interface RegisterRequest {
   username: string;
-  email: string;
-  password: string;
-}
-
-/** Body of `POST /api/auth/forgot-password` */
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-/** Body of `POST /api/auth/reset-password`; the token comes from the link in the mail. */
-export interface ResetPasswordRequest {
-  token: string;
+  /** Shown instead of the username when set; empty or missing for none. */
+  displayName?: string | null;
   password: string;
 }
 
@@ -49,9 +37,17 @@ export interface ResetPasswordRequest {
 export interface UserProfile {
   id: string;
   username: string;
-  email: string;
+  displayName: string | null;
   role: UserRole;
   settings: UserSettings;
+}
+
+/** Anyone shown in the app: identified by `username`, labelled with `shownName`. */
+export interface UserName {
+  /** For logging in and in profile URLs. */
+  username: string;
+  /** Optional; shown instead of the username when set. */
+  displayName: string | null;
 }
 
 /**
@@ -77,15 +73,22 @@ export interface ApiError {
 }
 
 export function normalizeUsername(value: string): string {
-  return value.trim().replace(/\s+/g, ' ');
+  return value.trim();
 }
 
 export function usernameKey(value: string): string {
-  return normalizeUsername(value).toLocaleLowerCase('de-CH');
+  return normalizeUsername(value).toLowerCase();
 }
 
-export function normalizeEmail(value: string): string {
-  return value.trim().toLowerCase();
+/** Trimmed with inner whitespace collapsed; `null` when nothing is left. */
+export function normalizeDisplayName(value: string | null | undefined): string | null {
+  const name = (value ?? '').trim().replace(/\s+/g, ' ');
+  return name.length > 0 ? name : null;
+}
+
+/** The name to show for a user: the display name if set, else the username. */
+export function shownName(user: UserName): string {
+  return user.displayName ?? user.username;
 }
 
 export function isValidUsername(value: string): boolean {
@@ -97,9 +100,9 @@ export function isValidUsername(value: string): boolean {
   );
 }
 
-export function isValidEmail(value: string): boolean {
-  const email = normalizeEmail(value);
-  return email.length <= EMAIL_MAX_LENGTH && EMAIL_PATTERN.test(email);
+export function isValidDisplayName(value: string | null | undefined): boolean {
+  const name = normalizeDisplayName(value);
+  return name === null || name.length <= DISPLAY_NAME_MAX_LENGTH;
 }
 
 export function isValidPassword(value: string): boolean {

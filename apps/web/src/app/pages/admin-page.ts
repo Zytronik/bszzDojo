@@ -9,6 +9,7 @@ import {
   RANKS,
   RANK_IDS,
   currentClubMonth,
+  shownName,
   type AdminUser,
   type BadgePlace,
   type BadgeRequest,
@@ -30,6 +31,7 @@ import { Icon } from '../ui/icon';
 import { faCheck, faDeleteLeft } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
+import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { Tabs, type TabItem } from '../ui/tabs';
 
 /** A year in the request's name ("Chlausschüsse 2023"), else the current one. */
@@ -50,6 +52,7 @@ function yearFromName(name: string, fallback: number): number {
     FeedbackMessage,
     ConfirmDialog,
     Icon,
+    ShownNamePipe,
   ],
   templateUrl: './admin-page.html',
 })
@@ -174,7 +177,7 @@ export class AdminPage {
     this.deletingUser.set(true);
     try {
       await this.api.deleteUser(user.id);
-      this.usersFeedback.set(success(`${user.username} wurde gelöscht.`));
+      this.usersFeedback.set(success(`${shownName(user)} wurde gelöscht.`));
       this.users.reload();
       this.requests.reload();
     } catch (error: unknown) {

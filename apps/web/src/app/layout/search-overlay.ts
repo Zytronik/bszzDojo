@@ -10,6 +10,7 @@ import {
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import type { UserSearchResult } from '@bszz-dojo/shared';
+import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { cx } from 'styled-system/css';
 import { pageContainer, input, searchOverlay } from 'styled-system/recipes';
 import {
@@ -34,7 +35,7 @@ type SearchResults = UserSearchResult[] | null;
 @Component({
   selector: 'app-search-overlay',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, ShownNamePipe],
   host: { '(document:keydown.escape)': 'state.close()' },
   templateUrl: './search-overlay.html',
 })

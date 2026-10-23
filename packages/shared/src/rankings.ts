@@ -1,3 +1,4 @@
+import type { UserName } from './auth';
 import type { BowTypeId } from './bow-types';
 import type { CalendarMonth, IsoDate } from './dates';
 import type { TargetSize } from './scores';
@@ -10,9 +11,8 @@ export const LEADERBOARD_ARROWS = 30;
 export const LEADERBOARD_SIZE = 10;
 
 /** A user's best round at a distance. */
-export interface LeaderboardEntry {
+export interface LeaderboardEntry extends UserName {
   rank: number;
-  username: string;
   /** With the bow type's handicap; what the board is sorted by. */
   adjustedResult: number;
   result: number;
@@ -29,9 +29,8 @@ export interface DistanceLeaderboard {
   entries: LeaderboardEntry[];
 }
 
-export interface MedalStanding {
+export interface MedalStanding extends UserName {
   rank: number;
-  username: string;
   gold: number;
   silver: number;
   bronze: number;

@@ -20,6 +20,12 @@ export class BadgeRequestResponse implements BadgeRequest {
 
   username: string;
 
+  /**
+   * Shown instead of the username when set.
+   * @example 'Robin Hood'
+   */
+  displayName: string | null;
+
   /** @example 'Chlausschüsse 2023' */
   name: string;
 

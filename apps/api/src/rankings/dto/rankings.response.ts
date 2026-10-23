@@ -27,6 +27,12 @@ export class LeaderboardEntryResponse implements LeaderboardEntry {
 
   username: string;
 
+  /**
+   * Shown instead of the username when set.
+   * @example 'Robin Hood'
+   */
+  displayName: string | null;
+
   /** With the bow type's handicap; what the board is sorted by. */
   adjustedResult: number;
 
@@ -58,6 +64,12 @@ export class MedalStandingResponse implements MedalStanding {
   rank: number;
 
   username: string;
+
+  /**
+   * Shown instead of the username when set.
+   * @example 'Robin Hood'
+   */
+  displayName: string | null;
 
   gold: number;
 
