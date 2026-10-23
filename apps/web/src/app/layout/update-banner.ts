@@ -24,19 +24,19 @@ export class UpdateBanner {
     // The accent colour sets it apart from the footer it sits above, which is a surface too.
     bg: 'accent.default',
     color: 'fg.onAccent',
-    position: 'fixed',
+    pos: 'fixed',
     insetX: '15',
     // Above the footer, not on it.
-    bottom: 'calc(token(sizes.footer) + token(spacing.15))',
+    insetBlockEnd: 'calc(token(sizes.footer) + token(spacing.15))',
     zIndex: 'banner',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '15',
     p: '15',
-    borderRadius: 'sm',
+    rounded: 'sm',
     animation: 'fadeIn',
-    md: { insetX: 'auto', right: '15', maxWidth: 'container.sm' },
+    md: { insetStart: 'auto', insetEnd: '15', maxW: 'container.sm' },
   });
   protected readonly buttonStyles = button({ size: 'inline', tone: 'neutral' });
 }

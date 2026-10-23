@@ -94,14 +94,14 @@ export class TargetCanvas {
 
   protected readonly canvasStyles = css({
     display: 'block',
-    width: 'full',
-    maxWidth: 'canvas',
+    w: 'full',
+    maxW: 'canvas',
     aspectRatio: '1',
     mx: 'auto',
     touchAction: 'none',
     cursor: 'crosshair',
   });
-  protected readonly summaryStyles = css({ mt: '15' });
+  protected readonly summaryStyles = css({ marginBlockStart: '15' });
   protected readonly actionsStyles = css({ display: 'flex', gap: '15' });
   protected readonly buttonStyles = button();
   protected readonly recordStyles = record();

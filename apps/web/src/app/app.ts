@@ -27,10 +27,10 @@ import { SettingsStore } from './settings/settings.store';
 export class App {
   protected readonly auth = inject(AuthStore);
   protected readonly mainStyles = css({
-    pt: 'header',
+    paddingBlockStart: 'header',
     // Together with the last section's own padding, the 30px the old pages ended with.
-    pb: '15',
-    minHeight: 'calc(100dvh - token(sizes.footer))',
+    paddingBlockEnd: '15',
+    minH: 'calc(100dvh - token(sizes.footer))',
   });
 
   constructor() {

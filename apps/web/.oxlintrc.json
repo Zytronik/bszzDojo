@@ -1,8 +1,10 @@
 {
   "$schema": "../../node_modules/oxlint/configuration_schema.json",
   "extends": ["../../.oxlintrc.json"],
-  "env": { "browser": true },
-  "jsPlugins": ["@pandacss/eslint-plugin"],
+  "env": {
+    "browser": true
+  },
+  "jsPlugins": ["./oxlint-panda-plugin.mjs"],
   "rules": {
     "@pandacss/file-not-included": "error",
     "@pandacss/no-config-function-in-source": "error",
@@ -16,6 +18,8 @@
     "@pandacss/no-invalid-token-paths": "error",
     "@pandacss/no-property-renaming": "error",
     "@pandacss/no-unsafe-token-fn-usage": "error",
-    "@pandacss/prefer-unified-property-style": "error"
+    "@pandacss/prefer-unified-property-style": "error",
+    "@pandacss/no-physical-properties": "error",
+    "@pandacss/prefer-shorthand-properties": "error"
   }
 }
