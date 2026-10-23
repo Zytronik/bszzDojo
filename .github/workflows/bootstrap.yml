@@ -21,7 +21,12 @@ jobs:
       - name: Install
         run: |
           set -o pipefail
-          npm install --no-audit --no-fund 2>&1 | tee /tmp/install.log
+          if ! npm install --no-audit --no-fund 2>&1 | tee /tmp/install.log; then
+            echo "::warning::npm $(npm -v) failed, retrying with npm 11"
+            rm -rf node_modules package-lock.json
+            npx -y npm@11 install --no-audit --no-fund 2>&1 | tee /tmp/install.log
+            echo "::warning::installed with npm 11"
+          fi
       - name: Report install errors
         if: failure()
         run: grep -E 'npm (error|ERR)' /tmp/install.log | head -40 | while IFS= read -r line; do echo "::error::$line"; done
