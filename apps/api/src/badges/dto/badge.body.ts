@@ -73,10 +73,8 @@ export class BadgeBody implements BadgeInput {
   @IsBoolean()
   is3d: boolean | null;
 
-  /** Optional for every kind. @example 'U18' */
-  @ApiProperty({ type: String, nullable: true })
-  @IsOptional()
+  /** Required for every kind; free text for now. @example 'U18' */
   @IsString()
   @MaxLength(AGE_CATEGORY_MAX_LENGTH)
-  ageCategory: string | null;
+  ageCategory: string;
 }

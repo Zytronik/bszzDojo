@@ -84,12 +84,12 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
   (`PATCH /api/users/me`), no admin approval.
-- **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record and
-  delete themselves (`/api/users/me/badges`), no admin approval and no requests. The kind (`SM`,
+- **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record in the
+  settings and delete on their own profile (`/api/users/me/badges`), no admin approval and no requests. The kind (`SM`,
   `Clubturnier`, `Turnier`) decides the fields (`BADGE_KIND_FIELDS`): SM has location, team and
-  indoor/outdoor; Clubturnier the event name; Turnier all of them. Year, bow type and distance are
-  always required, 3D only applies outdoors, the age category is optional free text until the
-  club defines a list. `normalizeBadgeInput` clears what the kind doesn't use and
+  indoor/outdoor; Clubturnier the event name; Turnier all of them. Year, bow type, distance and the
+  age category (free text until the club defines a list) are always required, 3D only applies
+  outdoors. `normalizeBadgeInput` clears what the kind doesn't use and
   `badgeFieldErrors` validates in the form and the API. Placings from the old app are a
   "Turnier" with only the old name (as `eventName`), year and place, so the details are nullable.
   Show them with `badgeTitle` / `badgeDetails` (`BadgeRow`).

@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -31,12 +30,6 @@ import { BadgeResponse } from './dto/badge.response';
 @Controller('users/me/badges')
 export class BadgesController {
   constructor(private readonly badges: BadgesService) {}
-
-  /** The logged-in user's placings ("Auszeichnungen"), newest year first. */
-  @Get()
-  list(@CurrentUser() user: AuthUser): Promise<BadgeResponse[]> {
-    return this.badges.list(user.id);
-  }
 
   /** Records a placing for the logged-in user; no admin approval. */
   @Post()

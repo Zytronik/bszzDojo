@@ -53,8 +53,8 @@ export const BADGE_KIND_FIELDS: Record<
 
 /**
  * Body of `POST /api/users/me/badges`. Fields a kind doesn't ask for (`BADGE_KIND_FIELDS`) are
- * `null`; `is3d` only for outdoor placings. The age category is free text until the club settles
- * on a list.
+ * `null`; `is3d` only for outdoor placings. The age category is required free text until the club
+ * settles on a list.
  */
 export interface BadgeInput {
   kind: BadgeKind;
@@ -68,17 +68,18 @@ export interface BadgeInput {
   team: boolean | null;
   venue: BadgeVenue | null;
   is3d: boolean | null;
-  ageCategory: string | null;
+  ageCategory: string;
 }
 
 /**
  * A recorded placing. Placings imported from the old app only have a name (as `eventName`), year
  * and place, so the other details can be `null`.
  */
-export interface Badge extends Omit<BadgeInput, 'bowType' | 'distance'> {
+export interface Badge extends Omit<BadgeInput, 'bowType' | 'distance' | 'ageCategory'> {
   id: string;
   bowType: BowTypeId | null;
   distance: number | null;
+  ageCategory: string | null;
 }
 
 /** A placing while it's being entered: anything can still be empty. */
@@ -153,7 +154,9 @@ export function badgeFieldErrors(
       errors[field] = `Höchstens ${BADGE_TEXT_MAX_LENGTH} Zeichen.`;
     }
   }
-  if ((badge.ageCategory?.length ?? 0) > AGE_CATEGORY_MAX_LENGTH) {
+  if (!badge.ageCategory) {
+    errors.ageCategory = 'Bitte gib die Alterskategorie ein.';
+  } else if (badge.ageCategory.length > AGE_CATEGORY_MAX_LENGTH) {
     errors.ageCategory = `Höchstens ${AGE_CATEGORY_MAX_LENGTH} Zeichen.`;
   }
   return errors;

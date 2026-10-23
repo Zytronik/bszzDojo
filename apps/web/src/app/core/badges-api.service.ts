@@ -9,10 +9,6 @@ import { apiUrl } from './api-url';
 export class BadgesApiService {
   private readonly http = inject(HttpClient);
 
-  mine(): Promise<Badge[]> {
-    return firstValueFrom(this.http.get<Badge[]>(apiUrl('users/me/badges')));
-  }
-
   create(badge: BadgeInput): Promise<Badge> {
     return firstValueFrom(this.http.post<Badge>(apiUrl('users/me/badges'), badge));
   }
