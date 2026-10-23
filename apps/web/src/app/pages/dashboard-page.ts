@@ -15,6 +15,7 @@ import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
 import { MedalList } from '../dashboard/medal-list';
 import { FeedbackMessage } from '../ui/feedback-message';
+import { SkeletonList } from '../ui/skeleton-list';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -22,7 +23,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
 @Component({
   selector: 'app-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage],
+  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage, SkeletonList],
   templateUrl: './dashboard-page.html',
 })
 export class DashboardPage {
@@ -39,7 +40,6 @@ export class DashboardPage {
   protected readonly monthlyTab = signal(this.distanceTabs[0]?.id ?? '');
 
   protected readonly leadStyles = css({ mb: '10' });
-  protected readonly mutedStyles = css({ layerStyle: 'muted' });
 
   protected monthName(month: number): string {
     return MONTH_NAMES[month - 1] ?? '';

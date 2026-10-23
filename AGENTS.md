@@ -160,7 +160,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   injection), and `@if` / `@for` control flow. No `zone.js`.
 - **State:** app-wide state lives in NgRx SignalStores (`*.store.ts`, `providedIn: 'root'`):
   `AuthStore`, `SettingsStore`. Components read store signals and call store methods; only stores
-  call `patchState`. Page data is loaded with `resource()` in the page.
+  call `patchState`. Page data is loaded with `resource()` in the page; while it loads, lists show
+  `<app-skeleton-list>` (and the profile chart `<app-skeleton-chart>`) shaped like the rows they
+  stand in for, never a plain "Wird geladen…".
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
   `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, update
@@ -207,10 +209,10 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     `accent.default`, `status.*`, `medal.*`, `rank.*`, spacing like `gutter`, `section`, `stack`).
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
-    backdrop) and `global-css.ts`.
+    backdrop, skeleton) and `global-css.ts`.
   - `recipes/`: `button`, `container`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
     recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
-    `siteHeader`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
+    `siteHeader`, `skeleton`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
   reject them. The canvas target face is the exception, since canvas can't read CSS tokens.
 - Breakpoints are Bootstrap 3's (`sm` 768px, `md` 992px, `lg` 1200px) so the layout matches

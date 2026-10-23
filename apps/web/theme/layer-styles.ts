@@ -19,4 +19,13 @@ export const layerStyles = defineLayerStyles({
   backdrop: {
     value: { bg: 'bg.overlay' },
   },
+  /** A pulsing placeholder block (`skeleton` recipe) */
+  skeleton: {
+    value: {
+      bg: 'bg.surface',
+      borderRadius: 'sm',
+      animation: 'pulse',
+      '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+    },
+  },
 });

@@ -27,7 +27,7 @@
   } @empty {
   <p>Keine Benutzer vorhanden.</p>
   } } @else if (users.isLoading()) {
-  <p [class]="mutedStyles">Wird geladen…</p>
+  <app-skeleton-list [lines]="2" />
   }
   <app-confirm-dialog
     [open]="userToDelete() !== null"

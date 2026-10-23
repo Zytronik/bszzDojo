@@ -49,6 +49,9 @@ export default defineConfig({
       spin: {
         to: { transform: 'rotate(360deg)' },
       },
+      pulse: {
+        '50%': { opacity: '0.4' },
+      },
     },
   },
   // Recipes are called from TypeScript with variants that are often dynamic (a rank, a status),

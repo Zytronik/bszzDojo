@@ -103,6 +103,22 @@
 />
 } @else {
 <app-section>
-  <p [class]="pageStyles.muted">Wird geladen…</p>
+  <app-skeleton-list [rows]="1" [lines]="3" />
+</app-section>
+<app-section>
+  <h2>Rekorde</h2>
+  <app-skeleton-list [rows]="3" [lines]="3" [rank]="true" />
+</app-section>
+<app-section>
+  <h2>Entwicklung</h2>
+  <app-skeleton-chart />
+</app-section>
+<app-section>
+  <h2>Auszeichnungen</h2>
+  <app-skeleton-list [rows]="2" [lines]="2" />
+</app-section>
+<app-section>
+  <h2>Historie</h2>
+  <app-skeleton-list [rows]="5" [lines]="3" />
 </app-section>
 }

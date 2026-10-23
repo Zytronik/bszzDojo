@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { shownName, type AdminUser } from '@bszz-dojo/shared';
-import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { AdminApiService } from '../admin/admin-api.service';
 import { AuthStore } from '../auth/auth.store';
@@ -15,11 +14,21 @@ import { faDeleteLeft } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
+import { SkeletonList } from '../ui/skeleton-list';
 
 @Component({
   selector: 'app-admin-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, PageTitle, Section, FeedbackMessage, ConfirmDialog, Icon, ShownNamePipe],
+  imports: [
+    RouterLink,
+    PageTitle,
+    Section,
+    FeedbackMessage,
+    ConfirmDialog,
+    Icon,
+    ShownNamePipe,
+    SkeletonList,
+  ],
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
@@ -27,7 +36,6 @@ export class AdminPage {
   private readonly api = inject(AdminApiService);
 
   protected readonly recordStyles = record();
-  protected readonly mutedStyles = css({ layerStyle: 'muted' });
   protected readonly icons = { faDeleteLeft };
   protected readonly formatDate = formatDate;
 
