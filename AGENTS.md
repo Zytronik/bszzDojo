@@ -95,8 +95,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   - **Clubturnier**: event name and distance.
 
   `normalizeBadgeInput` clears what the kind doesn't use and `badgeFieldErrors` validates in the
-  form and the API. Placings from the old app are a "Nationales Turnier" with only the old name
-  (as `eventName`), year and place, so the details are nullable. Show them with `badgeTitle` /
+  form and the API. Placings imported from the old app are a "Nationales Turnier" with only the old
+  name (as `eventName`), year and place, so the details are nullable. Show them with `badgeTitle` /
   `badgeDetails` (`BadgeRow`).
 
 ## Auth
@@ -138,8 +138,6 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Everything that belongs to a user references it with `ON DELETE CASCADE`.
 - There are two databases: **dev** (local development and Vercel preview deployments) and
   **prod** (the production deployment). Never point local development at prod.
-- `npm run legacy:import -w api` copies the old PHP app's MySQL data into an empty database once
-  (`src/database/legacy-import.ts`).
 
 ## API conventions (`apps/api`)
 

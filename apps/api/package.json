@@ -15,7 +15,6 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:deploy": "typeorm migration:run -d dist/database/data-source.js",
-    "legacy:import": "ts-node src/database/legacy-import.ts",
     "swagger:metadata": "ts-node --transpile-only scripts/swagger-metadata.ts"
   },
   "dependencies": {
@@ -42,7 +41,6 @@
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
-    "mysql2": "^3.15.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
   }
