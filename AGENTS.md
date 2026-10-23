@@ -138,8 +138,10 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Everything that belongs to a user references it with `ON DELETE CASCADE`.
 - There are two databases: **dev** (local development and Vercel preview deployments) and
   **prod** (the production deployment). Never point local development at prod.
-- `npm run legacy:import -w api` copies the old PHP app's MySQL data into an empty database once
-  (`src/database/legacy-import.ts`).
+- `npm run legacy:import -w api` copies the old PHP app's data into an empty database once
+  (`src/database/legacy-import.ts`), from a phpMyAdmin export (`LEGACY_SQL_DUMP`, read by
+  `legacy-dump.ts`) or a MySQL connection (`LEGACY_MYSQL_URL`). Old timestamps are UTC; a round's
+  day is their Swiss date.
 
 ## API conventions (`apps/api`)
 

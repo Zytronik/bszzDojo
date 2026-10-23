@@ -3,8 +3,9 @@
  *
  *   npm run legacy:import -w api
  *
- * Reads `LEGACY_MYSQL_URL` and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from `apps/api/.env`, runs
- * pending migrations and copies users, scores and placings (as "Nationales Turnier" under their
+ * Reads the old data from a phpMyAdmin SQL export (`LEGACY_SQL_DUMP`, a file path) or a MySQL
+ * connection (`LEGACY_MYSQL_URL`), and `DATABASE_URL_UNPOOLED` / `DATABASE_URL` from
+ * `apps/api/.env` (or the environment). It runs pending migrations and copies users, scores and placings (as "Nationales Turnier" under their
  * old name). It refuses to run if the Postgres database already has users, so it can't import
  * twice. Passwords keep working: the old bcrypt hashes are copied. Emails, badge requests, open
  * password reset links and "auto login" cookies are not copied. Usernames with characters that
@@ -23,22 +24,24 @@ import {
   isRankId,
   isRecord,
   isTargetSize,
+  todayInClub,
   normalizeDisplayName,
   usernameKey,
   type BadgePlace,
   type TargetSize,
 } from '@bszz-dojo/shared';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
-import { createConnection, type RowDataPacket } from 'mysql2/promise';
+import { createConnection } from 'mysql2/promise';
 import { DataSource, type EntityManager } from 'typeorm';
 import { compatibleHash } from '../auth/auth.service';
 import { BadgeEntity } from '../badges/badge.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
+import { readDump, type DumpRow } from './legacy-dump';
 import { typeOrmOptions } from './typeorm-options';
 
-interface LegacyUser extends RowDataPacket {
+interface LegacyUser {
   id: number;
   username: string;
   passwordHash: string;
@@ -54,7 +57,7 @@ interface LegacyBadge {
   place: BadgePlace;
 }
 
-interface LegacyScore extends RowDataPacket {
+interface LegacyScore {
   id: number;
   userId: number;
   bowType: string;
@@ -74,14 +77,94 @@ function warn(message: string): void {
   console.warn(`! ${message}`);
 }
 
-/** MySQL `DATETIME` / `DATE` as returned with `dateStrings: true`. */
+/** MySQL `TIMESTAMP` / `DATE` strings, read in UTC (the dump's and our session's time zone). */
 function toDate(value: string | null): Date {
   if (!value) return new Date();
   return new Date(value.includes(' ') ? `${value.replace(' ', 'T')}Z` : `${value}T00:00:00Z`);
 }
 
+/**
+ * The old app stored the day a round was shot as midnight Swiss time, e.g. 18 June as
+ * `2023-06-17 22:00:00` UTC, so the day is the Swiss date of that moment.
+ */
 function toIsoDay(value: string): string {
-  return value.slice(0, 10);
+  return todayInClub(toDate(value));
+}
+
+type Row = Record<string, unknown>;
+
+function text(row: Row, column: string): string | null {
+  const value = row[column];
+  if (value === null || value === undefined) return null;
+  return value instanceof Date ? value.toISOString() : String(value);
+}
+
+function int(row: Row, column: string): number {
+  const value = Number(row[column]);
+  if (!Number.isFinite(value)) throw new Error(`${column} is not a number: ${String(row[column])}`);
+  return value;
+}
+
+function toLegacyUser(row: Row): LegacyUser {
+  return {
+    id: int(row, 'id'),
+    username: text(row, 'username') ?? '',
+    passwordHash: text(row, 'passwordHash') ?? '',
+    role: text(row, 'role'),
+    rank: text(row, 'rank'),
+    badges: text(row, 'badges'),
+    createdAt: text(row, 'createdAt'),
+  };
+}
+
+function toLegacyScore(row: Row): LegacyScore {
+  return {
+    id: int(row, 'id'),
+    userId: int(row, 'userId'),
+    bowType: text(row, 'bowType') ?? '',
+    targetSize: int(row, 'targetSize'),
+    distance: int(row, 'distance'),
+    isSpot: int(row, 'isSpot'),
+    tens: int(row, 'tens'),
+    nines: int(row, 'nines'),
+    result: int(row, 'result'),
+    numberOfArrows: int(row, 'numberOfArrows'),
+    createdAt: text(row, 'createdAt') ?? '',
+  };
+}
+
+interface LegacyData {
+  users: LegacyUser[];
+  scores: LegacyScore[];
+}
+
+function byId<T extends { id: number }>(rows: T[]): T[] {
+  return rows.toSorted((a, b) => a.id - b.id);
+}
+
+function readDumpFile(path: string): LegacyData {
+  const tables = readDump(readFileSync(path, 'utf8'));
+  const rows = (table: string): DumpRow[] => tables.get(table) ?? [];
+  return {
+    users: byId(rows('user').map(toLegacyUser)),
+    scores: byId(rows('score').map(toLegacyScore)),
+  };
+}
+
+async function readMysql(url: string): Promise<LegacyData> {
+  const mysql = await createConnection({ uri: url, dateStrings: true });
+  try {
+    // TIMESTAMP columns come back in the session's time zone; UTC like the dump.
+    await mysql.query("SET time_zone = '+00:00'");
+    const [users] = await mysql.query('SELECT * FROM `user` ORDER BY id');
+    const [scores] = await mysql.query('SELECT * FROM `score` ORDER BY id');
+    return {
+      users: (users as Row[]).map(toLegacyUser),
+      scores: (scores as Row[]).map(toLegacyScore),
+    };
+  } finally {
+    await mysql.end();
+  }
 }
 
 /**
@@ -243,20 +326,20 @@ async function copyScores(
 
 async function main(): Promise<void> {
   if (existsSync('.env')) process.loadEnvFile('.env');
+  const dumpPath = process.env['LEGACY_SQL_DUMP'];
   const mysqlUrl = process.env['LEGACY_MYSQL_URL'];
   const postgresUrl = process.env['DATABASE_URL_UNPOOLED'] || process.env['DATABASE_URL'];
-  if (!mysqlUrl || !postgresUrl) throw new Error('LEGACY_MYSQL_URL and DATABASE_URL must be set');
+  if ((!dumpPath && !mysqlUrl) || !postgresUrl) {
+    throw new Error('LEGACY_SQL_DUMP or LEGACY_MYSQL_URL, and DATABASE_URL must be set');
+  }
 
-  const mysql = await createConnection({ uri: mysqlUrl, dateStrings: true });
+  const { users, scores } = dumpPath ? readDumpFile(dumpPath) : await readMysql(mysqlUrl ?? '');
   const postgres = await new DataSource(typeOrmOptions(postgresUrl)).initialize();
   try {
     await postgres.runMigrations();
     if ((await postgres.getRepository(UserEntity).count()) > 0) {
       throw new Error('The Postgres database already has users; import only into an empty one.');
     }
-
-    const [users] = await mysql.query<LegacyUser[]>('SELECT * FROM `user` ORDER BY id');
-    const [scores] = await mysql.query<LegacyScore[]>('SELECT * FROM `score` ORDER BY id');
 
     await postgres.transaction(async (manager) => {
       const userIds = await copyUsers(manager, users);
@@ -267,7 +350,6 @@ async function main(): Promise<void> {
       warnings.length === 0 ? 'No warnings.' : `${warnings.length} warning(s), see above.`,
     );
   } finally {
-    await mysql.end();
     await postgres.destroy();
   }
 }
