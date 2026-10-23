@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/Zytronik/bszzDojo/compare/v1.1.0...v2.0.0) (2026-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* the email field and the forgot/reset password endpoints are gone; every user payload has a displayName.
+
+### Features
+
+* identify users by username only, add optional display name ([#21](https://github.com/Zytronik/bszzDojo/issues/21)) ([9db3411](https://github.com/Zytronik/bszzDojo/commit/9db34116522f1694c4f9ab7729ef8400737ad51d))
+* **web:** add field errors, form messages and loading buttons ([#26](https://github.com/Zytronik/bszzDojo/issues/26)) ([f0425ac](https://github.com/Zytronik/bszzDojo/commit/f0425ac4d8eb206f5db8a83f7a5a6700dc672c6a))
+
+
+### Bug Fixes
+
+* **api:** restore the swagger metadata on turbo cache hits ([#25](https://github.com/Zytronik/bszzDojo/issues/25)) ([41c19e9](https://github.com/Zytronik/bszzDojo/commit/41c19e9f137b50dd06bccbefb6bc36284a4f549d))
+* **web:** let /api and /api-json bypass the service worker ([#24](https://github.com/Zytronik/bszzDojo/issues/24)) ([ee47803](https://github.com/Zytronik/bszzDojo/commit/ee47803d87d168c026748ccfbfe27b8b85314a5a))
+
 ## [1.1.0](https://github.com/Zytronik/bszzDojo/compare/v1.0.0...v1.1.0) (2026-10-23)
 
 
