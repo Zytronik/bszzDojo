@@ -1,0 +1,11 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      // The Swagger metadata is generated into src/ and bundled from there by Vercel, so a cache
+      // hit has to restore it along with dist/.
+      "outputs": ["dist/**", "src/metadata.ts"]
+    }
+  }
+}
