@@ -9,9 +9,16 @@ import { skeleton } from 'styled-system/recipes';
 @Component({
   selector: 'app-skeleton-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { role: 'status', 'aria-busy': 'true' },
+  host: {
+    '[attr.role]': "ghost() ? null : 'status'",
+    '[attr.aria-busy]': 'ghost() ? null : true',
+    '[attr.aria-hidden]': 'ghost() || null',
+    '[class]': "ghost() ? ghostStyles : ''",
+  },
   template: `
-    <span [class]="srOnly">Wird geladen…</span>
+    @if (!ghost()) {
+      <span [class]="srOnly">Wird geladen…</span>
+    }
     @for (row of indexes(); track row) {
       <div [class]="styles.row" aria-hidden="true">
         @if (rank()) {
@@ -34,8 +41,11 @@ export class SkeletonList {
   readonly rows = input(5);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
+  /** Invisible, only holding the space (see `LoadingFrame`). */
+  readonly ghost = input(false);
 
   protected readonly indexes = computed(() => Array.from({ length: this.rows() }, (_, i) => i));
   protected readonly styles = skeleton();
   protected readonly srOnly = css({ srOnly: true });
+  protected readonly ghostStyles = css({ visibility: 'hidden', '& *': { animation: 'none' } });
 }

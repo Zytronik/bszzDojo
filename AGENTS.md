@@ -160,9 +160,10 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   injection), and `@if` / `@for` control flow. No `zone.js`.
 - **State:** app-wide state lives in NgRx SignalStores (`*.store.ts`, `providedIn: 'root'`):
   `AuthStore`, `SettingsStore`. Components read store signals and call store methods; only stores
-  call `patchState`. Page data is loaded with `resource()` in the page; while it loads, lists show
-  `<app-skeleton-list>` (and the profile chart `<app-skeleton-chart>`) shaped like the rows they
-  stand in for, never a plain "Wird geladen…".
+  call `patchState`. Page data is loaded with `resource()` in the page; lists sit in
+  `<app-loading-frame>`, which shows a skeleton shaped like their rows while loading (`chart` for
+  the progress chart) and keeps it invisible afterwards, so the area never shrinks below it and
+  the page doesn't jump. Never a plain "Wird geladen…".
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
   `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, update

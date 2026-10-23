@@ -14,7 +14,7 @@ import { faDeleteLeft } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
-import { SkeletonList } from '../ui/skeleton-list';
+import { LoadingFrame } from '../ui/loading-frame';
 
 @Component({
   selector: 'app-admin-page',
@@ -27,7 +27,7 @@ import { SkeletonList } from '../ui/skeleton-list';
     ConfirmDialog,
     Icon,
     ShownNamePipe,
-    SkeletonList,
+    LoadingFrame,
   ],
   templateUrl: './admin-page.html',
 })
