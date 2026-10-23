@@ -11,8 +11,8 @@ log in with username and password, record their rounds ("Scores"), compare thems
 leaderboards and look at each other's profiles. Admins hand out club badges ("Abzeichen") and
 tournament placings ("Auszeichnungen") and manage users. It's an installable PWA.
 
-- `apps/api`: NestJS 11. REST under the global prefix `/api` (Swagger UI at `/api/docs`, locally
-  only), Postgres through TypeORM. The database is Neon (Vercel Postgres).
+- `apps/api`: NestJS 11. REST under the global prefix `/api` (Swagger UI at `/api`, OpenAPI JSON
+  at `/api-json`), Postgres through TypeORM. The database is Neon (Vercel Postgres).
 - `apps/web`: Angular 21, zoneless, standalone components, NgRx SignalStore for app-wide state,
   Panda CSS for styling, `@angular/service-worker` for the PWA. Dev server on :4200 proxies `/api`
   to :3000.
@@ -133,6 +133,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Those file suffixes are required: the `@nestjs/swagger` CLI plugin only reads those files
   (see `nest-cli.json`; add new suffixes there). Document fields with JSDoc comments instead of
   `@ApiProperty()`.
+- Vercel bundles `src/main.ts` without the Nest CLI, so the plugin's output is generated into
+  `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
+  git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
 - One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
   `badges/`, `admin/`, `mail/`, `health/`); cross-cutting helpers in `common/`.
 - Errors are Nest HTTP exceptions with a German message the web app can show as is.

@@ -24,6 +24,8 @@
     }
   },
   "rewrites": [
+    { "source": "/api", "destination": { "service": "api" } },
+    { "source": "/api-json", "destination": { "service": "api" } },
     { "source": "/api/(.*)", "destination": { "service": "api" } },
     { "source": "/(.*)", "destination": { "service": "web" } }
   ]

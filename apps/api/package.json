@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "nest build",
-    "dev": "npm run migration:run && nest start --watch",
+    "build": "npm run swagger:metadata && nest build",
+    "dev": "npm run swagger:metadata && npm run migration:run && nest start --watch",
     "start": "node dist/main",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run swagger:metadata && tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "clean": "rm -rf dist .turbo",
@@ -15,7 +15,8 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:deploy": "typeorm migration:run -d dist/database/data-source.js",
-    "legacy:import": "ts-node src/database/legacy-import.ts"
+    "legacy:import": "ts-node src/database/legacy-import.ts",
+    "swagger:metadata": "ts-node --transpile-only scripts/swagger-metadata.ts"
   },
   "dependencies": {
     "@bszz-dojo/shared": "*",
