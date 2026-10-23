@@ -170,7 +170,8 @@ export class AuthService {
   private appUrl(): string {
     const configured = this.config.get<string>('APP_URL');
     if (configured) return configured.replace(/\/$/, '');
-    const vercelUrl = this.config.get<string>('VERCEL_BRANCH_URL') ?? this.config.get<string>('VERCEL_URL');
+    const vercelUrl =
+      this.config.get<string>('VERCEL_BRANCH_URL') ?? this.config.get<string>('VERCEL_URL');
     return vercelUrl ? `https://${vercelUrl}` : 'http://localhost:4200';
   }
 

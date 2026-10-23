@@ -11,11 +11,7 @@ import {
   type UserSettings,
 } from '@bszz-dojo/shared';
 import { ILike, Repository } from 'typeorm';
-import {
-  hashPassword,
-  passwordMatches,
-  rethrowUniqueViolation,
-} from '../auth/auth.service';
+import { hashPassword, passwordMatches, rethrowUniqueViolation } from '../auth/auth.service';
 import { TokenService } from '../auth/token.service';
 import { escapeLike } from '../common/escape-like';
 import { toUserProfile } from './user-profile';

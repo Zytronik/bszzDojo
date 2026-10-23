@@ -4,9 +4,9 @@
 />
 
 @if (loadError()) {
-  <app-section>
-    <app-feedback-message [feedback]="loadError()" />
-  </app-section>
+<app-section>
+  <app-feedback-message [feedback]="loadError()" />
+</app-section>
 }
 
 <app-section>
@@ -14,9 +14,9 @@
   <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
   <app-tabs [tabs]="distanceTabs" [(selected)]="allTimeTab">
     @if (rankings.hasValue()) {
-      <app-leaderboard-list [entries]="entries(rankings.value().allTime, allTimeTab())" />
+    <app-leaderboard-list [entries]="entries(rankings.value().allTime, allTimeTab())" />
     } @else if (rankings.isLoading()) {
-      <p [class]="mutedStyles">Wird geladen…</p>
+    <p [class]="mutedStyles">Wird geladen…</p>
     }
   </app-tabs>
 </app-section>
@@ -26,9 +26,9 @@
   <p [class]="leadStyles">Die besten monatlichen Resultate, mit 30 Pfeilen und Faktor</p>
   <app-tabs [tabs]="distanceTabs" [(selected)]="monthlyTab">
     @if (rankings.hasValue()) {
-      <app-leaderboard-list [entries]="entries(rankings.value().monthly, monthlyTab())" />
+    <app-leaderboard-list [entries]="entries(rankings.value().monthly, monthlyTab())" />
     } @else if (rankings.isLoading()) {
-      <p [class]="mutedStyles">Wird geladen…</p>
+    <p [class]="mutedStyles">Wird geladen…</p>
     }
   </app-tabs>
 </app-section>
@@ -37,8 +37,8 @@
   <h2>Top 10 - Auszeichnungen</h2>
   <p [class]="leadStyles">Die Schützen mit den meisten Auszeichnungen</p>
   @if (rankings.hasValue()) {
-    <app-medal-list [standings]="rankings.value().medals" />
+  <app-medal-list [standings]="rankings.value().medals" />
   } @else if (rankings.isLoading()) {
-    <p [class]="mutedStyles">Wird geladen…</p>
+  <p [class]="mutedStyles">Wird geladen…</p>
   }
 </app-section>

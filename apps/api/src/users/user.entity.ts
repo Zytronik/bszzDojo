@@ -1,12 +1,5 @@
 import type { RankId, UserRole, UserSettings } from '@bszz-dojo/shared';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 // Column and constraint names are explicit so they match the hand-written initial migration.
 @Entity('users')

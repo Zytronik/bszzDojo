@@ -128,7 +128,10 @@ function parseBadges(raw: string | null, username: string): LegacyBadge[] {
   return badges;
 }
 
-async function copyUsers(manager: EntityManager, users: LegacyUser[]): Promise<Map<number, string>> {
+async function copyUsers(
+  manager: EntityManager,
+  users: LegacyUser[],
+): Promise<Map<number, string>> {
   const ids = new Map<number, string>();
   const takenKeys = new Set<string>();
   const takenEmails = new Set<string>();
@@ -138,7 +141,9 @@ async function copyUsers(manager: EntityManager, users: LegacyUser[]): Promise<M
     let key = usernameKey(username);
     if (takenKeys.has(key)) {
       const renamed = `${username.slice(0, USERNAME_MAX_LENGTH - 4)} ${legacy.id}`;
-      warn(`username "${username}" exists twice ignoring case; user ${legacy.id} is now "${renamed}"`);
+      warn(
+        `username "${username}" exists twice ignoring case; user ${legacy.id} is now "${renamed}"`,
+      );
       username = renamed;
       key = usernameKey(renamed);
     }
@@ -191,11 +196,14 @@ async function copyScores(
       continue;
     }
     if (!isBowTypeId(legacy.bowType) || legacy.numberOfArrows < 1) {
-      warn(`score ${legacy.id}: bow type "${legacy.bowType}" or ${legacy.numberOfArrows} arrows invalid, skipped`);
+      warn(
+        `score ${legacy.id}: bow type "${legacy.bowType}" or ${legacy.numberOfArrows} arrows invalid, skipped`,
+      );
       continue;
     }
     const targetSize = Number(legacy.targetSize);
-    if (!isTargetSize(targetSize)) warn(`score ${legacy.id}: unusual target size ${targetSize}cm, kept`);
+    if (!isTargetSize(targetSize))
+      warn(`score ${legacy.id}: unusual target size ${targetSize}cm, kept`);
     await manager.insert(ScoreEntity, {
       id: randomUUID(),
       userId,
@@ -269,7 +277,9 @@ async function main(): Promise<void> {
           `${copiedRequests}/${requests.length} badge requests.`,
       );
     });
-    console.log(warnings.length === 0 ? 'No warnings.' : `${warnings.length} warning(s), see above.`);
+    console.log(
+      warnings.length === 0 ? 'No warnings.' : `${warnings.length} warning(s), see above.`,
+    );
   } finally {
     await mysql.end();
     await postgres.destroy();

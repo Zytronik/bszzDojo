@@ -13,6 +13,11 @@ export class BadgesService {
   ) {}
 
   async request(userId: string, input: BadgeRequestInput): Promise<void> {
-    await this.requests.insert({ id: randomUUID(), userId, name: input.name.trim(), place: input.place });
+    await this.requests.insert({
+      id: randomUUID(),
+      userId,
+      name: input.name.trim(),
+      place: input.place,
+    });
   }
 }

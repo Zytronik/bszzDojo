@@ -7,7 +7,13 @@ import { toBadge } from '../badges/badge-mapper';
 import { byShotOn, toScore } from '../scores/score-mapper';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
-import { history, personalBests, profileStats, progress, type ProfileRound } from './profile-builder';
+import {
+  history,
+  personalBests,
+  profileStats,
+  progress,
+  type ProfileRound,
+} from './profile-builder';
 
 @Injectable()
 export class ProfilesService {

@@ -70,7 +70,13 @@ export class SubmitScorePage {
   protected async submit(): Promise<void> {
     const value = this.form.getRawValue();
     const { distance, tens, nines, arrows, result } = value;
-    if (distance === null || tens === null || nines === null || arrows === null || result === null) {
+    if (
+      distance === null ||
+      tens === null ||
+      nines === null ||
+      arrows === null ||
+      result === null
+    ) {
       this.feedback.set(failure('Bitte fülle alle Felder aus.'));
       return;
     }

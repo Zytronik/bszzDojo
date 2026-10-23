@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, resource, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  resource,
+  signal,
+} from '@angular/core';
 import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
@@ -38,7 +45,10 @@ export class DashboardPage {
     return MONTH_NAMES[month - 1] ?? '';
   }
 
-  protected entries(boards: readonly DistanceLeaderboard[], tab: string): DistanceLeaderboard['entries'] {
+  protected entries(
+    boards: readonly DistanceLeaderboard[],
+    tab: string,
+  ): DistanceLeaderboard['entries'] {
     return boards.find((board) => String(board.distance) === tab)?.entries ?? [];
   }
 

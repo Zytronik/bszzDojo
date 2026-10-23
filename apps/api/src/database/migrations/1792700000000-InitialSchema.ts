@@ -19,7 +19,9 @@ export class InitialSchema1792700000000 implements MigrationInterface {
         CONSTRAINT "PK_users" PRIMARY KEY ("id")
       )
     `);
-    await queryRunner.query(`CREATE UNIQUE INDEX "UQ_users_username_key" ON "users" ("username_key")`);
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "UQ_users_username_key" ON "users" ("username_key")`,
+    );
     await queryRunner.query(`CREATE UNIQUE INDEX "UQ_users_email" ON "users" ("email")`);
 
     await queryRunner.query(`
@@ -32,7 +34,9 @@ export class InitialSchema1792700000000 implements MigrationInterface {
         CONSTRAINT "PK_refresh_tokens" PRIMARY KEY ("id")
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_refresh_tokens_user_id" ON "refresh_tokens" ("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_refresh_tokens_user_id" ON "refresh_tokens" ("user_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "password_resets" (
@@ -44,7 +48,9 @@ export class InitialSchema1792700000000 implements MigrationInterface {
         CONSTRAINT "PK_password_resets" PRIMARY KEY ("id")
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_password_resets_user_id" ON "password_resets" ("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_password_resets_user_id" ON "password_resets" ("user_id")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "scores" (
@@ -63,8 +69,12 @@ export class InitialSchema1792700000000 implements MigrationInterface {
         CONSTRAINT "PK_scores" PRIMARY KEY ("id")
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_scores_user_shot_on" ON "scores" ("user_id", "shot_on")`);
-    await queryRunner.query(`CREATE INDEX "IDX_scores_distance_arrows" ON "scores" ("distance", "arrows")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_scores_user_shot_on" ON "scores" ("user_id", "shot_on")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_scores_distance_arrows" ON "scores" ("distance", "arrows")`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "badges" (
@@ -89,10 +99,18 @@ export class InitialSchema1792700000000 implements MigrationInterface {
         CONSTRAINT "PK_badge_requests" PRIMARY KEY ("id")
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_badge_requests_user_id" ON "badge_requests" ("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_badge_requests_user_id" ON "badge_requests" ("user_id")`,
+    );
 
     // Everything belonging to a user goes when the account is deleted.
-    for (const table of ['refresh_tokens', 'password_resets', 'scores', 'badges', 'badge_requests']) {
+    for (const table of [
+      'refresh_tokens',
+      'password_resets',
+      'scores',
+      'badges',
+      'badge_requests',
+    ]) {
       await queryRunner.query(`
         ALTER TABLE "${table}"
         ADD CONSTRAINT "FK_${table}_user" FOREIGN KEY ("user_id")
@@ -102,7 +120,13 @@ export class InitialSchema1792700000000 implements MigrationInterface {
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    for (const table of ['badge_requests', 'badges', 'scores', 'password_resets', 'refresh_tokens']) {
+    for (const table of [
+      'badge_requests',
+      'badges',
+      'scores',
+      'password_resets',
+      'refresh_tokens',
+    ]) {
       await queryRunner.query(`DROP TABLE "${table}"`);
     }
     await queryRunner.query(`DROP TABLE "users"`);

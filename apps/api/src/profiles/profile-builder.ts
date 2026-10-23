@@ -47,7 +47,9 @@ export function progress(rounds: readonly ProfileRound[]): DistanceProgress[] {
     const atDistance = rounds.filter((round) => round.distance === distance);
     return {
       distance,
-      series: BOW_TYPE_IDS.filter((bowType) => atDistance.some((round) => round.bowType === bowType))
+      series: BOW_TYPE_IDS.filter((bowType) =>
+        atDistance.some((round) => round.bowType === bowType),
+      )
         .toSorted()
         .map((bowType) => ({
           bowType,

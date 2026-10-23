@@ -22,7 +22,15 @@ import {
 } from 'chart.js';
 import { SettingsStore } from '../settings/settings.store';
 
-Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Legend,
+  Tooltip,
+);
 
 /**
  * One line per bow type over every day any of them was shot. The old chart labelled the x axis
@@ -31,12 +39,16 @@ Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryS
 type ProgressChartData = ChartData<'line', (number | null)[], string>;
 
 function chartData(progress: DistanceProgress): ProgressChartData {
-  const days = [...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn)))].toSorted();
+  const days = [
+    ...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn))),
+  ].toSorted();
   // Several rounds on one day: one x position each, in the order they were entered.
   const slots: string[] = [];
   for (const day of days) {
     const perDay = Math.max(
-      ...progress.series.map((series) => series.points.filter((point) => point.shotOn === day).length),
+      ...progress.series.map(
+        (series) => series.points.filter((point) => point.shotOn === day).length,
+      ),
     );
     for (let index = 0; index < perDay; index++) slots.push(day);
   }

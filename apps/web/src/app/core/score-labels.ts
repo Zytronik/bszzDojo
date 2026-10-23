@@ -1,4 +1,11 @@
-import { BOW_TYPES, formatGermanDate, targetLabel, type BowTypeId, type IsoDate, type ScoreInput } from '@bszz-dojo/shared';
+import {
+  BOW_TYPES,
+  formatGermanDate,
+  targetLabel,
+  type BowTypeId,
+  type IsoDate,
+  type ScoreInput,
+} from '@bszz-dojo/shared';
 
 export function bowTypeName(bowType: BowTypeId): string {
   return BOW_TYPES[bowType].name;

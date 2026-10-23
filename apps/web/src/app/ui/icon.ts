@@ -29,7 +29,12 @@ export class Icon {
   readonly icon = input.required<IconDefinition>();
   readonly label = input<string>('');
 
-  protected readonly styles = css({ display: 'inline-block', height: '1em', width: 'auto', overflow: 'visible' });
+  protected readonly styles = css({
+    display: 'inline-block',
+    height: '1em',
+    width: 'auto',
+    overflow: 'visible',
+  });
   protected readonly viewBox = computed(() => {
     const [width, height] = this.icon().icon;
     return `0 0 ${width} ${height}`;

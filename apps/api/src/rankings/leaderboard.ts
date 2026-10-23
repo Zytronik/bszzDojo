@@ -42,9 +42,13 @@ function compareRounds(a: AdjustedRound, b: AdjustedRound): number {
 export function buildLeaderboard(rounds: readonly LeaderboardRound[]): LeaderboardEntry[] {
   const bestPerUser = new Map<string, AdjustedRound>();
   for (const round of rounds) {
-    const adjusted: AdjustedRound = { ...round, adjusted: adjustedResult(round.result, round.bowType) };
+    const adjusted: AdjustedRound = {
+      ...round,
+      adjusted: adjustedResult(round.result, round.bowType),
+    };
     const best = bestPerUser.get(round.userId);
-    if (best === undefined || compareRounds(adjusted, best) < 0) bestPerUser.set(round.userId, adjusted);
+    if (best === undefined || compareRounds(adjusted, best) < 0)
+      bestPerUser.set(round.userId, adjusted);
   }
   return [...bestPerUser.values()]
     .toSorted(compareRounds)
@@ -73,7 +77,13 @@ export interface BadgeHolder {
 export function buildMedalStandings(badges: readonly BadgeHolder[]): MedalStanding[] {
   const standings = new Map<string, Omit<MedalStanding, 'rank'>>();
   for (const { userId, username, place } of badges) {
-    const standing = standings.get(userId) ?? { username, gold: 0, silver: 0, bronze: 0, points: 0 };
+    const standing = standings.get(userId) ?? {
+      username,
+      gold: 0,
+      silver: 0,
+      bronze: 0,
+      points: 0,
+    };
     if (place === 1) standing.gold += 1;
     if (place === 2) standing.silver += 1;
     if (place === 3) standing.bronze += 1;

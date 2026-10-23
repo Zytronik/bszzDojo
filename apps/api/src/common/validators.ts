@@ -6,7 +6,9 @@ export function IsUsername(options?: ValidationOptions): PropertyDecorator {
   return ValidateBy(
     {
       name: 'isUsername',
-      validator: { validate: (value: unknown): boolean => typeof value === 'string' && isValidUsername(value) },
+      validator: {
+        validate: (value: unknown): boolean => typeof value === 'string' && isValidUsername(value),
+      },
     },
     options,
   );
@@ -16,7 +18,9 @@ export function IsEmailAddress(options?: ValidationOptions): PropertyDecorator {
   return ValidateBy(
     {
       name: 'isEmailAddress',
-      validator: { validate: (value: unknown): boolean => typeof value === 'string' && isValidEmail(value) },
+      validator: {
+        validate: (value: unknown): boolean => typeof value === 'string' && isValidEmail(value),
+      },
     },
     options,
   );

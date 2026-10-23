@@ -11,7 +11,9 @@ import { AppUpdateService } from '../core/app-update.service';
     @if (updates.updateReady()) {
       <div [class]="styles" role="status">
         <span>Eine neue Version ist verfügbar.</span>
-        <button type="button" [class]="buttonStyles" (click)="updates.reload()">Aktualisieren</button>
+        <button type="button" [class]="buttonStyles" (click)="updates.reload()">
+          Aktualisieren
+        </button>
       </div>
     }
   `,

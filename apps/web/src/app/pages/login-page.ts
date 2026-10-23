@@ -41,7 +41,12 @@ export class LoginPage {
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly styles = formStyles;
-  protected readonly limits = { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH };
+  protected readonly limits = {
+    USERNAME_MAX_LENGTH,
+    EMAIL_MAX_LENGTH,
+    PASSWORD_MAX_LENGTH,
+    PASSWORD_MIN_LENGTH,
+  };
   protected readonly tabs: TabItem[] = [
     { id: 'login', label: 'Login' },
     { id: 'register', label: 'Register' },

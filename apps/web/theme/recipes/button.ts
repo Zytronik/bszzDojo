@@ -17,7 +17,12 @@ export const button = defineRecipe({
     transitionProperty: 'opacity',
     transitionDuration: 'normal',
     _hover: { opacity: 'muted' },
-    _focusVisible: { outlineWidth: 'thick', outlineStyle: 'solid', outlineColor: 'fg.default', outlineOffset: '2px' },
+    _focusVisible: {
+      outlineWidth: 'thick',
+      outlineStyle: 'solid',
+      outlineColor: 'fg.default',
+      outlineOffset: '2px',
+    },
     _disabled: { opacity: 'inactive', cursor: 'not-allowed', _hover: { opacity: 'inactive' } },
   },
   variants: {

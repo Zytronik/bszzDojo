@@ -19,12 +19,22 @@ let nextDialogId = 0;
           [attr.aria-labelledby]="textId"
           (click)="$event.stopPropagation()"
         >
-          <button type="button" [class]="styles.close" aria-label="Schliessen" (click)="cancelled.emit()">
+          <button
+            type="button"
+            [class]="styles.close"
+            aria-label="Schliessen"
+            (click)="cancelled.emit()"
+          >
             &times;
           </button>
           <p [id]="textId" [class]="textStyles">{{ message() }}</p>
           <ng-content />
-          <button type="button" [class]="buttonStyles" [disabled]="pending()" (click)="confirmed.emit()">
+          <button
+            type="button"
+            [class]="buttonStyles"
+            [disabled]="pending()"
+            (click)="confirmed.emit()"
+          >
             {{ confirmLabel() }}
           </button>
           <button type="button" [class]="buttonStyles" (click)="cancelled.emit()">Abbrechen</button>

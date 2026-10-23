@@ -30,7 +30,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     title: title('Score erfassen'),
   },
-  { path: 'settings', component: SettingsPage, canActivate: [authGuard], title: title('Einstellungen') },
+  {
+    path: 'settings',
+    component: SettingsPage,
+    canActivate: [authGuard],
+    title: title('Einstellungen'),
+  },
   {
     path: 'admin',
     canActivate: [authGuard, adminGuard],

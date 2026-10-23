@@ -34,9 +34,10 @@ export class RankingsService {
       where: { distance: In([...LEADERBOARD_DISTANCES]), arrows: LEADERBOARD_ARROWS },
       relations: { user: true },
     });
-    const rounds = scores.map(
-      (score): LeaderboardRound & { distance: number } => ({ ...score, username: score.user.username }),
-    );
+    const rounds = scores.map((score): LeaderboardRound & { distance: number } => ({
+      ...score,
+      username: score.user.username,
+    }));
 
     const boards = (inMonth: boolean): DistanceLeaderboard[] =>
       LEADERBOARD_DISTANCES.map((distance) => ({
@@ -52,7 +53,11 @@ export class RankingsService {
 
     const badges = await this.badges.find({ relations: { user: true } });
     const medals = buildMedalStandings(
-      badges.map((badge) => ({ userId: badge.userId, username: badge.user.username, place: badge.place })),
+      badges.map((badge) => ({
+        userId: badge.userId,
+        username: badge.user.username,
+        place: badge.place,
+      })),
     );
 
     return { month, allTime: boards(false), monthly: boards(true), medals };

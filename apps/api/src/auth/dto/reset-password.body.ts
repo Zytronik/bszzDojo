@@ -1,4 +1,8 @@
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, type ResetPasswordRequest } from '@bszz-dojo/shared';
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  type ResetPasswordRequest,
+} from '@bszz-dojo/shared';
 import { IsString, Length, MaxLength } from 'class-validator';
 import { VALIDATION_MESSAGES } from '../../common/validation-messages';
 

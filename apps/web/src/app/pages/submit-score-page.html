@@ -1,4 +1,7 @@
-<app-page-title title="Score erfassen" description="Trage hier deine Leistungen im BSZZ Dojo ein." />
+<app-page-title
+  title="Score erfassen"
+  description="Trage hier deine Leistungen im BSZZ Dojo ein."
+/>
 
 <app-section>
   <app-feedback-message [feedback]="feedback()" />
@@ -8,7 +11,7 @@
       <label for="score-bow-type" [class]="styles.field.label">Bogenart:</label>
       <select id="score-bow-type" [class]="styles.input" formControlName="bowType">
         @for (bowType of bowTypes; track bowType.id) {
-          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+        <option [ngValue]="bowType.id">{{ bowType.name }}</option>
         }
       </select>
     </div>
@@ -16,37 +19,50 @@
       <label for="score-target-size" [class]="styles.field.label">Scheibengrösse:</label>
       <select id="score-target-size" [class]="styles.input" formControlName="targetSize">
         @for (size of targetSizes; track size) {
-          <option [ngValue]="size">{{ size }}cm</option>
+        <option [ngValue]="size">{{ size }}cm</option>
         }
       </select>
     </div>
-    <app-checkbox-field label="Spot:" [checked]="form.controls.isSpot.value" (checkedChange)="form.controls.isSpot.setValue($event)" />
+    <app-checkbox-field
+      label="Spot:"
+      [checked]="form.controls.isSpot.value"
+      (checkedChange)="form.controls.isSpot.setValue($event)"
+    />
     <div [class]="styles.field.root">
       <label for="score-date" [class]="styles.field.label">Datum:</label>
-      <input id="score-date" type="date" [class]="styles.input" formControlName="shotOn" [max]="today" [min]="earliestDate" />
+      <input
+        id="score-date"
+        type="date"
+        [class]="styles.input"
+        formControlName="shotOn"
+        [max]="today"
+        [min]="earliestDate"
+      />
     </div>
     @for (field of numberFields; track field.name) {
-      <div [class]="styles.field.root">
-        <label [for]="'score-' + field.name" [class]="styles.field.label">{{ field.label }}</label>
-        <input
-          [id]="'score-' + field.name"
-          type="number"
-          inputmode="numeric"
-          min="0"
-          [max]="field.max"
-          [class]="styles.input"
-          [formControlName]="field.name"
-        />
-      </div>
+    <div [class]="styles.field.root">
+      <label [for]="'score-' + field.name" [class]="styles.field.label">{{ field.label }}</label>
+      <input
+        [id]="'score-' + field.name"
+        type="number"
+        inputmode="numeric"
+        min="0"
+        [max]="field.max"
+        [class]="styles.input"
+        [formControlName]="field.name"
+      />
+    </div>
     }
     <button type="submit" [class]="styles.button" [disabled]="pending()">Speichern</button>
   </form>
 </app-section>
 
 @if (auth.isAdmin()) {
-  <app-section>
-    <h2>Scheibe (Beta)</h2>
-    <p [class]="styles.lead">Tippe auf die Scheibe, wo deine Pfeile getroffen haben. Mit zwei Fingern zoomen.</p>
-    <app-target-canvas />
-  </app-section>
+<app-section>
+  <h2>Scheibe (Beta)</h2>
+  <p [class]="styles.lead">
+    Tippe auf die Scheibe, wo deine Pfeile getroffen haben. Mit zwei Fingern zoomen.
+  </p>
+  <app-target-canvas />
+</app-section>
 }

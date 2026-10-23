@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -85,7 +93,12 @@ export class SettingsPage {
       const user = this.auth.user();
       if (!user) return;
       untracked(() =>
-        this.profileForm.reset({ username: user.username, email: user.email, password: '', currentPassword: '' }),
+        this.profileForm.reset({
+          username: user.username,
+          email: user.email,
+          password: '',
+          currentPassword: '',
+        }),
       );
     });
   }

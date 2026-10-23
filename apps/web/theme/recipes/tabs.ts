@@ -25,7 +25,11 @@ export const tabs = defineSlotRecipe({
       transitionDuration: 'normal',
       _hover: { opacity: 'muted' },
       _selected: { opacity: 'full', _hover: { opacity: 'full' } },
-      _focusVisible: { outlineWidth: 'thick', outlineStyle: 'solid', outlineColor: 'accent.default' },
+      _focusVisible: {
+        outlineWidth: 'thick',
+        outlineStyle: 'solid',
+        outlineColor: 'accent.default',
+      },
     },
     panel: {
       animation: 'fadeIn',

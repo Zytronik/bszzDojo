@@ -41,7 +41,16 @@ function yearFromName(name: string, fallback: number): number {
 @Component({
   selector: 'app-admin-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, PageTitle, Section, Tabs, FeedbackMessage, ConfirmDialog, Icon],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    PageTitle,
+    Section,
+    Tabs,
+    FeedbackMessage,
+    ConfirmDialog,
+    Icon,
+  ],
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
@@ -59,7 +68,10 @@ export class AdminPage {
   protected readonly earliestYear = BADGE_EARLIEST_YEAR;
   protected readonly badgeNameMaxLength = BADGE_NAME_MAX_LENGTH;
   protected readonly ranks = RANK_IDS.map((id) => ({ id, name: RANKS[id].name }));
-  protected readonly places = BADGE_PLACES.map((value) => ({ value, label: BADGE_PLACE_LABELS[value] }));
+  protected readonly places = BADGE_PLACES.map((value) => ({
+    value,
+    label: BADGE_PLACE_LABELS[value],
+  }));
 
   // App update
   protected readonly updateDialogOpen = signal(false);
@@ -178,7 +190,12 @@ export class AdminPage {
       this.editFeedback.set(failure('Bitte gib einen Namen ein.'));
       return false;
     }
-    if (year === null || !Number.isInteger(year) || year < BADGE_EARLIEST_YEAR || year > this.currentYear) {
+    if (
+      year === null ||
+      !Number.isInteger(year) ||
+      year < BADGE_EARLIEST_YEAR ||
+      year > this.currentYear
+    ) {
       this.editFeedback.set(failure('Bitte gib ein gültiges Jahr ein.'));
       return false;
     }

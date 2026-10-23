@@ -16,31 +16,40 @@ import { faDeleteLeft } from '../ui/icons';
   // The host is the row, so consecutive rows are siblings and the first one loses its top padding.
   host: { '[class]': 'styles.root' },
   template: `
-      @if (rank(); as rank) {
-        <p [class]="styles.rank">#{{ rank }}</p>
-      }
-      <div [class]="styles.body">
-        <p [class]="styles.meta">{{ formatDate(score().shotOn) }}</p>
-        <p [class]="styles.info">
-          @if (variant() === 'history') {
-            {{ bowTypeName(score().bowType) }}: {{ score().arrows }}P. {{ score().distance }}m ({{ targetText(score()) }})
-          } @else {
-            {{ bowTypeName(score().bowType) }}: {{ score().arrows }} Pfeile ({{ targetText(score()) }})
-          }
-        </p>
-        <p [class]="styles.results">
-          <span [class]="styles.highlight">{{ score().result }}</span>
-          10er: <span [class]="styles.highlight">x{{ score().tens }}</span>
-          9er: <span [class]="styles.highlight">x{{ score().nines }}</span>
-        </p>
+    @if (rank(); as rank) {
+      <p [class]="styles.rank">#{{ rank }}</p>
+    }
+    <div [class]="styles.body">
+      <p [class]="styles.meta">{{ formatDate(score().shotOn) }}</p>
+      <p [class]="styles.info">
+        @if (variant() === 'history') {
+          {{ bowTypeName(score().bowType) }}: {{ score().arrows }}P. {{ score().distance }}m ({{
+            targetText(score())
+          }})
+        } @else {
+          {{ bowTypeName(score().bowType) }}: {{ score().arrows }} Pfeile ({{
+            targetText(score())
+          }})
+        }
+      </p>
+      <p [class]="styles.results">
+        <span [class]="styles.highlight">{{ score().result }}</span>
+        10er: <span [class]="styles.highlight">x{{ score().tens }}</span> 9er:
+        <span [class]="styles.highlight">x{{ score().nines }}</span>
+      </p>
+    </div>
+    @if (deletable()) {
+      <div [class]="styles.actions">
+        <button
+          type="button"
+          [class]="styles.action"
+          aria-label="Eintrag löschen"
+          (click)="deleted.emit()"
+        >
+          <app-icon [icon]="deleteIcon" />
+        </button>
       </div>
-      @if (deletable()) {
-        <div [class]="styles.actions">
-          <button type="button" [class]="styles.action" aria-label="Eintrag löschen" (click)="deleted.emit()">
-            <app-icon [icon]="deleteIcon" />
-          </button>
-        </div>
-      }
+    }
   `,
 })
 export class ScoreRow {

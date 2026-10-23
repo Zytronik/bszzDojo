@@ -4,7 +4,8 @@
   <app-feedback-message [feedback]="badgeFeedback()" />
   <h2>Auszeichnung anfordern</h2>
   <p [class]="styles.lead">
-    Da ich keinen Zugriff auf SM/Clubturnier Titel oder Abzeichen habe, kannst du hier deine anfordern.
+    Da ich keinen Zugriff auf SM/Clubturnier Titel oder Abzeichen habe, kannst du hier deine
+    anfordern.
   </p>
   <form [formGroup]="badgeForm" (ngSubmit)="requestBadge()">
     <div [class]="styles.field.root">
@@ -21,7 +22,7 @@
       <label for="badge-place" [class]="styles.field.label">Platzierung:</label>
       <select id="badge-place" [class]="styles.input" formControlName="place">
         @for (place of places; track place.value) {
-          <option [ngValue]="place.value">{{ place.label }}</option>
+        <option [ngValue]="place.value">{{ place.label }}</option>
         }
       </select>
     </div>
@@ -67,18 +68,18 @@
       <span [class]="styles.field.hint">Leer lassen, um es nicht zu ändern.</span>
     </div>
     @if (needsCurrentPassword()) {
-      <div [class]="styles.field.root">
-        <label for="profile-current-password" [class]="styles.field.label">Aktuelles Passwort:</label>
-        <input
-          id="profile-current-password"
-          type="password"
-          [class]="styles.input"
-          formControlName="currentPassword"
-          autocomplete="current-password"
-          [maxLength]="limits.PASSWORD_MAX_LENGTH"
-        />
-        <span [class]="styles.field.hint">Nötig, um E-Mail oder Passwort zu ändern.</span>
-      </div>
+    <div [class]="styles.field.root">
+      <label for="profile-current-password" [class]="styles.field.label">Aktuelles Passwort:</label>
+      <input
+        id="profile-current-password"
+        type="password"
+        [class]="styles.input"
+        formControlName="currentPassword"
+        autocomplete="current-password"
+        [maxLength]="limits.PASSWORD_MAX_LENGTH"
+      />
+      <span [class]="styles.field.hint">Nötig, um E-Mail oder Passwort zu ändern.</span>
+    </div>
     }
     <button type="submit" [class]="styles.button" [disabled]="profilePending()">Speichern</button>
   </form>
@@ -92,7 +93,7 @@
     (checkedChange)="settings.setTheme($event ? 'light' : 'dark')"
   />
   @if (settings.saveStatus() === 'error') {
-    <app-feedback-message [feedback]="themeError" />
+  <app-feedback-message [feedback]="themeError" />
   }
 </app-section>
 

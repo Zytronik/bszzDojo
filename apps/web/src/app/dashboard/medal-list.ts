@@ -17,9 +17,15 @@ import { medal, record } from 'styled-system/recipes';
             {{ standing.username }}
           </a>
           <div [class]="medalsStyles">
-            <p [class]="medalStyles.gold" [attr.aria-label]="standing.gold + ' Gold'">{{ standing.gold }}</p>
-            <p [class]="medalStyles.silver" [attr.aria-label]="standing.silver + ' Silber'">{{ standing.silver }}</p>
-            <p [class]="medalStyles.bronze" [attr.aria-label]="standing.bronze + ' Bronze'">{{ standing.bronze }}</p>
+            <p [class]="medalStyles.gold" [attr.aria-label]="standing.gold + ' Gold'">
+              {{ standing.gold }}
+            </p>
+            <p [class]="medalStyles.silver" [attr.aria-label]="standing.silver + ' Silber'">
+              {{ standing.silver }}
+            </p>
+            <p [class]="medalStyles.bronze" [attr.aria-label]="standing.bronze + ' Bronze'">
+              {{ standing.bronze }}
+            </p>
           </div>
         </div>
       </div>

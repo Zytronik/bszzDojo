@@ -49,18 +49,28 @@ interface Arrow {
     ></canvas>
     <div [class]="summaryStyles" aria-live="polite">
       <p>
-        Pfeile: <span [class]="recordStyles.highlight">{{ arrows().length }}</span>
-        Total: <span [class]="recordStyles.highlight">{{ total() }}</span>
+        Pfeile: <span [class]="recordStyles.highlight">{{ arrows().length }}</span> Total:
+        <span [class]="recordStyles.highlight">{{ total() }}</span>
       </p>
       @if (arrows().length > 0) {
         <p [class]="recordStyles.meta">{{ scoresText() }}</p>
       }
     </div>
     <div [class]="actionsStyles">
-      <button type="button" [class]="buttonStyles" [disabled]="arrows().length === 0" (click)="undo()">
+      <button
+        type="button"
+        [class]="buttonStyles"
+        [disabled]="arrows().length === 0"
+        (click)="undo()"
+      >
         Letzten Pfeil entfernen
       </button>
-      <button type="button" [class]="buttonStyles" [disabled]="arrows().length === 0" (click)="reset()">
+      <button
+        type="button"
+        [class]="buttonStyles"
+        [disabled]="arrows().length === 0"
+        (click)="reset()"
+      >
         Zurücksetzen
       </button>
     </div>
@@ -123,7 +133,10 @@ export class TargetCanvas {
     event.preventDefault();
     const distance = Math.hypot(first.pageX - second.pageX, first.pageY - second.pageY);
     if (this.lastPinchDistance > 0) {
-      this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.zoom * (distance / this.lastPinchDistance)));
+      this.zoom = Math.min(
+        MAX_ZOOM,
+        Math.max(MIN_ZOOM, this.zoom * (distance / this.lastPinchDistance)),
+      );
       this.draw();
     }
     this.lastPinchDistance = distance;

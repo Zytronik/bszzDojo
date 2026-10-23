@@ -24,7 +24,10 @@ export function readRefreshCookie(request: Request): string | null {
 }
 
 export function setRefreshCookie(response: Response, token: string, config: ConfigService): void {
-  response.cookie(REFRESH_COOKIE, token, { ...cookieOptions(config), maxAge: REFRESH_TOKEN_TTL_MS });
+  response.cookie(REFRESH_COOKIE, token, {
+    ...cookieOptions(config),
+    maxAge: REFRESH_TOKEN_TTL_MS,
+  });
 }
 
 export function clearRefreshCookie(response: Response, config: ConfigService): void {

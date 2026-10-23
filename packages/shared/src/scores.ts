@@ -74,7 +74,9 @@ export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): 
   if (!isInteger(result) || result < 0) {
     errors.push('Das Resultat darf nicht negativ sein.');
   } else if (isInteger(arrows) && result > arrows * POINTS_PER_ARROW) {
-    errors.push(`Mit ${arrows} Pfeilen sind höchstens ${arrows * POINTS_PER_ARROW} Punkte möglich.`);
+    errors.push(
+      `Mit ${arrows} Pfeilen sind höchstens ${arrows * POINTS_PER_ARROW} Punkte möglich.`,
+    );
   } else if (isInteger(tens) && isInteger(nines) && result < tens * 10 + nines * 9) {
     errors.push('Das Resultat ist kleiner als die Punkte der 10er und 9er.');
   }

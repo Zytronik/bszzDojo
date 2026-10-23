@@ -3,7 +3,18 @@ import { defineSlotRecipe } from '@pandacss/dev';
 /** A row in one of the lists: leaderboards, records, history, badges, users, requests. */
 export const record = defineSlotRecipe({
   className: 'record',
-  slots: ['root', 'rank', 'body', 'title', 'results', 'highlight', 'info', 'meta', 'actions', 'action'],
+  slots: [
+    'root',
+    'rank',
+    'body',
+    'title',
+    'results',
+    'highlight',
+    'info',
+    'meta',
+    'actions',
+    'action',
+  ],
   base: {
     root: {
       display: 'flex',

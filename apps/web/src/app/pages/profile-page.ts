@@ -1,5 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, resource, signal } from '@angular/core';
-import { usernameKey, type DistanceProgress, type PersonalBests, type RankedScore } from '@bszz-dojo/shared';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  resource,
+  signal,
+} from '@angular/core';
+import {
+  usernameKey,
+  type DistanceProgress,
+  type PersonalBests,
+  type RankedScore,
+} from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
@@ -39,7 +53,9 @@ export class ProfilePage {
   );
 
   /** The first distance again whenever another profile is opened. */
-  protected readonly recordsTab = linkedSignal(() => this.firstTab(this.profile.value()?.personalBests));
+  protected readonly recordsTab = linkedSignal(() =>
+    this.firstTab(this.profile.value()?.personalBests),
+  );
   protected readonly chartTab = linkedSignal(() => this.firstTab(this.profile.value()?.progress));
 
   protected readonly scoreToDelete = signal<string | null>(null);
@@ -56,8 +72,19 @@ export class ProfilePage {
 
   protected readonly recordStyles = record();
   protected readonly pageStyles = {
-    rankRow: css({ display: 'flex', alignItems: 'center', flexWrap: 'wrap', '& > p': { mr: '15' } }),
-    stats: css({ borderTopWidth: 'thick', borderTopStyle: 'solid', borderColor: 'border.subtle', mt: '10', pt: '10' }),
+    rankRow: css({
+      display: 'flex',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      '& > p': { mr: '15' },
+    }),
+    stats: css({
+      borderTopWidth: 'thick',
+      borderTopStyle: 'solid',
+      borderColor: 'border.subtle',
+      mt: '10',
+      pt: '10',
+    }),
     stat: css({ display: 'flex', gap: '15' }),
     muted: css({ layerStyle: 'muted' }),
   };

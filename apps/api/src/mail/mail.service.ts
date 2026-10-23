@@ -24,7 +24,9 @@ export class MailService {
 
   async send(mail: Mail): Promise<void> {
     if (this.transport === null) {
-      this.logger.log(`SMTP_URL not set, not sending to ${mail.to}:\n${mail.subject}\n\n${mail.text}`);
+      this.logger.log(
+        `SMTP_URL not set, not sending to ${mail.to}:\n${mail.subject}\n\n${mail.text}`,
+      );
       return;
     }
     await this.transport.sendMail({ from: this.from, ...mail });

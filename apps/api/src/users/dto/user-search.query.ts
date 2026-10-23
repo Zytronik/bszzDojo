@@ -1,4 +1,8 @@
-import { USERNAME_MAX_LENGTH, USER_SEARCH_MIN_LENGTH, type UserSearchQuery } from '@bszz-dojo/shared';
+import {
+  USERNAME_MAX_LENGTH,
+  USER_SEARCH_MIN_LENGTH,
+  type UserSearchQuery,
+} from '@bszz-dojo/shared';
 import { IsString, Length } from 'class-validator';
 
 export class UserSearchQueryParams implements UserSearchQuery {
