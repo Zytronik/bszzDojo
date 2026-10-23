@@ -13,8 +13,9 @@ import { faDeleteLeft } from '../ui/icons';
   selector: 'app-score-row',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon],
+  // The host is the row, so consecutive rows are siblings and the first one loses its top padding.
+  host: { '[class]': 'styles.root' },
   template: `
-    <div [class]="styles.root">
       @if (rank(); as rank) {
         <p [class]="styles.rank">#{{ rank }}</p>
       }
@@ -40,7 +41,6 @@ import { faDeleteLeft } from '../ui/icons';
           </button>
         </div>
       }
-    </div>
   `,
 })
 export class ScoreRow {

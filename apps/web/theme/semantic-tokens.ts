@@ -53,5 +53,7 @@ export const semanticTokens = defineSemanticTokens({
     stack: { value: '{spacing.15}' },
     /** Between the header's icons */
     nav: { value: '{spacing.25}' },
+    /** Offset below the fixed header (its height), for the page and the search overlay */
+    header: { value: '{sizes.header}' },
   },
 });
