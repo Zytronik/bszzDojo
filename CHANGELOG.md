@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.4.0](https://github.com/Zytronik/bszzDojo/compare/v3.3.0...v3.4.0) (2026-10-23)
+
+
+### Features
+
+* **web:** record auszeichnungen in a dialog ([#45](https://github.com/Zytronik/bszzDojo/issues/45)) ([5d1964d](https://github.com/Zytronik/bszzDojo/commit/5d1964dc5f492719241cbc965e92e8620e6dc50b))
+
+
+### Bug Fixes
+
+* drop the team type from national tournaments ([#42](https://github.com/Zytronik/bszzDojo/issues/42)) ([b10c82c](https://github.com/Zytronik/bszzDojo/commit/b10c82cf29093e60e0bbd05e833e0b928bbad62b))
+
 ## [3.3.0](https://github.com/Zytronik/bszzDojo/compare/v3.2.0...v3.3.0) (2026-10-23)
 
 
