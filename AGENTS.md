@@ -188,6 +188,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     in the form's `<app-feedback-message>`, which also shows the API's answer (success or error).
   - Buttons are `<button appButton [pending]="…">`: disabled with a spinner while their request
     runs (also the confirm button of `<app-confirm-dialog>`).
+  - Long forms open in `<app-dialog title="…">` (the `modal` recipe's `form` tone, so inputs
+    stand out) from a button in the page, like "Auszeichnung erfassen" in the settings.
 - **Icons:** Font Awesome solid icons as inline SVG through `<app-icon>`; re-export new ones from
   `ui/icons.ts`. Interactive icons need an accessible name (`label` or the button's `aria-label`).
 - **Assets** in `public/` (logo, rank icons, favicons, iOS splash screens, the Avenir font) are

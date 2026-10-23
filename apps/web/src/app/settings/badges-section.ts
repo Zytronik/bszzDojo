@@ -32,6 +32,7 @@ import {
   type BowTypeId,
   type TournamentType,
 } from '@bszz-dojo/shared';
+import { css } from 'styled-system/css';
 import { BadgesApiService } from '../core/badges-api.service';
 import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
@@ -40,6 +41,7 @@ import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, messageFrom, required } from '../forms/validators';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FeedbackMessage } from '../ui/feedback-message';
+import { Dialog } from '../ui/dialog';
 import { Section } from '../ui/section';
 
 /** The shared rules for one field, run on the whole form since the kind decides what's needed. */
@@ -52,7 +54,7 @@ function badgeRule(field: keyof BadgeInput): ValidatorFn {
   });
 }
 
-/** "Auszeichnung erfassen" in the settings; the placings are listed (and deleted) on the profile. */
+/** "Auszeichnung erfassen" in the settings, as a dialog; the placings are listed on the profile. */
 @Component({
   selector: 'app-badges-section',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +66,7 @@ function badgeRule(field: keyof BadgeInput): ValidatorFn {
     FieldControl,
     FormButton,
     CheckboxField,
+    Dialog,
   ],
   templateUrl: './badges-section.html',
 })
@@ -117,6 +120,9 @@ export class BadgesSection {
 
   protected readonly pending = signal(false);
   protected readonly feedback = signal<Feedback | null>(null);
+  protected readonly savedFeedback = signal<Feedback | null>(null);
+  protected readonly dialogOpen = signal(false);
+  protected readonly leadStyles = css({ marginBlockEnd: '10' });
 
   constructor() {
     // Switching from an SM "Team" to a national tournament falls back to FITA.
@@ -133,6 +139,12 @@ export class BadgesSection {
       }
       this.form.updateValueAndValidity({ emitEvent: false });
     });
+  }
+
+  protected openDialog(): void {
+    this.savedFeedback.set(null);
+    this.feedback.set(null);
+    this.dialogOpen.set(true);
   }
 
   protected async submit(): Promise<void> {
@@ -153,7 +165,9 @@ export class BadgesSection {
     this.pending.set(true);
     try {
       await this.api.create({ ...draft, kind, place, year, bowType, ageCategory });
-      this.feedback.set(success('Auszeichnung erfasst. Du findest sie in deinem Profil.'));
+      this.feedback.set(null);
+      this.savedFeedback.set(success('Auszeichnung erfasst. Du findest sie in deinem Profil.'));
+      this.dialogOpen.set(false);
       // Kind, year, bow type, tournament type and age category usually stay the same.
       for (const field of ['place', 'eventName', 'location', 'distance', 'team'] as const) {
         this.form.controls[field].reset();
