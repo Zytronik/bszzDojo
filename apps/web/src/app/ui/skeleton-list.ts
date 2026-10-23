@@ -38,7 +38,7 @@ import { skeleton } from 'styled-system/recipes';
   `,
 })
 export class SkeletonList {
-  readonly rows = input(5);
+  readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
   /** Invisible, only holding the space (see `LoadingFrame`). */

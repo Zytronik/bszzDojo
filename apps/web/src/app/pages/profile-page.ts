@@ -26,6 +26,7 @@ import { ProgressChart } from '../profile/progress-chart';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
+import { EmptyState } from '../ui/empty-state';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
@@ -46,6 +47,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     FeedbackMessage,
     ShownNamePipe,
     LoadingFrame,
+    EmptyState,
   ],
   templateUrl: './profile-page.html',
 })

@@ -8,6 +8,7 @@ import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
 import { formatDate } from '../core/score-labels';
 import { ConfirmDialog } from '../ui/confirm-dialog';
+import { EmptyState } from '../ui/empty-state';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { Icon } from '../ui/icon';
 import { faDeleteLeft } from '../ui/icons';
@@ -28,6 +29,7 @@ import { LoadingFrame } from '../ui/loading-frame';
     Icon,
     ShownNamePipe,
     LoadingFrame,
+    EmptyState,
   ],
   templateUrl: './admin-page.html',
 })

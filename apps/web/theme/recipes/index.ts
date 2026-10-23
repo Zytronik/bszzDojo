@@ -1,6 +1,7 @@
 import { button } from './button';
 import { checkbox } from './checkbox';
 import { pageContainer } from './container';
+import { emptyState } from './empty-state';
 import { field } from './field';
 import { input } from './input';
 import { medal } from './medal';
@@ -14,7 +15,16 @@ import { skeleton } from './skeleton';
 import { spinner } from './spinner';
 import { tabs } from './tabs';
 
-export const recipes = { button, pageContainer, input, medal, message, rankBadge, spinner };
+export const recipes = {
+  button,
+  pageContainer,
+  emptyState,
+  input,
+  medal,
+  message,
+  rankBadge,
+  spinner,
+};
 
 export const slotRecipes = {
   checkbox,

@@ -1,14 +1,18 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { LeaderboardEntry } from '@bszz-dojo/shared';
+import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
+import { EmptyState } from '../ui/empty-state';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { bowTypeName, formatDate, targetText } from '../core/score-labels';
 
 @Component({
   selector: 'app-leaderboard-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ShownNamePipe],
+  // Grows inside a LoadingFrame, so the empty state can fill it.
+  host: { '[class]': 'hostStyles' },
+  imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `
     @for (entry of entries(); track entry.username) {
       <div [class]="styles.root">
@@ -27,11 +31,12 @@ import { bowTypeName, formatDate, targetText } from '../core/score-labels';
         </div>
       </div>
     } @empty {
-      <p>Keine Rekorde vorhanden.</p>
+      <app-empty-state>Keine Rekorde vorhanden.</app-empty-state>
     }
   `,
 })
 export class LeaderboardList {
+  protected readonly hostStyles = css({ flex: '1', display: 'flex', flexDir: 'column' });
   readonly entries = input.required<readonly LeaderboardEntry[]>();
 
   protected readonly styles = record();
