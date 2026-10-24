@@ -13,6 +13,7 @@ const score: Score = {
   tens: 12,
   nines: 9,
   result: 271,
+  shots: null,
 };
 
 const meta: Meta<ScoreRow> = {
