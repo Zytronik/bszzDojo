@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0](https://github.com/Zytronik/bszzDojo/compare/v3.6.0...v3.7.0) (2026-10-24)
+
+
+### Features
+
+* **web:** show messages as toasts ([#54](https://github.com/Zytronik/bszzDojo/issues/54)) ([2a516c8](https://github.com/Zytronik/bszzDojo/commit/2a516c8613d795baf6a95b99bf59d9b5d7b51980))
+
 ## [3.6.0](https://github.com/Zytronik/bszzDojo/compare/v3.5.0...v3.6.0) (2026-10-24)
 
 
