@@ -6,6 +6,7 @@
   },
   "jsPlugins": ["./oxlint-panda-plugin.mjs"],
   "rules": {
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }],
     "@pandacss/file-not-included": "error",
     "@pandacss/no-config-function-in-source": "error",
     "@pandacss/no-debug": "error",

@@ -1,0 +1,71 @@
+import { ColorItem, ColorPalette, Meta } from '@storybook/addon-docs/blocks';
+import { token } from 'styled-system/tokens';
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Semantic tokens (`theme/semantic-tokens.ts`). Switch the theme in the toolbar to see the light
+values.
+
+<ColorPalette>
+  <ColorItem
+    title="bg"
+    subtitle="canvas · surface · overlay"
+    colors={{
+      canvas: token.var('colors.bg.canvas'),
+      surface: token.var('colors.bg.surface'),
+      overlay: token.var('colors.bg.overlay'),
+    }}
+  />
+  <ColorItem
+    title="fg"
+    subtitle="Text"
+    colors={{
+      default: token.var('colors.fg.default'),
+      onAccent: token.var('colors.fg.onAccent'),
+    }}
+  />
+  <ColorItem
+    title="accent"
+    subtitle="The torii red of the logo"
+    colors={{ default: token.var('colors.accent.default') }}
+  />
+  <ColorItem
+    title="border"
+    subtitle="Dividers"
+    colors={{ subtle: token.var('colors.border.subtle') }}
+  />
+  <ColorItem
+    title="status.error"
+    subtitle="Errors"
+    colors={{ fg: token.var('colors.status.error.fg'), bg: token.var('colors.status.error.bg') }}
+  />
+  <ColorItem
+    title="status.success"
+    subtitle="Confirmations"
+    colors={{
+      fg: token.var('colors.status.success.fg'),
+      bg: token.var('colors.status.success.bg'),
+    }}
+  />
+  <ColorItem
+    title="medal"
+    subtitle="Medal table"
+    colors={{
+      gold: token.var('colors.medal.gold'),
+      silver: token.var('colors.medal.silver'),
+      bronze: token.var('colors.medal.bronze'),
+    }}
+  />
+  <ColorItem
+    title="rank"
+    subtitle="Abzeichen backgrounds"
+    colors={{
+      red: token.var('colors.rank.red'),
+      gold: token.var('colors.rank.gold'),
+      white: token.var('colors.rank.white'),
+      blue: token.var('colors.rank.blue'),
+    }}
+  />
+</ColorPalette>

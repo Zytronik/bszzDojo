@@ -33,7 +33,7 @@ jobs:
         run: npx turbo run lint -- --deny-warnings
 
   build:
-    name: Build & typecheck
+    name: Build, typecheck & Storybook
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -45,4 +45,4 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npx turbo run build typecheck
+      - run: npx turbo run build typecheck build-storybook

@@ -1,0 +1,15 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# BSZZ Dojo Design System
+
+The building blocks of the app, in the dark and the light theme (toolbar: **Theme**).
+
+- **Foundations:** the semantic tokens from `apps/web/theme/`. Components only use these, never
+  raw values, so the light theme just remaps them (`_light` in `semantic-tokens.ts`).
+- **Components:** the reusable pieces in `src/app/ui/`, `forms/`, `profile/` and `dashboard/`.
+  Their styles are the Panda recipes in `theme/recipes/`; a story sits next to each component
+  (`*.stories.ts`).
+
+Run it with `npm run storybook -w web` (http://localhost:6006).

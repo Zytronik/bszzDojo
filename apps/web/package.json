@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "panda codegen && ng serve",
     "build": "panda codegen && ng build",
-    "typecheck": "panda codegen && tsc -p tsconfig.app.json --noEmit",
+    "typecheck": "panda codegen && tsc -p tsconfig.app.json --noEmit && tsc -p .storybook/tsconfig.json --noEmit",
     "lint": "oxlint --threads 1",
     "lint:fix": "oxlint --threads 1 --fix",
-    "clean": "rm -rf dist .angular .turbo styled-system"
+    "clean": "rm -rf dist .angular .turbo styled-system storybook-static",
+    "storybook": "panda codegen && storybook dev -p 6006",
+    "build-storybook": "panda codegen && storybook build"
   },
   "dependencies": {
     "@angular/common": "^21.2.0",
@@ -26,12 +28,18 @@
     "tslib": "^2.8.0"
   },
   "devDependencies": {
+    "@angular/animations": "^21.2.0",
     "@angular/build": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
+    "@angular/platform-browser-dynamic": "^21.2.0",
     "@pandacss/dev": "^1.0.0",
     "@pandacss/eslint-plugin": "^0.2.0",
+    "@storybook/addon-docs": "^10.0.0",
+    "@storybook/angular-vite": "^10.0.0",
+    "@types/node": "^22.10.0",
     "postcss": "^8.5.0",
+    "storybook": "^10.0.0",
     "typescript": "~5.9.2"
   }
 }

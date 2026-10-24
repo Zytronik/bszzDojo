@@ -226,6 +226,23 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Breakpoints are Bootstrap 3's (`sm` 768px, `md` 992px, `lg` 1200px) so the layout matches
   the old app.
 
+## Storybook (design system)
+
+- Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook -w web`
+  (http://localhost:6006), `npm run build-storybook -w web` (`storybook-static/`, git-ignored),
+  which CI builds too, so stories must compile.
+- Every reusable component in `ui/`, `forms/`, `profile/` and `dashboard/` has a story next to
+  it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
+  update it with the component. Pages and the layout frame have none.
+- Foundations (colors, typography, spacing) are MDX pages in `src/stories/`; they read the
+  semantic tokens through `token.var()`, so a new semantic token belongs in `colors.mdx`.
+- Stories follow the app's rules (return types, Panda lint, `css()` for layout, never inline
+  styles). Components using `routerLink` need
+  `applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`.
+- The toolbar's **Theme** switches `data-theme` like the account setting.
+- Storybook needs `@angular/animations` and `@angular/platform-browser-dynamic` as peers; keep
+  them on the same major version as the other Angular packages.
+
 ## Linting
 
 - Oxlint everywhere (root `.oxlintrc.json`, extended per workspace). The web app also loads

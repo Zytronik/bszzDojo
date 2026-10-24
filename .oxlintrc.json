@@ -32,6 +32,7 @@
     "**/out-tsc/**",
     "**/coverage/**",
     "**/styled-system/**",
+    "**/storybook-static/**",
     "**/src/metadata.ts"
   ]
 }
