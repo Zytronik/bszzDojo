@@ -17,7 +17,9 @@
       </select>
     </app-form-field>
     @if (fields().eventName) {
-    <app-form-field label="Name des Events:">
+    <app-form-field
+      [label]="fields().eventName === 'optional' ? 'Name des Events (optional):' : 'Name des Events:'"
+    >
       <input
         appFieldControl
         formControlName="eventName"

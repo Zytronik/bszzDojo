@@ -43,7 +43,7 @@ export class BadgeResponse implements Badge {
   @ApiProperty({ type: String, nullable: true })
   location: string | null;
 
-  /** Clubturnier and Nationales Turnier. @example 'Chlausschiessen' */
+  /** Clubturnier; optional for a Nationales Turnier. @example 'Chlausschiessen' */
   @ApiProperty({ type: String, nullable: true })
   eventName: string | null;
 

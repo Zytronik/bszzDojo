@@ -55,7 +55,7 @@ export class BadgeBody implements BadgeInput {
   @MaxLength(BADGE_TEXT_MAX_LENGTH)
   location: string | null;
 
-  /** Clubturnier and Nationales Turnier, else `null`. @example 'Chlausschiessen' */
+  /** Clubturnier (required) and Nationales Turnier (optional), else `null`. @example 'Chlausschiessen' */
   @ApiProperty({ type: String, nullable: true })
   @IsOptional()
   @IsString()
