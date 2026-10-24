@@ -6,13 +6,12 @@ import { SearchOverlay } from './layout/search-overlay';
 import { SiteFooter } from './layout/site-footer';
 import { SiteHeader } from './layout/site-header';
 import { Toaster } from './layout/toaster';
-import { UpdateBanner } from './layout/update-banner';
 import { SettingsStore } from './settings/settings.store';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, SiteHeader, SearchOverlay, SiteFooter, UpdateBanner, Toaster],
+  imports: [RouterOutlet, SiteHeader, SearchOverlay, SiteFooter, Toaster],
   template: `
     <app-site-header />
     @if (auth.isAuthenticated()) {
@@ -22,7 +21,6 @@ import { SettingsStore } from './settings/settings.store';
       <router-outlet />
     </main>
     <app-site-footer />
-    <app-update-banner />
     <app-toaster />
   `,
 })

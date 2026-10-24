@@ -1,25 +1,23 @@
 import { defineSlotRecipe } from '@pandacss/dev';
 
-/** A success or error message under the header, on top of everything (also dialogs). */
+/** A message under the header, on top of everything (also dialogs), filled so it stands out. */
 export const toast = defineSlotRecipe({
   className: 'toast',
-  slots: ['root', 'text', 'close'],
+  slots: ['root', 'text', 'action', 'close'],
   base: {
     root: {
-      layerStyle: 'surface',
       display: 'flex',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       gap: '10',
       py: '10',
       px: '15',
       borderRadius: 'sm',
-      borderInlineStartWidth: 'thick',
-      borderInlineStartStyle: 'solid',
       boxShadow: 'toast',
       pointerEvents: 'auto',
       animation: 'fadeIn',
     },
     text: { flex: '1', minW: '0', overflowWrap: 'anywhere' },
+    action: { flexShrink: '0' },
     close: {
       bg: 'transparent',
       border: 'none',
@@ -32,8 +30,10 @@ export const toast = defineSlotRecipe({
   },
   variants: {
     status: {
-      success: { root: { borderColor: 'status.success' } },
-      error: { root: { borderColor: 'status.error' } },
+      success: { root: { bg: 'status.success', color: 'fg.onAccent' } },
+      error: { root: { bg: 'status.error', color: 'fg.onAccent' } },
+      /** Inverted from the page, e.g. "Eine neue Version ist verfügbar." */
+      info: { root: { bg: 'fg.default', color: 'bg.canvas' } },
     },
   },
   defaultVariants: { status: 'success' },

@@ -109,12 +109,11 @@ export const tokens = defineTokens({
     pulse: { value: 'pulse {durations.pulse} {easings.default} infinite' },
   },
   shadows: {
-    toast: { value: '0 4px 16px rgba(0, 0, 0, 0.4)' },
+    toast: { value: '0 6px 24px rgba(0, 0, 0, 0.5)' },
   },
   zIndex: {
     header: { value: '1000' },
     modal: { value: '1100' },
-    banner: { value: '1200' },
     toast: { value: '1300' },
   },
 });
