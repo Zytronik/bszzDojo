@@ -77,8 +77,8 @@ The design system lives in Storybook: the foundations (colors, typography, spaci
 theme) and every reusable component with its states, in the dark and the light theme.
 
 ```bash
-npm run storybook -w web        # http://localhost:6006
-npm run build-storybook -w web  # static build in apps/web/storybook-static
+npm run storybook        # http://localhost:6006
+npm run build-storybook  # static build in apps/web/storybook-static
 ```
 
 ## Linting

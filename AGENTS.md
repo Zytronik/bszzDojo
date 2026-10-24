@@ -228,8 +228,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 
 ## Storybook (design system)
 
-- Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook -w web`
-  (http://localhost:6006), `npm run build-storybook -w web` (`storybook-static/`, git-ignored),
+- Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook`
+  (http://localhost:6006), `npm run build-storybook` (`storybook-static/`, git-ignored),
   which CI builds too, so stories must compile.
 - Every reusable component in `ui/`, `forms/`, `profile/` and `dashboard/` has a story next to
   it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
