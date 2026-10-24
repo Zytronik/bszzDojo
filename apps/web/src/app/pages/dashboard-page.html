@@ -3,12 +3,6 @@
   description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
 />
 
-@if (loadError()) {
-<app-section>
-  <app-feedback-message [feedback]="loadError()" />
-</app-section>
-}
-
 <app-section>
   <h2>Top 10 - Allzeit</h2>
   <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>

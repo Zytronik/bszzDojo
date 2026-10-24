@@ -20,7 +20,7 @@ export const input = defineRecipe({
     '&[aria-invalid=true]': {
       outlineWidth: 'thick',
       outlineStyle: 'solid',
-      outlineColor: 'status.error.fg',
+      outlineColor: 'status.error',
     },
   },
 });

@@ -5,9 +5,7 @@
 />
 
 <app-section>
-  <app-tabs [tabs]="tabs" [selected]="tab()" (selectedChange)="selectTab($event)">
-    <app-feedback-message [feedback]="feedback()" />
-
+  <app-tabs [tabs]="tabs" [(selected)]="tab">
     @if (isTab('login')) {
     <h2>Einloggen</h2>
     <form [formGroup]="login" (ngSubmit)="submitLogin()" novalidate>

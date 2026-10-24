@@ -15,7 +15,6 @@ import {
 } from '@bszz-dojo/shared';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
-import { failure, success, type Feedback } from '../core/feedback';
 import { ScoresApiService } from '../core/scores-api.service';
 import { TargetCanvas } from '../scores/target-canvas';
 import { CheckboxField } from '../ui/checkbox-field';
@@ -28,7 +27,7 @@ import {
   required,
   revalidateOnChange,
 } from '../forms/validators';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { ToastStore } from '../layout/toast.store';
 import { css } from 'styled-system/css';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
@@ -42,7 +41,6 @@ type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
     ReactiveFormsModule,
     PageTitle,
     Section,
-    FeedbackMessage,
     CheckboxField,
     TargetCanvas,
     FormField,
@@ -54,6 +52,7 @@ type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 export class SubmitScorePage {
   protected readonly auth = inject(AuthStore);
   private readonly api = inject(ScoresApiService);
+  private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
@@ -83,7 +82,6 @@ export class SubmitScorePage {
   });
 
   protected readonly pending = signal(false);
-  protected readonly feedback = signal<Feedback | null>(null);
 
   constructor() {
     revalidateOnChange(this.form);
@@ -100,7 +98,7 @@ export class SubmitScorePage {
       arrows === null ||
       result === null
     ) {
-      this.feedback.set(INVALID_FORM);
+      this.toasts.error(INVALID_FORM);
       return;
     }
     const score: ScoreInput = { ...value, distance, tens, nines, arrows, result };
@@ -108,13 +106,13 @@ export class SubmitScorePage {
     this.pending.set(true);
     try {
       await this.api.create(score);
-      this.feedback.set(success('Score erfolgreich eingetragen.'));
+      this.toasts.success('Score erfolgreich eingetragen.');
       // Bow, target, date and distance usually stay the same for the next round.
       for (const field of ['tens', 'nines', 'arrows', 'result'] as const) {
         this.form.controls[field].reset(null);
       }
     } catch (error: unknown) {
-      this.feedback.set(failure(errorMessage(error)));
+      this.toasts.error(errorMessage(error));
     } finally {
       this.pending.set(false);
     }

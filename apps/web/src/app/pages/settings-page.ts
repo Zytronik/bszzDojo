@@ -28,7 +28,6 @@ import {
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
-import { failure, success, type Feedback } from '../core/feedback';
 import { UsersApiService } from '../core/users-api.service';
 import { BadgesSection } from '../settings/badges-section';
 import { SettingsStore } from '../settings/settings.store';
@@ -36,7 +35,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, messageFrom, required, rule } from '../forms/validators';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { ToastStore } from '../layout/toast.store';
 import { PageTitle } from '../ui/page-title';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
@@ -48,7 +47,6 @@ import { Section } from '../ui/section';
     ReactiveFormsModule,
     PageTitle,
     Section,
-    FeedbackMessage,
     CheckboxField,
     FormField,
     FieldControl,
@@ -62,6 +60,7 @@ export class SettingsPage {
   private readonly auth = inject(AuthStore);
   protected readonly settings = inject(SettingsStore);
   private readonly users = inject(UsersApiService);
+  private readonly toasts = inject(ToastStore);
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 
@@ -69,7 +68,6 @@ export class SettingsPage {
   protected readonly limits = { USERNAME_MAX_LENGTH, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH };
   protected readonly rankRowStyles = css({ display: 'flex', alignItems: 'center', gap: '15' });
   protected readonly ranks = RANK_IDS.map((id) => ({ id, name: RANKS[id].name }));
-  protected readonly themeError = failure('Das Theme konnte nicht gespeichert werden.');
 
   protected readonly profileForm = this.forms.group({
     username: ['', [required(), rule(isValidUsername, ACCOUNT_FIELD_ERRORS.username)]],
@@ -93,7 +91,6 @@ export class SettingsPage {
     ],
   });
   protected readonly profilePending = signal(false);
-  protected readonly profileFeedback = signal<Feedback | null>(null);
   protected readonly loggingOut = signal(false);
   private readonly profileValue = toSignal(this.profileForm.valueChanges, {
     initialValue: this.profileForm.getRawValue(),
@@ -130,7 +127,7 @@ export class SettingsPage {
     const user = this.auth.user();
     if (!user) return;
     if (!checkForm(this.profileForm)) {
-      this.profileFeedback.set(INVALID_FORM);
+      this.toasts.error(INVALID_FORM);
       return;
     }
     const { username, displayName, rank, password, currentPassword } =
@@ -145,7 +142,7 @@ export class SettingsPage {
     if (password.length > 0) changes.password = password;
 
     if (Object.keys(changes).length === 0) {
-      this.profileFeedback.set(success('Profil erfolgreich aktualisiert.'));
+      this.toasts.success('Profil erfolgreich aktualisiert.');
       return;
     }
     if (changes.password !== undefined) changes.currentPassword = currentPassword;
@@ -158,9 +155,9 @@ export class SettingsPage {
       if (changes.password !== undefined) {
         await this.auth.login({ username: updated.username, password: changes.password });
       }
-      this.profileFeedback.set(success('Profil erfolgreich aktualisiert.'));
+      this.toasts.success('Profil erfolgreich aktualisiert.');
     } catch (failed: unknown) {
-      this.profileFeedback.set(failure(errorMessage(failed)));
+      this.toasts.error(errorMessage(failed));
     } finally {
       this.profilePending.set(false);
     }

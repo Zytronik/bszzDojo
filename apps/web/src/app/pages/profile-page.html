@@ -1,6 +1,6 @@
 @if (profile.error()) {
 <app-section>
-  <app-feedback-message [feedback]="loadError()" />
+  <app-empty-state>Das Profil konnte nicht geladen werden.</app-empty-state>
 </app-section>
 } @else { @let p = profile.hasValue() ? profile.value() : null;
 
@@ -67,7 +67,6 @@
 </app-section>
 
 <app-section>
-  <app-feedback-message [feedback]="badgeDeleteFeedback()" />
   <h2>Auszeichnungen</h2>
   <app-loading-frame [loading]="!p" [lines]="2">
     @if (p) { @for (badge of p.badges; track badge.id) {
@@ -83,7 +82,6 @@
 </app-section>
 
 <app-section>
-  <app-feedback-message [feedback]="deleteFeedback()" />
   <h2>Historie</h2>
   <app-loading-frame [loading]="!p" [lines]="3">
     @if (p) { @for (score of p.history; track score.id) {

@@ -37,16 +37,11 @@ values.
     colors={{ subtle: token.var('colors.border.subtle') }}
   />
   <ColorItem
-    title="status.error"
-    subtitle="Errors"
-    colors={{ fg: token.var('colors.status.error.fg'), bg: token.var('colors.status.error.bg') }}
-  />
-  <ColorItem
-    title="status.success"
-    subtitle="Confirmations"
+    title="status"
+    subtitle="Errors and confirmations (toasts, invalid fields)"
     colors={{
-      fg: token.var('colors.status.success.fg'),
-      bg: token.var('colors.status.success.bg'),
+      error: token.var('colors.status.error'),
+      success: token.var('colors.status.success'),
     }}
   />
   <ColorItem

@@ -1,15 +1,13 @@
 <app-section>
-  <app-feedback-message [feedback]="savedFeedback()" />
   <h2>Auszeichnungen</h2>
   <p [class]="leadStyles">
     Erfasse deine Platzierungen an Turnieren. Sie erscheinen in deinem Profil und zählen für die
     Medaillen-Tabelle.
   </p>
-  <button type="button" appButton (click)="openDialog()">Auszeichnung erfassen</button>
+  <button type="button" appButton (click)="dialogOpen.set(true)">Auszeichnung erfassen</button>
 </app-section>
 
 <app-dialog title="Auszeichnung erfassen" [open]="dialogOpen()" (closed)="dialogOpen.set(false)">
-  <app-feedback-message [feedback]="feedback()" />
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <app-form-field label="Art:">
       <select appFieldControl formControlName="kind">

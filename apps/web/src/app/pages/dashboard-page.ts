@@ -9,12 +9,10 @@ import {
 import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
-import { errorMessage } from '../core/error-message';
-import { failure, type Feedback } from '../core/feedback';
 import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
 import { MedalList } from '../dashboard/medal-list';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { toastErrors } from '../layout/toast.store';
 import { LoadingFrame } from '../ui/loading-frame';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
@@ -23,7 +21,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
 @Component({
   selector: 'app-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, FeedbackMessage, LoadingFrame],
+  imports: [PageTitle, Section, Tabs, LeaderboardList, MedalList, LoadingFrame],
   templateUrl: './dashboard-page.html',
 })
 export class DashboardPage {
@@ -55,7 +53,7 @@ export class DashboardPage {
     return boards.find((board) => String(board.distance) === tab)?.entries ?? [];
   }
 
-  protected readonly loadError = computed((): Feedback | null =>
-    this.rankings.error() ? failure(errorMessage(this.rankings.error())) : null,
-  );
+  constructor() {
+    toastErrors(() => this.rankings.error());
+  }
 }

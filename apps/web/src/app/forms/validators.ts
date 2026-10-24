@@ -5,7 +5,6 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import { failure, type Feedback } from '../core/feedback';
 
 /*
  * Every validator here answers with the German message to show, so `FormField` can display it
@@ -68,7 +67,7 @@ export function errorText(errors: ValidationErrors | null): string | null {
   return 'Ungültige Eingabe.';
 }
 
-export const INVALID_FORM: Feedback = failure('Bitte korrigiere die markierten Felder.');
+export const INVALID_FORM = 'Bitte korrigiere die markierten Felder.';
 
 /** On submit: shows every field's error and tells whether the form can be sent. */
 export function checkForm(form: AbstractControl): boolean {
