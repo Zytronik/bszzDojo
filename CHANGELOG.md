@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.1](https://github.com/Zytronik/bszzDojo/compare/v3.10.0...v3.10.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **web:** style date fields on iOS like the other inputs ([#65](https://github.com/Zytronik/bszzDojo/issues/65)) ([6da6a47](https://github.com/Zytronik/bszzDojo/commit/6da6a472038e50110b3768273073c72e76c60820))
+
 ## [3.10.0](https://github.com/Zytronik/bszzDojo/compare/v3.9.0...v3.10.0) (2026-10-24)
 
 
