@@ -12,6 +12,7 @@ import { searchOverlay } from './search-overlay';
 import { siteHeader } from './site-header';
 import { skeleton } from './skeleton';
 import { spinner } from './spinner';
+import { steps } from './steps';
 import { tabs } from './tabs';
 import { toast } from './toast';
 
@@ -33,6 +34,7 @@ export const slotRecipes = {
   searchOverlay,
   siteHeader,
   skeleton,
+  steps,
   tabs,
   toast,
 };

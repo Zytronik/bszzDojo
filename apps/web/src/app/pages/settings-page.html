@@ -68,6 +68,14 @@
   />
 </app-section>
 
+@if (install.canInstall()) {
+<app-section>
+  <h2>App installieren</h2>
+  <p [class]="leadStyles">Speichere das BSZZ Dojo als App auf deinem Startbildschirm.</p>
+  <button type="button" appButton (click)="install.show()">Anleitung anzeigen</button>
+</app-section>
+}
+
 <app-section>
   <h2>Ausloggen</h2>
   <p [class]="leadStyles">Möchtest du dich wirklich ausloggen?</p>
