@@ -202,10 +202,9 @@ export function badgeTitle(badge: Badge): string {
   return badge.tournamentType ? `SM ${TOURNAMENT_TYPE_LABELS[badge.tournamentType]}` : 'SM';
 }
 
-/** "Nationales Turnier · Field · Recurve · Bern · U18" */
+/** "Field · Recurve · Bern · U18" */
 export function badgeDetails(badge: Badge): string {
   const parts = [
-    badge.kind === 'sm' ? null : BADGE_KIND_LABELS[badge.kind],
     badge.kind === 'tournament' && badge.tournamentType
       ? TOURNAMENT_TYPE_LABELS[badge.tournamentType]
       : null,
