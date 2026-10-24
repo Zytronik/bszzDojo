@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.0](https://github.com/Zytronik/bszzDojo/compare/v3.7.1...v3.8.0) (2026-10-24)
+
+
+### Features
+
+* **web:** explain how to install the app on phones ([#58](https://github.com/Zytronik/bszzDojo/issues/58)) ([db08ce5](https://github.com/Zytronik/bszzDojo/commit/db08ce52c42656a973730e0bea5d7cc66d0e8826))
+
 ## [3.7.1](https://github.com/Zytronik/bszzDojo/compare/v3.7.0...v3.7.1) (2026-10-24)
 
 
