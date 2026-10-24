@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.0](https://github.com/Zytronik/bszzDojo/compare/v3.9.0...v3.10.0) (2026-10-24)
+
+
+### Features
+
+* **web:** pan and zoom the target, draw the inner 10 ([#63](https://github.com/Zytronik/bszzDojo/issues/63)) ([c26bf4b](https://github.com/Zytronik/bszzDojo/commit/c26bf4b00847604123c384bf70a468cb909cf07a))
+
 ## [3.9.0](https://github.com/Zytronik/bszzDojo/compare/v3.8.0...v3.9.0) (2026-10-24)
 
 
