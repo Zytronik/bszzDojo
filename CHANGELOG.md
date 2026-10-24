@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.11.0](https://github.com/Zytronik/bszzDojo/compare/v3.10.1...v3.11.0) (2026-10-24)
+
+
+### Features
+
+* sort the imported placings, optional event name and distance ([#69](https://github.com/Zytronik/bszzDojo/issues/69)) ([27c85eb](https://github.com/Zytronik/bszzDojo/commit/27c85ebe32a39cefab2ed7c960cf7de70d3867bc))
+
 ## [3.10.1](https://github.com/Zytronik/bszzDojo/compare/v3.10.0...v3.10.1) (2026-10-24)
 
 
