@@ -41,6 +41,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { ToastStore } from '../layout/toast.store';
 import { Dialog } from '../ui/dialog';
 import { Section } from '../ui/section';
+import { formGrid } from 'styled-system/recipes';
 
 const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
   badgeFieldErrors(normalizeBadgeInput(draft));
@@ -61,6 +62,7 @@ const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
   templateUrl: './badges-section.html',
 })
 export class BadgesSection {
+  protected readonly formStyles = formGrid();
   private readonly api = inject(BadgesApiService);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);

@@ -1,14 +1,18 @@
 import { defineSlotRecipe } from '@pandacss/dev';
 
-/** A label with a custom 25px box; the real input stays in the DOM for forms and screen readers. */
+/**
+ * The label above a custom box as high as an input, like a `field`, so both line up in a row. The
+ * real input stays in the DOM for forms and screen readers.
+ */
 export const checkbox = defineSlotRecipe({
   className: 'checkbox',
   slots: ['root', 'input', 'control'],
   base: {
     root: {
       display: 'flex',
-      alignItems: 'center',
-      gap: '15',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: '5',
       cursor: 'pointer',
       userSelect: 'none',
       position: 'relative',
@@ -23,8 +27,8 @@ export const checkbox = defineSlotRecipe({
       display: 'block',
       position: 'relative',
       flexShrink: '0',
-      width: 'checkbox',
-      height: 'checkbox',
+      width: 'control',
+      height: 'control',
       layerStyle: 'surface',
       borderRadius: 'sm',
       transitionProperty: 'background-color',
@@ -34,10 +38,10 @@ export const checkbox = defineSlotRecipe({
         content: '""',
         position: 'absolute',
         display: 'none',
-        left: '35%',
-        top: '20%',
-        width: '8px',
-        height: '13px',
+        left: '36%',
+        top: '16%',
+        width: '28%',
+        height: '52%',
         borderStyle: 'solid',
         borderColor: 'fg.onAccent',
         borderWidth: '0 3px 3px 0',

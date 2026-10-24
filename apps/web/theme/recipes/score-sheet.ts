@@ -22,6 +22,8 @@ export const scoreSheet = defineSlotRecipe({
         outlineWidth: 'thick',
         outlineStyle: 'solid',
         outlineColor: 'accent.default',
+        // Inside the button, so the selected arrow keeps its size.
+        outlineOffset: '-2px',
       },
     },
     total: { py: '5', layerStyle: 'divider', fontWeight: 'bold' },

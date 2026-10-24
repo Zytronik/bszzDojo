@@ -42,7 +42,6 @@ export const tokens = defineTokens({
   sizes: {
     full: { value: '100%' },
     dot: { value: '12px' },
-    checkbox: { value: '25px' },
     /** Follows the text size of the button it's in. */
     spinner: { value: '1em' },
     /** Placeholder heights: a line of body text, a line of small text, and the `#1` column */

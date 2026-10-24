@@ -8,7 +8,7 @@
   <app-tabs [tabs]="tabs" [(selected)]="tab">
     @if (isTab('login')) {
     <h2>Einloggen</h2>
-    <form [formGroup]="login" (ngSubmit)="submitLogin()" novalidate>
+    <form [class]="formStyles" [formGroup]="login" (ngSubmit)="submitLogin()" novalidate>
       <app-form-field label="Benutzername:">
         <input
           appFieldControl
@@ -31,7 +31,7 @@
     </form>
     } @else {
     <h2>Registrieren</h2>
-    <form [formGroup]="register" (ngSubmit)="submitRegister()" novalidate>
+    <form [class]="formStyles" [formGroup]="register" (ngSubmit)="submitRegister()" novalidate>
       <app-form-field label="Benutzername:" hint="Zum Einloggen. Ohne Leerzeichen.">
         <input
           appFieldControl
@@ -42,8 +42,8 @@
         />
       </app-form-field>
       <app-form-field
-        label="Anzeigename (optional):"
-        hint="Wird statt des Benutzernamens angezeigt."
+        label="Anzeigename:"
+        hint="Optional. Wird statt des Benutzernamens angezeigt."
       >
         <input
           appFieldControl
