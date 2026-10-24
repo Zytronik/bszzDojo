@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.13.0](https://github.com/Zytronik/bszzDojo/compare/v3.12.0...v3.13.0) (2026-10-24)
+
+
+### Features
+
+* mark inner tens as X and score compound by the X ([#76](https://github.com/Zytronik/bszzDojo/issues/76)) ([2d14005](https://github.com/Zytronik/bszzDojo/commit/2d14005e8bc0c0cc4c5bf1134f6f9ad4992e98d3))
+* **web:** lock the round's setup once arrows are on the target ([#79](https://github.com/Zytronik/bszzDojo/issues/79)) ([2705d7c](https://github.com/Zytronik/bszzDojo/commit/2705d7c643103096965b08b0ae24bef7557f73bf))
+
+
+### Bug Fixes
+
+* **shared:** drop the badge kind from the details line ([#75](https://github.com/Zytronik/bszzDojo/issues/75)) ([a8eded7](https://github.com/Zytronik/bszzDojo/commit/a8eded73d48f89b7543b63c8fd05ab6a1a3505af))
+
 ## [3.12.0](https://github.com/Zytronik/bszzDojo/compare/v3.11.0...v3.12.0) (2026-10-24)
 
 
