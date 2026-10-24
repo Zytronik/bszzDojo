@@ -46,6 +46,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
+import { formGrid } from 'styled-system/recipes';
 
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
@@ -83,6 +84,7 @@ function isValidEndCount(arrows: number | null): arrows is number {
   templateUrl: './submit-score-page.html',
 })
 export class SubmitScorePage {
+  protected readonly formStyles = formGrid();
   private readonly api = inject(ScoresApiService);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);

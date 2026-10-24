@@ -8,7 +8,7 @@
 </app-section>
 
 <app-dialog title="Auszeichnung erfassen" [open]="dialogOpen()" (closed)="dialogOpen.set(false)">
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <form [class]="formStyles" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <app-form-field label="Art:">
       <select appFieldControl formControlName="kind">
         @for (kind of kinds; track kind.id) {
