@@ -53,6 +53,7 @@ import { formRow } from 'styled-system/recipes';
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
 const DEFAULT_TARGET_ARROWS = 30;
+const SETUP_FIELDS = ['bowType', 'targetSize', 'isSpot', 'shotOn', 'distance', 'arrows'] as const;
 /** What most rounds in the club are shot at */
 const DEFAULT_DISTANCE = 18;
 const DEFAULT_TARGET_SIZE: TargetSize = 60;
@@ -140,6 +141,10 @@ export class SubmitScorePage {
   protected readonly complete = computed(
     () => this.shots().length > 0 && this.shots().every((shot) => shot !== null),
   );
+  /** Once an arrow is on the target, the round's setup stays as it was shot. */
+  protected readonly locked = computed(
+    () => this.mode() === 'target' && this.shots().some((shot) => shot !== null),
+  );
   /** The arrow the next tap on the target places */
   protected readonly selected = signal<number | null>(0);
 
@@ -170,6 +175,16 @@ export class SubmitScorePage {
         const arrows = this.form.controls.arrows;
         if (arrows.value === null) arrows.setValue(DEFAULT_TARGET_ARROWS);
         this.resize(arrows.value);
+      });
+    });
+    effect(() => {
+      const locked = this.locked();
+      untracked(() => {
+        for (const field of SETUP_FIELDS) {
+          const control = this.form.controls[field];
+          if (locked) control.disable({ emitEvent: false });
+          else control.enable({ emitEvent: false });
+        }
       });
     });
     // `revalidateOnChange` re-emits every control's value, so only real changes count here.

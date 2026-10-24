@@ -16,6 +16,7 @@ export const input = defineRecipe({
     transitionProperty: 'box-shadow',
     transitionDuration: 'normal',
     _focusVisible: { outlineWidth: 'thick', outlineStyle: 'solid', outlineColor: 'accent.default' },
+    _disabled: { opacity: 'inactive', cursor: 'not-allowed' },
     _placeholder: { color: 'fg.default', opacity: 'inactive' },
     // Set by `FieldControl` once the user touched the field; not `:invalid`, which applies at once.
     '&[aria-invalid=true]': {

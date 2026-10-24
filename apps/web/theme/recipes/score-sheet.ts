@@ -13,6 +13,8 @@ export const scoreSheet = defineSlotRecipe({
       w: 'full',
       maxW: 'control',
       h: 'control',
+      // An empty button sits on the text baseline, which makes rows without arrows taller.
+      verticalAlign: 'middle',
       border: 'none',
       borderRadius: 'sm',
       cursor: 'pointer',
