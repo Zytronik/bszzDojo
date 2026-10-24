@@ -19,7 +19,6 @@ import { ToastStore } from '../layout/toast.store';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
-import { formGrid } from 'styled-system/recipes';
 
 type AuthTab = 'login' | 'register';
 
@@ -38,7 +37,6 @@ export class LoginPage {
   /** Set by `authGuard` */
   readonly returnUrl = input<string>();
 
-  protected readonly formStyles = formGrid();
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);

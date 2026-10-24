@@ -40,7 +40,6 @@ import { ToastStore } from '../layout/toast.store';
 import { PageTitle } from '../ui/page-title';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
-import { formGrid } from 'styled-system/recipes';
 
 @Component({
   selector: 'app-settings-page',
@@ -59,7 +58,6 @@ import { formGrid } from 'styled-system/recipes';
   templateUrl: './settings-page.html',
 })
 export class SettingsPage {
-  protected readonly formStyles = formGrid();
   private readonly auth = inject(AuthStore);
   protected readonly settings = inject(SettingsStore);
   private readonly users = inject(UsersApiService);

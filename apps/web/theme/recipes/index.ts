@@ -3,7 +3,7 @@ import { checkbox } from './checkbox';
 import { pageContainer } from './container';
 import { emptyState } from './empty-state';
 import { field } from './field';
-import { formGrid } from './form-grid';
+import { formRow } from './form-row';
 import { input } from './input';
 import { medal } from './medal';
 import { modal } from './modal';
@@ -22,7 +22,7 @@ export const recipes = {
   button,
   pageContainer,
   emptyState,
-  formGrid,
+  formRow,
   input,
   medal,
   rankBadge,

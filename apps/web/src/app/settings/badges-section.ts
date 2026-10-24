@@ -41,7 +41,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { ToastStore } from '../layout/toast.store';
 import { Dialog } from '../ui/dialog';
 import { Section } from '../ui/section';
-import { formGrid } from 'styled-system/recipes';
+import { formRow } from 'styled-system/recipes';
 
 const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
   badgeFieldErrors(normalizeBadgeInput(draft));
@@ -62,7 +62,7 @@ const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
   templateUrl: './badges-section.html',
 })
 export class BadgesSection {
-  protected readonly formStyles = formGrid();
+  protected readonly rows = { even: formRow({ split: 'even' }), wide: formRow({ split: 'wide' }) };
   private readonly api = inject(BadgesApiService);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
@@ -82,7 +82,7 @@ export class BadgesSection {
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
 
   protected readonly form = this.forms.group({
-    kind: this.forms.control<BadgeKind>('tournament', formRule(badgeErrors, 'kind')),
+    kind: this.forms.control<BadgeKind>('sm', formRule(badgeErrors, 'kind')),
     place: this.forms.control<BadgePlace>(1, formRule(badgeErrors, 'place')),
     year: this.forms.control<number | null>(this.currentYear, [
       required(),
@@ -103,9 +103,9 @@ export class BadgesSection {
   private readonly value = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
-  protected readonly fields = computed(() => BADGE_KIND_FIELDS[this.value().kind ?? 'tournament']);
+  protected readonly fields = computed(() => BADGE_KIND_FIELDS[this.value().kind ?? 'sm']);
   protected readonly tournamentTypes = computed(() =>
-    BADGE_KIND_TOURNAMENT_TYPES[this.value().kind ?? 'tournament'].map((id) => ({
+    BADGE_KIND_TOURNAMENT_TYPES[this.value().kind ?? 'sm'].map((id) => ({
       id,
       label: TOURNAMENT_TYPE_LABELS[id],
     })),

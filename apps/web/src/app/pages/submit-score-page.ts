@@ -16,6 +16,7 @@ import {
   EARLIEST_SCORE_DATE,
   MAX_ARROWS,
   MAX_DISTANCE,
+  POINTS_PER_ARROW,
   TARGET_SIZES,
   scoreFieldErrors,
   shotPoints,
@@ -46,7 +47,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
-import { formGrid } from 'styled-system/recipes';
+import { formRow } from 'styled-system/recipes';
 
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
@@ -84,7 +85,7 @@ function isValidEndCount(arrows: number | null): arrows is number {
   templateUrl: './submit-score-page.html',
 })
 export class SubmitScorePage {
-  protected readonly formStyles = formGrid();
+  protected readonly rows = { even: formRow({ split: 'even' }), wide: formRow({ split: 'wide' }) };
   private readonly api = inject(ScoresApiService);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
@@ -99,20 +100,11 @@ export class SubmitScorePage {
   protected readonly targetSizes = TARGET_SIZES;
   protected readonly today = todayInClub();
   protected readonly earliestDate = EARLIEST_SCORE_DATE;
-  protected readonly maxArrows = MAX_ARROWS;
-  // In the old form's order.
-  private readonly resultFields: readonly { name: NumberField; label: string; max: number }[] = [
-    { name: 'distance', label: 'Distanz:', max: MAX_DISTANCE },
-    { name: 'tens', label: '10er:', max: MAX_ARROWS },
-    { name: 'nines', label: '9er:', max: MAX_ARROWS },
-    { name: 'arrows', label: 'Anzahl Pfeile:', max: MAX_ARROWS },
-    { name: 'result', label: 'Resultat:', max: MAX_ARROWS * 10 },
-  ];
-  protected readonly numberFields = computed(() =>
-    this.mode() === 'target'
-      ? this.resultFields.filter(({ name }) => name === 'distance')
-      : this.resultFields,
-  );
+  protected readonly limits = {
+    MAX_DISTANCE,
+    MAX_ARROWS,
+    MAX_RESULT: MAX_ARROWS * POINTS_PER_ARROW,
+  };
 
   protected readonly form = this.forms.group({
     bowType: this.forms.control<BowTypeId>('r'),

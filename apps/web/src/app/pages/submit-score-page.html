@@ -6,60 +6,96 @@
 <app-section>
   <h2>Erfasse einen neuen Score</h2>
   <app-tabs [tabs]="modes" [(selected)]="mode">
-    <form [class]="formStyles" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <app-form-field label="Bogenart:">
-        <select appFieldControl formControlName="bowType">
-          @for (bowType of bowTypes; track bowType.id) {
-          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
-          }
-        </select>
-      </app-form-field>
-      <app-form-field label="Scheibengrösse:">
-        <select appFieldControl formControlName="targetSize">
-          @for (size of targetSizes; track size) {
-          <option [ngValue]="size">{{ size }}cm</option>
-          }
-        </select>
-      </app-form-field>
-      <app-checkbox-field
-        label="Spot:"
-        [checked]="form.controls.isSpot.value"
-        (checkedChange)="form.controls.isSpot.setValue($event)"
-      />
-      <app-form-field label="Datum:">
-        <input
-          appFieldControl
-          type="date"
-          formControlName="shotOn"
-          [max]="today"
-          [min]="earliestDate"
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div [class]="rows.even">
+        <app-form-field label="Bogenart:">
+          <select appFieldControl formControlName="bowType">
+            @for (bowType of bowTypes; track bowType.id) {
+            <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+            }
+          </select>
+        </app-form-field>
+        <app-form-field label="Datum:">
+          <input
+            appFieldControl
+            type="date"
+            formControlName="shotOn"
+            [max]="today"
+            [min]="earliestDate"
+          />
+        </app-form-field>
+      </div>
+      <div [class]="rows.wide">
+        <app-form-field label="Scheibengrösse:">
+          <select appFieldControl formControlName="targetSize">
+            @for (size of targetSizes; track size) {
+            <option [ngValue]="size">{{ size }}cm</option>
+            }
+          </select>
+        </app-form-field>
+        <app-checkbox-field
+          label="Spot:"
+          [checked]="form.controls.isSpot.value"
+          (checkedChange)="form.controls.isSpot.setValue($event)"
         />
-      </app-form-field>
-      @for (field of numberFields(); track field.name) {
-      <app-form-field [label]="field.label">
+      </div>
+      <div [class]="rows.even">
+        <app-form-field label="Distanz:">
+          <input
+            appFieldControl
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="limits.MAX_DISTANCE"
+            formControlName="distance"
+          />
+        </app-form-field>
+        <app-form-field label="Anzahl Pfeile:">
+          <input
+            appFieldControl
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="limits.MAX_ARROWS"
+            formControlName="arrows"
+          />
+        </app-form-field>
+      </div>
+      @if (mode() === 'result') {
+      <div [class]="rows.even">
+        <app-form-field label="10er:">
+          <input
+            appFieldControl
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="limits.MAX_ARROWS"
+            formControlName="tens"
+          />
+        </app-form-field>
+        <app-form-field label="9er:">
+          <input
+            appFieldControl
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="limits.MAX_ARROWS"
+            formControlName="nines"
+          />
+        </app-form-field>
+      </div>
+      <app-form-field label="Resultat:">
         <input
           appFieldControl
           type="number"
           inputmode="numeric"
           min="0"
-          [max]="field.max"
-          [formControlName]="field.name"
+          [max]="limits.MAX_RESULT"
+          formControlName="result"
         />
       </app-form-field>
-      } @if (mode() === 'target') {
-      <app-form-field label="Anzahl Pfeile:" hint="Durch 3 teilbar: eine Passe hat 3 Pfeile.">
-        <input
-          appFieldControl
-          type="number"
-          inputmode="numeric"
-          min="3"
-          step="3"
-          [max]="maxArrows"
-          formControlName="arrows"
-        />
-      </app-form-field>
-      @if (shots().length > 0) {
-      <div [class]="targetStyles" data-full-width>
+      } @else { @if (shots().length > 0) {
+      <div [class]="targetStyles">
         <app-target-canvas
           [shots]="shots()"
           [selected]="selected()"
