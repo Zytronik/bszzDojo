@@ -4,37 +4,32 @@ import {
   DestroyRef,
   ElementRef,
   afterNextRender,
-  computed,
+  afterRenderEffect,
   inject,
-  signal,
+  input,
+  output,
   viewChild,
 } from '@angular/core';
+import { ringCount, type Shot } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
-import { button, record } from 'styled-system/recipes';
-import {
-  ARROW_COLOR,
-  RING_COLORS,
-  RING_COUNT,
-  RING_LINE_COLOR,
-  scoreAt,
-  type Point,
-} from './target-scoring';
+
+/**
+ * Canvas can't read CSS tokens, and these are the target face's own colors, not theme colors, so
+ * they stay the same in the light theme. Per ring pair from the outside: 1–2 white, 3–4 black,
+ * 5–6 blue, 7–8 red, 9–10 gold (World Archery).
+ */
+const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as const;
+const RING_LINE_COLOR = '#000000';
+const SHOT_COLOR = '#ffae00';
+const SELECTED_COLOR = '#00e5ff';
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
 const FACE_SHARE = 0.8;
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
+const SHOT_RADIUS = 5;
 
-interface Arrow {
-  /** In face units: the face has radius 1, the center is 0/0. Independent of canvas size and zoom. */
-  position: Point;
-  score: number;
-}
-
-/**
- * Experimental (admins only, as in the old app): tap the target where each arrow hit; pinch to zoom.
- * The old version showed each score in an `alert()`; this one lists the arrows and their sum.
- */
+/** Tap where an arrow hit (`placed`); pinch to zoom. Shows `shots`, `selected` highlighted. */
 @Component({
   selector: 'app-target-canvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,48 +42,15 @@ interface Arrow {
       (touchmove)="onTouchMove($event)"
       (touchend)="lastPinchDistance = 0"
     ></canvas>
-    <div [class]="summaryStyles" aria-live="polite">
-      <p>
-        Pfeile: <span [class]="recordStyles.highlight">{{ arrows().length }}</span> Total:
-        <span [class]="recordStyles.highlight">{{ total() }}</span>
-      </p>
-      @if (arrows().length > 0) {
-        <p [class]="recordStyles.meta">{{ scoresText() }}</p>
-      }
-    </div>
-    <div [class]="actionsStyles">
-      <button
-        type="button"
-        [class]="buttonStyles"
-        [disabled]="arrows().length === 0"
-        (click)="undo()"
-      >
-        Letzten Pfeil entfernen
-      </button>
-      <button
-        type="button"
-        [class]="buttonStyles"
-        [disabled]="arrows().length === 0"
-        (click)="reset()"
-      >
-        Zurücksetzen
-      </button>
-    </div>
   `,
 })
 export class TargetCanvas {
+  readonly shots = input<readonly (Shot | null)[]>([]);
+  readonly selected = input<number | null>(null);
+  readonly isSpot = input(false);
+  readonly placed = output<Shot>();
+
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
-
-  protected readonly arrows = signal<readonly Arrow[]>([]);
-  protected readonly total = computed(() =>
-    this.arrows().reduce((sum, arrow) => sum + arrow.score, 0),
-  );
-  protected readonly scoresText = computed(() =>
-    this.arrows()
-      .map((arrow) => (arrow.score === 0 ? 'M' : String(arrow.score)))
-      .join(', '),
-  );
-
   private zoom = 1;
   protected lastPinchDistance = 0;
 
@@ -101,12 +63,9 @@ export class TargetCanvas {
     touchAction: 'none',
     cursor: 'crosshair',
   });
-  protected readonly summaryStyles = css({ marginBlockStart: '15' });
-  protected readonly actionsStyles = css({ display: 'flex', gap: '15' });
-  protected readonly buttonStyles = button();
-  protected readonly recordStyles = record();
 
   constructor() {
+    afterRenderEffect(() => this.draw());
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       const observer = new ResizeObserver(() => this.draw());
@@ -116,15 +75,12 @@ export class TargetCanvas {
   }
 
   protected onClick(event: MouseEvent): void {
-    const element = this.canvas().nativeElement;
-    const rect = element.getBoundingClientRect();
+    const rect = this.canvas().nativeElement.getBoundingClientRect();
     const faceRadius = (rect.width / 2) * FACE_SHARE * this.zoom;
-    const position = {
+    this.placed.emit({
       x: (event.clientX - rect.left - rect.width / 2) / faceRadius,
       y: (event.clientY - rect.top - rect.height / 2) / faceRadius,
-    };
-    this.arrows.update((arrows) => [...arrows, { position, score: scoreAt(position, 1) }]);
-    this.draw();
+    });
   }
 
   protected onTouchMove(event: TouchEvent): void {
@@ -142,18 +98,10 @@ export class TargetCanvas {
     this.lastPinchDistance = distance;
   }
 
-  protected undo(): void {
-    this.arrows.update((arrows) => arrows.slice(0, -1));
-    this.draw();
-  }
-
-  protected reset(): void {
-    this.arrows.set([]);
-    this.zoom = 1;
-    this.draw();
-  }
-
   private draw(): void {
+    const shots = this.shots();
+    const selected = this.selected();
+    const isSpot = this.isSpot();
     const element = this.canvas().nativeElement;
     const context = element.getContext('2d');
     if (!context) return;
@@ -168,29 +116,28 @@ export class TargetCanvas {
     context.translate(size / 2, size / 2);
 
     const faceRadius = (size / 2) * FACE_SHARE * this.zoom;
-    const ringWidth = faceRadius / RING_COUNT;
-    for (let ring = RING_COUNT; ring > 0; ring--) {
+    const rings = ringCount(isSpot);
+    const ringWidth = faceRadius / rings;
+    for (let ring = rings; ring > 0; ring--) {
+      // Ring number 1–10 counted from the outside; a spot starts at 6.
+      const number = 11 - ring;
       context.beginPath();
       context.arc(0, 0, ring * ringWidth, 0, Math.PI * 2);
-      context.fillStyle = RING_COLORS[Math.floor((RING_COUNT - ring) / 2)] ?? RING_LINE_COLOR;
+      context.fillStyle = RING_COLORS[Math.floor((number - 1) / 2)] ?? RING_LINE_COLOR;
       context.fill();
       context.strokeStyle = RING_LINE_COLOR;
       context.lineWidth = 1;
       context.stroke();
     }
 
-    context.beginPath();
-    context.moveTo(-5, 0);
-    context.lineTo(5, 0);
-    context.moveTo(0, -5);
-    context.lineTo(0, 5);
-    context.stroke();
-
-    context.fillStyle = ARROW_COLOR;
-    for (const { position } of this.arrows()) {
+    shots.forEach((shot, index) => {
+      if (!shot) return;
       context.beginPath();
-      context.arc(position.x * faceRadius, position.y * faceRadius, 5, 0, Math.PI * 2);
+      context.arc(shot.x * faceRadius, shot.y * faceRadius, SHOT_RADIUS, 0, Math.PI * 2);
+      context.fillStyle = index === selected ? SELECTED_COLOR : SHOT_COLOR;
       context.fill();
-    }
+      context.strokeStyle = RING_LINE_COLOR;
+      context.stroke();
+    });
   }
 }

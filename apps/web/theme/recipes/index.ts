@@ -8,6 +8,7 @@ import { medal } from './medal';
 import { modal } from './modal';
 import { rankBadge } from './rank-badge';
 import { record } from './record';
+import { scoreSheet } from './score-sheet';
 import { searchOverlay } from './search-overlay';
 import { siteHeader } from './site-header';
 import { skeleton } from './skeleton';
@@ -31,6 +32,7 @@ export const slotRecipes = {
   field,
   modal,
   record,
+  scoreSheet,
   searchOverlay,
   siteHeader,
   skeleton,

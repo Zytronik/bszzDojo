@@ -1,4 +1,4 @@
-import type { BowTypeId, IsoDate, TargetSize } from '@bszz-dojo/shared';
+import type { BowTypeId, IsoDate, Shot, TargetSize } from '@bszz-dojo/shared';
 import {
   Column,
   CreateDateColumn,
@@ -49,6 +49,10 @@ export class ScoreEntity {
 
   @Column({ type: 'smallint' })
   result: number;
+
+  /** Entered on the target; `null` when only the totals were entered */
+  @Column({ type: 'jsonb', nullable: true })
+  shots: Shot[] | null;
 
   /** The day it was shot; TypeORM returns `date` columns as `YYYY-MM-DD` strings. */
   @Column({ name: 'shot_on', type: 'date' })

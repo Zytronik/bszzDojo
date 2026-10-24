@@ -9,5 +9,6 @@ export * from './rankings';
 export * from './ranks';
 export * from './scores';
 export * from './settings';
+export * from './target';
 export * from './users';
 export * from './version';

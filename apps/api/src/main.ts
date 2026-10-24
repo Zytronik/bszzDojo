@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { API_PREFIX } from '@bszz-dojo/shared';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { validationException } from './common/validation-errors';
 import { setupSwagger } from './swagger';
 
 // Vercel deploys this file as a single function (NestJS zero-config): it must call `listen`.
@@ -12,7 +13,12 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix(API_PREFIX);
   app.use(cookieParser());
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: validationException,
+    }),
   );
   await setupSwagger(app);
 
