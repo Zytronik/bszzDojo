@@ -71,6 +71,16 @@ styles and recipes for the recurring pieces (buttons, inputs, tabs, list rows, d
 Components build their classes with `css()` and the recipes; `panda codegen` generates
 `styled-system/`.
 
+## Storybook
+
+The design system lives in Storybook: the foundations (colors, typography, spacing from the Panda
+theme) and every reusable component with its states, in the dark and the light theme.
+
+```bash
+npm run storybook -w web        # http://localhost:6006
+npm run build-storybook -w web  # static build in apps/web/storybook-static
+```
+
 ## Linting
 
 [Oxlint](https://oxc.rs/docs/guide/usage/linter) lints every workspace (root `.oxlintrc.json`,
