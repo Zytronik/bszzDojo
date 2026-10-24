@@ -106,8 +106,8 @@ export function scoreFieldErrors(
       errors.shots = score.shots.every((shot) => shot === null || isShot(shot))
         ? 'Setze alle Pfeile auf der Scheibe.'
         : 'Ungültige Pfeilposition.';
-    } else {
-      const totals = shotTotals(score.shots, score.isSpot === true);
+    } else if (isBowTypeId(score.bowType)) {
+      const totals = shotTotals(score.shots, score.isSpot === true, score.bowType);
       if (totals.result !== result || totals.tens !== tens || totals.nines !== nines) {
         errors.result = 'Das Resultat passt nicht zu den Pfeilen auf der Scheibe.';
       }
