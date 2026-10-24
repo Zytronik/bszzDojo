@@ -16,5 +16,9 @@ export const Empty: Story = {
   args: { points: Array.from({ length: 9 }, () => null), selected: 0 },
 };
 export const Complete: Story = {
-  args: { points: [10, 10, 9, 9, 9, 8, 10, 7, 6], selected: null },
+  args: {
+    points: [10, 10, 9, 9, 9, 8, 10, 7, 6],
+    inner: [true, false, false, false, false, false, true, false, false],
+    selected: null,
+  },
 };

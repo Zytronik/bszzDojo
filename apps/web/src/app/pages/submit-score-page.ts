@@ -19,6 +19,7 @@ import {
   POINTS_PER_ARROW,
   TARGET_SIZES,
   scoreFieldErrors,
+  isInnerTen,
   shotPoints,
   shotTotals,
   todayInClub,
@@ -27,7 +28,7 @@ import {
   type Shot,
   type TargetSize,
 } from '@bszz-dojo/shared';
-import { distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged, map, merge } from 'rxjs';
 import { css } from 'styled-system/css';
 import { errorMessage } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
@@ -129,7 +130,12 @@ export class SubmitScorePage {
 
   protected readonly shots = computed(() => this.value().shots ?? []);
   protected readonly points = computed(() =>
-    this.shots().map((shot) => (shot ? shotPoints(shot, this.value().isSpot) : null)),
+    this.shots().map((shot) =>
+      shot ? shotPoints(shot, this.value().isSpot, this.value().bowType) : null,
+    ),
+  );
+  protected readonly inner = computed(() =>
+    this.shots().map((shot) => shot !== null && isInnerTen(shot, this.value().isSpot)),
   );
   protected readonly complete = computed(
     () => this.shots().length > 0 && this.shots().every((shot) => shot !== null),
@@ -172,9 +178,12 @@ export class SubmitScorePage {
       .subscribe((arrows) => {
         if (this.mode() === 'target') this.resize(arrows);
       });
-    // A spot scores the same positions differently.
-    this.form.controls.isSpot.valueChanges
-      .pipe(distinctUntilChanged(), takeUntilDestroyed())
+    // A spot and compound score the same positions differently.
+    merge(
+      this.form.controls.isSpot.valueChanges.pipe(distinctUntilChanged()),
+      this.form.controls.bowType.valueChanges.pipe(distinctUntilChanged()),
+    )
+      .pipe(takeUntilDestroyed())
       .subscribe(() => {
         if (this.mode() === 'target') this.setShots(this.shots());
       });
@@ -249,7 +258,10 @@ export class SubmitScorePage {
   /** Tens, nines and the result always follow the placed arrows. */
   private setShots(shots: (Shot | null)[]): void {
     const placed = shots.filter((shot) => shot !== null);
-    this.form.patchValue({ shots, ...shotTotals(placed, this.form.controls.isSpot.value) });
+    this.form.patchValue({
+      shots,
+      ...shotTotals(placed, this.form.controls.isSpot.value, this.form.controls.bowType.value),
+    });
   }
 
   /** The next arrow without a position after `index`, wrapping around; `null` when all are set. */

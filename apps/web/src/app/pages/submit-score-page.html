@@ -100,7 +100,7 @@
           (placed)="place($event)"
         />
         <div>
-          <app-score-sheet [points]="points()" [(selected)]="selected" />
+          <app-score-sheet [points]="points()" [inner]="inner()" [(selected)]="selected" />
           <p [class]="summaryStyles" aria-live="polite">
             <span>10er: {{ totals().tens }}</span>
             <span>9er: {{ totals().nines }}</span>

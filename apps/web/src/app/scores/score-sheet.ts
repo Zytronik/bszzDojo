@@ -10,9 +10,10 @@ interface End {
   runningTotal: number | null;
 }
 
-/** "M" for a miss, empty while the arrow isn't placed yet */
-function label(points: number | null | undefined): string {
+/** "X" for an inner 10, "M" for a miss, empty while the arrow isn't placed yet */
+function label(points: number | null | undefined, inner: boolean): string {
   if (points === null || points === undefined) return '';
+  if (inner) return 'X';
   return points === 0 ? 'M' : String(points);
 }
 
@@ -65,6 +66,8 @@ function label(points: number | null | undefined): string {
 export class ScoreSheet {
   /** Per arrow, in the order shot: `null` while it isn't placed */
   readonly points = input.required<readonly (number | null)[]>();
+  /** Per arrow, whether it's in the inner 10 */
+  readonly inner = input<readonly boolean[]>([]);
   readonly selected = model<number | null>(null);
 
   protected readonly styles = scoreSheet();
@@ -90,6 +93,6 @@ export class ScoreSheet {
   });
 
   protected text(slot: number): string {
-    return label(this.points()[slot]);
+    return label(this.points()[slot], this.inner()[slot] ?? false);
   }
 }

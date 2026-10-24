@@ -1,3 +1,4 @@
+import type { BowTypeId } from './bow-types';
 import { isRecord } from './guards';
 
 /**
@@ -18,18 +19,29 @@ export function ringCount(isSpot: boolean): number {
   return isSpot ? 5 : 10;
 }
 
-/** 0 is a miss. An arrow on a line counts for the higher ring. */
-export function shotPoints(shot: Shot, isSpot: boolean): number {
+/**
+ * 0 is a miss. An arrow on a line counts for the higher ring. Compound archers only get 10 for
+ * the inner 10 (X); the rest of the 10 counts 9.
+ */
+export function shotPoints(shot: Shot, isSpot: boolean, bowType: BowTypeId): number {
   const rings = ringCount(isSpot);
   const ring = Math.floor(Math.hypot(shot.x, shot.y) * rings);
-  return ring >= rings ? 0 : 10 - ring;
+  if (ring >= rings) return 0;
+  if (ring === 0 && bowType === 'cp' && !isInnerTen(shot, isSpot)) return 9;
+  return 10 - ring;
+}
+
+/** In the inner 10 (X), half as wide as the 10. */
+export function isInnerTen(shot: Shot, isSpot: boolean): boolean {
+  return Math.hypot(shot.x, shot.y) * ringCount(isSpot) < 0.5;
 }
 
 export function shotTotals(
   shots: readonly Shot[],
   isSpot: boolean,
+  bowType: BowTypeId,
 ): { result: number; tens: number; nines: number } {
-  const points = shots.map((shot) => shotPoints(shot, isSpot));
+  const points = shots.map((shot) => shotPoints(shot, isSpot, bowType));
   return {
     result: points.reduce((sum, value) => sum + value, 0),
     tens: points.filter((value) => value === 10).length,
