@@ -8,7 +8,7 @@ const meta: Meta<PageTitle> = {
   args: {
     title: 'Score erfassen',
     titleSecondLine: '',
-    description: 'Trage hier deine Leistungen im BSZZ Dojo ein.',
+    description: 'Trage hier deine Leistungen ein.',
   },
 };
 export default meta;
