@@ -4,7 +4,6 @@ import { checkbox } from 'styled-system/recipes';
 
 let nextCheckboxId = 0;
 
-/** The old app's custom checkbox: the label text, then a 25px box. */
 @Component({
   selector: 'app-checkbox-field',
   changeDetection: ChangeDetectionStrategy.OnPush,

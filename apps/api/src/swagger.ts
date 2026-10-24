@@ -11,7 +11,7 @@ import { API_PREFIX, APP_NAME, APP_VERSION, isRecord } from '@bszz-dojo/shared';
 import { REFRESH_COOKIE } from './auth/refresh-cookie';
 import metadata from './metadata';
 
-/** Major version of the installed `swagger-ui-dist`, for the CDN copy below. */
+/** Major version of the installed `swagger-ui-dist` */
 const SWAGGER_UI_MAJOR = 5;
 
 /**
@@ -72,9 +72,7 @@ async function addSuccessResponses(): Promise<void> {
   }
 }
 
-/** Swagger UI at `/api`, the OpenAPI JSON at `/api-json`. */
 export async function setupSwagger(app: INestApplication): Promise<void> {
-  // DTO and controller details from the Swagger CLI plugin (`npm run swagger:metadata`).
   await SwaggerModule.loadPluginMetadata(metadata);
   await addSuccessResponses();
 

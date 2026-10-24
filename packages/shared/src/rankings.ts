@@ -3,14 +3,13 @@ import type { BowTypeId } from './bow-types';
 import type { CalendarMonth, IsoDate } from './dates';
 import type { TargetSize } from './scores';
 
-/** Distances with a leaderboard, in the order of their tabs. */
+/** In the order of their tabs */
 export const LEADERBOARD_DISTANCES = [18, 8] as const;
 export type LeaderboardDistance = (typeof LEADERBOARD_DISTANCES)[number];
 /** Only rounds with exactly this many arrows count, so results are comparable. */
 export const LEADERBOARD_ARROWS = 30;
 export const LEADERBOARD_SIZE = 10;
 
-/** A user's best round at a distance. */
 export interface LeaderboardEntry extends UserName {
   rank: number;
   /** With the bow type's handicap; what the board is sorted by. */

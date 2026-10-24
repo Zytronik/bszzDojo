@@ -1,4 +1,3 @@
-/** Result line shown above a form (the old app's `infoMessage`). */
 export interface Feedback {
   status: 'success' | 'error';
   text: string;

@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
-/** One round a user shot and entered. */
 @Entity('scores')
 @Index('IDX_scores_user_shot_on', ['userId', 'shotOn'])
 @Index('IDX_scores_distance_arrows', ['distance', 'arrows'])
@@ -35,7 +34,7 @@ export class ScoreEntity {
   @Column({ name: 'is_spot', type: 'boolean' })
   isSpot: boolean;
 
-  /** m */
+  /** Meters */
   @Column({ type: 'smallint' })
   distance: number;
 

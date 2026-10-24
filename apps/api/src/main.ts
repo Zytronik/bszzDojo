@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { API_PREFIX } from '@bszz-dojo/shared';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { corsOrigins } from './cors';
 import { setupSwagger } from './swagger';
 
 // Vercel deploys this file as a single function (NestJS zero-config): it must call `listen`.
@@ -12,7 +11,6 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix(API_PREFIX);
   app.use(cookieParser());
-  app.enableCors({ origin: corsOrigins(), credentials: true });
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
   );

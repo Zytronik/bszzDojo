@@ -39,7 +39,6 @@ export const tokens = defineTokens({
     10: { value: '10px' },
     15: { value: '15px' },
     25: { value: '25px' },
-    30: { value: '30px' },
   },
   sizes: {
     full: { value: '100%' },
@@ -77,28 +76,21 @@ export const tokens = defineTokens({
     lg: { value: '120%' },
     xl: { value: '130%' },
     '2xl': { value: '140%' },
-    '3xl': { value: '170%' },
     /** The header's icons, which are `1em` */
     headerIcon: { value: '150%' },
     '4xl': { value: '180%' },
     '5xl': { value: '200%' },
   },
   fontWeights: {
-    normal: { value: '400' },
-    medium: { value: '500' },
     bold: { value: '700' },
   },
   lineHeights: {
     none: { value: '1' },
-    tight: { value: '1.1' },
     snug: { value: '1.2' },
     normal: { value: '1.42857143' },
   },
   borderWidths: {
     thick: { value: '2px' },
-  },
-  borders: {
-    none: { value: 'none' },
   },
   opacity: {
     inactive: { value: '0.4' },

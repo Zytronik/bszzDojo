@@ -1,13 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  type AbstractControl,
-  type ValidatorFn,
-} from '@angular/forms';
+import { FormControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   BOW_TYPES,
   BOW_TYPE_IDS,
@@ -18,7 +10,6 @@ import {
   scoreFieldErrors,
   todayInClub,
   type BowTypeId,
-  type ScoreDraft,
   type ScoreInput,
   type TargetSize,
 } from '@bszz-dojo/shared';
@@ -30,23 +21,19 @@ import { TargetCanvas } from '../scores/target-canvas';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
-import { INVALID_FORM, checkForm, messageFrom, required } from '../forms/validators';
+import {
+  INVALID_FORM,
+  checkForm,
+  formRule,
+  required,
+  revalidateOnChange,
+} from '../forms/validators';
 import { FeedbackMessage } from '../ui/feedback-message';
-import { formStyles } from '../ui/form-styles';
+import { css } from 'styled-system/css';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
-
-/** The shared rules for one field, run on the whole form since some compare fields. */
-function scoreRule(field: keyof ScoreInput): ValidatorFn {
-  return messageFrom((control: AbstractControl) => {
-    const form = control.parent;
-    if (!(form instanceof FormGroup)) return undefined;
-    const draft: ScoreDraft = form.getRawValue();
-    return scoreFieldErrors(draft)[field];
-  });
-}
 
 @Component({
   selector: 'app-submit-score-page',
@@ -69,7 +56,7 @@ export class SubmitScorePage {
   private readonly api = inject(ScoresApiService);
   private readonly forms = inject(NonNullableFormBuilder);
 
-  protected readonly styles = formStyles;
+  protected readonly leadStyles = css({ marginBlockEnd: '10' });
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
   protected readonly targetSizes = TARGET_SIZES;
   protected readonly today = todayInClub();
@@ -87,8 +74,7 @@ export class SubmitScorePage {
     bowType: this.forms.control<BowTypeId>('r'),
     targetSize: this.forms.control<TargetSize>(TARGET_SIZES[0]),
     isSpot: false,
-    shotOn: [this.today, [required(), scoreRule('shotOn')]],
-    // null while the field is empty
+    shotOn: [this.today, [required(), formRule(scoreFieldErrors, 'shotOn')]],
     distance: this.numberControl('distance'),
     tens: this.numberControl('tens'),
     nines: this.numberControl('nines'),
@@ -100,13 +86,7 @@ export class SubmitScorePage {
   protected readonly feedback = signal<Feedback | null>(null);
 
   constructor() {
-    // A change can make another field (in)valid, e.g. more arrows allow a higher result.
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      for (const control of Object.values(this.form.controls)) {
-        control.updateValueAndValidity({ onlySelf: true });
-      }
-      this.form.updateValueAndValidity({ emitEvent: false });
-    });
+    revalidateOnChange(this.form);
   }
 
   protected async submit(): Promise<void> {
@@ -141,6 +121,6 @@ export class SubmitScorePage {
   }
 
   private numberControl(field: NumberField): FormControl<number | null> {
-    return this.forms.control<number | null>(null, [required(), scoreRule(field)]);
+    return this.forms.control<number | null>(null, [required(), formRule(scoreFieldErrors, field)]);
   }
 }

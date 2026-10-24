@@ -5,13 +5,11 @@
   "scripts": {
     "build": "npm run swagger:metadata && nest build",
     "dev": "npm run swagger:metadata && npm run migration:run && nest start --watch",
-    "start": "node dist/main",
     "typecheck": "npm run swagger:metadata && tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "clean": "rm -rf dist .turbo",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
-    "migration:create": "typeorm-ts-node-commonjs migration:create",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:deploy": "typeorm migration:run -d dist/database/data-source.js",
@@ -37,7 +35,6 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",

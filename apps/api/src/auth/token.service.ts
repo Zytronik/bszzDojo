@@ -49,7 +49,6 @@ export class TokenService {
     return created.token;
   }
 
-  /** Invalidates the token and issues a new one. Null if the token is unknown or expired. */
   async rotateRefreshToken(token: string): Promise<{ userId: string; token: string } | null> {
     const stored = await this.findValid(token);
     if (!stored) return null;
@@ -63,7 +62,6 @@ export class TokenService {
     if (parsed) await this.refreshTokens.delete(parsed.id);
   }
 
-  /** Logs the user out on every device, e.g. after a password change. */
   async revokeAllRefreshTokens(userId: string): Promise<void> {
     await this.refreshTokens.delete({ userId });
   }

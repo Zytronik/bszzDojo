@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
-/** One row per logged-in device. The token itself is `<id>.<secret>`; only the secret's hash is stored. */
+/** One row per logged-in device */
 @Entity('refresh_tokens')
 export class RefreshTokenEntity {
   @PrimaryColumn({ type: 'uuid', primaryKeyConstraintName: 'PK_refresh_tokens' })

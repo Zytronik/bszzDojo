@@ -65,7 +65,6 @@ export class UsersService {
     return settings;
   }
 
-  /** Matches the username or the display name, ignoring case. */
   async search(query: string): Promise<UserSearchResult[]> {
     const pattern = `%${escapeLike(query.trim())}%`;
     const users = await this.users.find({

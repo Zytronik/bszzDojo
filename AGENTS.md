@@ -152,7 +152,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
   git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
 - One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
-  `badges/`, `admin/`, `health/`); cross-cutting helpers in `common/`.
+  `badges/`, `admin/`); cross-cutting helpers in `common/`.
 - Errors are Nest HTTP exceptions with a German message the web app can show as is.
 - `src/main.ts` is the Vercel entrypoint (NestJS zero-config): it must call `app.listen`.
 
@@ -164,8 +164,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **State:** app-wide state lives in NgRx SignalStores (`*.store.ts`, `providedIn: 'root'`):
   `AuthStore`, `SettingsStore`. Components read store signals and call store methods; only stores
   call `patchState`. Page data is loaded with `resource()` in the page; lists sit in
-  `<app-loading-frame>`, which shows a skeleton shaped like their rows while loading (`chart` for
-  the progress chart) and keeps it invisible afterwards, so the area never shrinks below it and
+  `<app-loading-frame>`, which shows an `<app-skeleton>` shaped like their rows while loading (`chart`
+  for the progress chart) and keeps it invisible afterwards, so the area never shrinks below it and
   the page doesn't jump. Never a plain "Wird geladen…". An empty list shows
   `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
@@ -180,8 +180,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     `hint`) once the field was touched.
   - Validators come from `forms/validators.ts` (`required`, `rule`, `messageFrom`) and answer
     with the German message to show; wrap the shared rules (`isValidUsername`,
-    `scoreFieldErrors`, …) instead of writing new ones. Rules that compare fields re-validate
-    their siblings on changes.
+    `scoreFieldErrors`, …) instead of writing new ones. A shared rule over the whole form is
+    `formRule(scoreFieldErrors, 'arrows')`, with `revalidateOnChange(form)` in the constructor so
+    fields that compare each other stay in sync.
   - On submit, `checkForm(form)` marks everything touched; if it's invalid, show `INVALID_FORM`
     in the form's `<app-feedback-message>`, which also shows the API's answer (success or error).
   - Buttons are `<button appButton [pending]="…">`: disabled with a spinner while their request

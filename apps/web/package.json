@@ -3,8 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "ng": "ng",
-    "codegen": "panda codegen",
     "dev": "panda codegen && ng serve",
     "build": "panda codegen && ng build",
     "typecheck": "panda codegen && tsc -p tsconfig.app.json --noEmit",
@@ -31,7 +29,6 @@
     "@angular/build": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
-    "@angular/pwa": "^21.2.0",
     "@pandacss/dev": "^1.0.0",
     "@pandacss/eslint-plugin": "^0.2.0",
     "postcss": "^8.5.0",

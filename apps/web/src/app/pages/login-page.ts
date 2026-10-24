@@ -44,7 +44,7 @@ function safeReturnUrl(url: string | undefined): string {
   templateUrl: './login-page.html',
 })
 export class LoginPage {
-  /** Query param set by `authGuard` */
+  /** Set by `authGuard` */
   readonly returnUrl = input<string>();
 
   protected readonly auth = inject(AuthStore);

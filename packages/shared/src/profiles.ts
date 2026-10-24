@@ -24,7 +24,7 @@ export interface ProgressPoint {
   result: number;
 }
 
-/** One line in the progress chart: every round of one bow type at one distance, oldest first. */
+/** Oldest first */
 export interface ProgressSeries {
   bowType: BowTypeId;
   points: ProgressPoint[];

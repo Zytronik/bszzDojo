@@ -8,7 +8,6 @@ export interface BowType {
    * float factor so `adjustedResult` is exact (300 × 1.18 is 353.99999… in floating point).
    */
   factorPercent: number;
-  /** Line color in the progress chart. */
   chartColor: string;
 }
 
@@ -24,7 +23,6 @@ export function isBowTypeId(value: unknown): value is BowTypeId {
   return typeof value === 'string' && (BOW_TYPE_IDS as readonly string[]).includes(value);
 }
 
-/** The result with the bow type's handicap, rounded down, as the leaderboards rank it. */
 export function adjustedResult(result: number, bowType: BowTypeId): number {
   return Math.floor((result * BOW_TYPES[bowType].factorPercent) / 100);
 }

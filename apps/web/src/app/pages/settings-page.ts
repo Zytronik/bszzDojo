@@ -37,7 +37,6 @@ import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, messageFrom, required, rule } from '../forms/validators';
 import { FeedbackMessage } from '../ui/feedback-message';
-import { formStyles } from '../ui/form-styles';
 import { PageTitle } from '../ui/page-title';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
@@ -66,7 +65,7 @@ export class SettingsPage {
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 
-  protected readonly styles = formStyles;
+  protected readonly leadStyles = css({ marginBlockEnd: '10' });
   protected readonly limits = { USERNAME_MAX_LENGTH, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH };
   protected readonly rankRowStyles = css({ display: 'flex', alignItems: 'center', gap: '15' });
   protected readonly ranks = RANK_IDS.map((id) => ({ id, name: RANKS[id].name }));

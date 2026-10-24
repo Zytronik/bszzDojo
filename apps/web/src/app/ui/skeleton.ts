@@ -3,11 +3,11 @@ import { css } from 'styled-system/css';
 import { skeleton } from 'styled-system/recipes';
 
 /**
- * Placeholder rows while a list loads: `rank` for leaderboards and records, `lines` 1–3 for how
- * much text a row has (title, details, date).
+ * Placeholder while a list loads: `rows` with `lines` 1–3 of text (title, details, date) and an
+ * optional `rank` column, or the progress `chart`'s block.
  */
 @Component({
-  selector: 'app-skeleton-list',
+  selector: 'app-skeleton',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.role]': "ghost() ? null : 'status'",
@@ -19,28 +19,33 @@ import { skeleton } from 'styled-system/recipes';
     @if (!ghost()) {
       <span [class]="srOnly">Wird geladen…</span>
     }
-    @for (row of indexes(); track row) {
-      <div [class]="styles.row" aria-hidden="true">
-        @if (rank()) {
-          <div [class]="styles.rank"></div>
-        }
-        <div [class]="styles.body">
-          <div [class]="styles.title"></div>
-          @if (lines() > 1) {
-            <div [class]="styles.line"></div>
+    @if (chart()) {
+      <div [class]="styles.chart" aria-hidden="true"></div>
+    } @else {
+      @for (row of indexes(); track row) {
+        <div [class]="styles.row" aria-hidden="true">
+          @if (rank()) {
+            <div [class]="styles.rank"></div>
           }
-          @if (lines() > 2) {
-            <div [class]="styles.meta"></div>
-          }
+          <div [class]="styles.body">
+            <div [class]="styles.title"></div>
+            @if (lines() > 1) {
+              <div [class]="styles.line"></div>
+            }
+            @if (lines() > 2) {
+              <div [class]="styles.meta"></div>
+            }
+          </div>
         </div>
-      </div>
+      }
     }
   `,
 })
-export class SkeletonList {
+export class Skeleton {
   readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
+  readonly chart = input(false);
   /** Invisible, only holding the space (see `LoadingFrame`). */
   readonly ghost = input(false);
 

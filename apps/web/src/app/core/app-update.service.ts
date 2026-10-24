@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate, type VersionEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 
-/** Service worker updates, for the banner shown when a new version is ready. */
 @Injectable({ providedIn: 'root' })
 export class AppUpdateService {
   private readonly updates = inject(SwUpdate);

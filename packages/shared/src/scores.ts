@@ -26,11 +26,8 @@ export interface ScoreInput {
   /** Meters */
   distance: number;
   arrows: number;
-  /** Number of arrows in the 10 ring */
   tens: number;
-  /** Number of arrows in the 9 ring */
   nines: number;
-  /** Total points */
   result: number;
 }
 
@@ -43,19 +40,15 @@ export interface RankedScore extends Score {
   rank: number;
 }
 
-/** A score while it's being entered: number fields are `null` while empty. */
 export type ScoreDraft = {
   [K in keyof ScoreInput]: ScoreInput[K] | null;
 };
 
-/** One German message per invalid field. */
 export type ScoreFieldErrors = Partial<Record<keyof ScoreInput, string>>;
 
 /**
- * What's wrong with a score, by field; empty if it's valid. Empty fields get no message here (the
- * form says they're required). Shared so the form shows the same errors the API would answer with;
- * cross-field rules go on the field that's usually entered last (more tens and nines than arrows
- * goes on `arrows`).
+ * Empty fields get no message here (the form says they're required). Cross-field rules go on the
+ * field that's usually entered last: more tens and nines than arrows goes on `arrows`.
  */
 export function scoreFieldErrors(
   score: ScoreDraft,
@@ -101,7 +94,6 @@ export function scoreFieldErrors(
   return errors;
 }
 
-/** Every message for a complete score, empty if it's valid. */
 export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): string[] {
   return Object.values(scoreFieldErrors(score, today));
 }

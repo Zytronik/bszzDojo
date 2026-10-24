@@ -16,10 +16,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 
-/**
- * A tournament placing ("Auszeichnung") a user recorded. The details are nullable for placings
- * imported from the old app, which only had a name, year and place.
- */
+/** The details are nullable for placings imported from the old app (only name, year, place). */
 @Entity('badges')
 export class BadgeEntity {
   @PrimaryColumn({ type: 'uuid', primaryKeyConstraintName: 'PK_badges' })

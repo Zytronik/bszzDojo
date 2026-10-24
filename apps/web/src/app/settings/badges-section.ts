@@ -1,12 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormGroup,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  type AbstractControl,
-  type ValidatorFn,
-} from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   AGE_CATEGORIES,
   BADGE_EARLIEST_YEAR,
@@ -26,7 +20,6 @@ import {
   normalizeBadgeInput,
   type AgeCategory,
   type BadgeDraft,
-  type BadgeInput,
   type BadgeKind,
   type BadgePlace,
   type BowTypeId,
@@ -38,23 +31,22 @@ import { errorMessage } from '../core/error-message';
 import { failure, success, type Feedback } from '../core/feedback';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
-import { INVALID_FORM, checkForm, messageFrom, required } from '../forms/validators';
+import {
+  INVALID_FORM,
+  checkForm,
+  formRule,
+  required,
+  revalidateOnChange,
+} from '../forms/validators';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FeedbackMessage } from '../ui/feedback-message';
 import { Dialog } from '../ui/dialog';
 import { Section } from '../ui/section';
 
-/** The shared rules for one field, run on the whole form since the kind decides what's needed. */
-function badgeRule(field: keyof BadgeInput): ValidatorFn {
-  return messageFrom((control: AbstractControl) => {
-    const form = control.parent;
-    if (!(form instanceof FormGroup)) return undefined;
-    const draft: BadgeDraft = form.getRawValue();
-    return badgeFieldErrors(normalizeBadgeInput(draft))[field];
-  });
-}
+const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
+  badgeFieldErrors(normalizeBadgeInput(draft));
 
-/** "Auszeichnung erfassen" in the settings, as a dialog; the placings are listed on the profile. */
+/** The placings are listed on the profile. */
 @Component({
   selector: 'app-badges-section',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,24 +81,28 @@ export class BadgesSection {
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
 
   protected readonly form = this.forms.group({
-    kind: this.forms.control<BadgeKind>('tournament', badgeRule('kind')),
-    place: this.forms.control<BadgePlace>(1, badgeRule('place')),
-    year: this.forms.control<number | null>(this.currentYear, [required(), badgeRule('year')]),
-    eventName: ['', badgeRule('eventName')],
-    tournamentType: this.forms.control<TournamentType | null>('fita', badgeRule('tournamentType')),
-    location: ['', badgeRule('location')],
-    bowType: this.forms.control<BowTypeId>('r', badgeRule('bowType')),
-    // Only the Clubturnier asks for it, so `badgeRule` (not `required`) decides.
-    distance: this.forms.control<number | null>(null, badgeRule('distance')),
+    kind: this.forms.control<BadgeKind>('tournament', formRule(badgeErrors, 'kind')),
+    place: this.forms.control<BadgePlace>(1, formRule(badgeErrors, 'place')),
+    year: this.forms.control<number | null>(this.currentYear, [
+      required(),
+      formRule(badgeErrors, 'year'),
+    ]),
+    eventName: ['', formRule(badgeErrors, 'eventName')],
+    tournamentType: this.forms.control<TournamentType | null>(
+      'fita',
+      formRule(badgeErrors, 'tournamentType'),
+    ),
+    location: ['', formRule(badgeErrors, 'location')],
+    bowType: this.forms.control<BowTypeId>('r', formRule(badgeErrors, 'bowType')),
+    // Only the Clubturnier asks for it, so the shared rule (not `required`) decides.
+    distance: this.forms.control<number | null>(null, formRule(badgeErrors, 'distance')),
     team: false,
-    ageCategory: this.forms.control<AgeCategory | null>(null, badgeRule('ageCategory')),
+    ageCategory: this.forms.control<AgeCategory | null>(null, formRule(badgeErrors, 'ageCategory')),
   });
   private readonly value = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
-  /** What the picked kind asks for, so the template only shows those fields. */
   protected readonly fields = computed(() => BADGE_KIND_FIELDS[this.value().kind ?? 'tournament']);
-  /** The national tournament has no "Team" type. */
   protected readonly tournamentTypes = computed(() =>
     BADGE_KIND_TOURNAMENT_TYPES[this.value().kind ?? 'tournament'].map((id) => ({
       id,
@@ -132,13 +128,7 @@ export class BadgesSection {
         this.form.controls.tournamentType.setValue('fita');
       }
     });
-    // Switching the kind changes what's required.
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      for (const control of Object.values(this.form.controls)) {
-        control.updateValueAndValidity({ onlySelf: true });
-      }
-      this.form.updateValueAndValidity({ emitEvent: false });
-    });
+    revalidateOnChange(this.form);
   }
 
   protected openDialog(): void {

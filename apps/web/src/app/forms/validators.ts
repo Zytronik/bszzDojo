@@ -1,4 +1,10 @@
-import type { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  FormGroup,
+  type AbstractControl,
+  type ValidationErrors,
+  type ValidatorFn,
+} from '@angular/forms';
 import { failure, type Feedback } from '../core/feedback';
 
 /*
@@ -6,10 +12,8 @@ import { failure, type Feedback } from '../core/feedback';
  * without knowing the rule (see `errorText`).
  */
 
-export const REQUIRED_MESSAGE = 'Bitte fülle dieses Feld aus.';
-
 /** Empty strings (also only spaces) and `null` count as missing. */
-export function required(message: string = REQUIRED_MESSAGE): ValidatorFn {
+export function required(message = 'Bitte fülle dieses Feld aus.'): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value: unknown = control.value;
     const empty = value === null || (typeof value === 'string' && value.trim().length === 0);
@@ -17,7 +21,6 @@ export function required(message: string = REQUIRED_MESSAGE): ValidatorFn {
   };
 }
 
-/** `message` whenever `isValid` rejects the value; `T` is the control's value type. */
 export function rule<T>(isValid: (value: T) => boolean, message: string): ValidatorFn {
   return (control: AbstractControl<T>): ValidationErrors | null =>
     isValid(control.value) ? null : { rule: message };
@@ -31,7 +34,31 @@ export function messageFrom(check: (control: AbstractControl) => string | undefi
   };
 }
 
-/** The message to show for a control's errors: the first one a validator above gave. */
+/**
+ * One field's message from a shared rule over the whole form (`scoreFieldErrors`, …). Pair it with
+ * `revalidateOnChange`, since a change to one field can make another one (in)valid.
+ */
+export function formRule<T>(
+  errors: (value: T) => Partial<Record<keyof T, string>>,
+  field: keyof T,
+): ValidatorFn {
+  return messageFrom((control) => {
+    const form = control.parent;
+    return form instanceof FormGroup ? errors(form.getRawValue() as T)[field] : undefined;
+  });
+}
+
+/** Call in an injection context (a constructor). */
+export function revalidateOnChange(form: FormGroup): void {
+  form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+    for (const control of Object.values(form.controls)) {
+      control.updateValueAndValidity({ onlySelf: true });
+    }
+    form.updateValueAndValidity({ emitEvent: false });
+  });
+}
+
+/** The first message a validator above gave. */
 export function errorText(errors: ValidationErrors | null): string | null {
   if (!errors) return null;
   for (const value of Object.values(errors) as unknown[]) {
@@ -41,7 +68,6 @@ export function errorText(errors: ValidationErrors | null): string | null {
   return 'Ungültige Eingabe.';
 }
 
-/** The form's message when a submit stopped at invalid fields. */
 export const INVALID_FORM: Feedback = failure('Bitte korrigiere die markierten Felder.');
 
 /** On submit: shows every field's error and tells whether the form can be sent. */

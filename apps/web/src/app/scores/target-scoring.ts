@@ -14,7 +14,7 @@ export interface Point {
   y: number;
 }
 
-/** Points for an arrow at `point`, relative to the center, on a face of `radius`; 0 is a miss. */
+/** `point` relative to the center; 0 is a miss. */
 export function scoreAt(point: Point, radius: number): number {
   const distance = Math.hypot(point.x, point.y);
   const ringWidth = radius / RING_COUNT;

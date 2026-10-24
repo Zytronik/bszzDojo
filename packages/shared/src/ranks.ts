@@ -23,7 +23,3 @@ export const RANKS: Record<RankId, Rank> = {
   roterPfeil: { name: 'roter Pfeil', icon: 'arrow' },
   goldenerPfeil: { name: 'goldener Pfeil', icon: 'arrow' },
 };
-
-export function isRankId(value: unknown): value is RankId {
-  return typeof value === 'string' && (RANK_IDS as readonly string[]).includes(value);
-}

@@ -8,10 +8,7 @@ export interface TabItem {
 
 let nextTabsId = 0;
 
-/**
- * A tab bar over projected content. The parent renders the selected tab's content itself
- * (`@switch` on `selected`), so hidden tabs aren't in the DOM at all.
- */
+/** The parent projects only the selected tab's content, so hidden tabs aren't in the DOM. */
 @Component({
   selector: 'app-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,

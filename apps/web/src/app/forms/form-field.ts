@@ -18,9 +18,8 @@ import { errorText } from './validators';
 let nextFieldId = 0;
 
 /**
- * The input or select of a `FormField`: links it to the label, styles it, and works out the error
- * to show. Errors appear once the field was touched (left, or `markAllAsTouched()` on submit), so
- * an empty form doesn't start out red.
+ * Errors appear once the field was touched (left, or `markAllAsTouched()` on submit), so an empty
+ * form doesn't start out red.
  */
 @Directive({
   selector: 'input[appFieldControl], select[appFieldControl]',
@@ -52,10 +51,7 @@ export class FieldControl implements OnInit {
   }
 }
 
-/**
- * A labelled form row: `<app-form-field label="Name:"><input appFieldControl … /></app-form-field>`.
- * Shows the control's error below it, otherwise the optional hint.
- */
+/** Shows the control's error below it, otherwise the hint. */
 @Component({
   selector: 'app-form-field',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 
-// Builds both CommonJS (consumed by NestJS) and ESM (consumed by Angular).
+// CommonJS for NestJS, ESM for Angular.
 export default defineConfig((options) => ({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],

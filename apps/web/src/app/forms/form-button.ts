@@ -1,10 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { button, spinner } from 'styled-system/recipes';
 
-/**
- * A form's button: `<button type="submit" appButton [pending]="saving()">Speichern</button>`.
- * While `pending`, it's disabled and shows a spinner before its label.
- */
+/** While `pending`, it's disabled and shows a spinner before its label. */
 @Component({
   selector: 'button[appButton]',
   changeDetection: ChangeDetectionStrategy.OnPush,

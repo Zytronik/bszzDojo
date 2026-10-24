@@ -21,7 +21,6 @@ export class AdminService {
     }));
   }
 
-  /** Scores and sessions go with it (foreign keys cascade). */
   async deleteUser(adminId: string, userId: string): Promise<void> {
     if (adminId === userId) throw new BadRequestException('Du kannst dich nicht selbst löschen.');
     const result = await this.users.delete(userId);

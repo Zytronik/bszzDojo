@@ -4,7 +4,6 @@ export * from './bow-types';
 export * from './constants';
 export * from './dates';
 export * from './guards';
-export * from './health';
 export * from './profiles';
 export * from './rankings';
 export * from './ranks';

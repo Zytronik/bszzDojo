@@ -10,7 +10,6 @@ export default defineConfig({
   preflight: true,
   // Templates can't call `css()`, so styles live in the components' .ts files.
   include: ['./src/**/*.ts'],
-  exclude: ['./src/**/*.spec.ts'],
   outdir: 'styled-system',
   // .js instead of .mjs, which esbuild and TypeScript both resolve without extra config.
   outExtension: 'js',

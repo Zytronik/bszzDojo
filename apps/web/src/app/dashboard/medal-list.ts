@@ -9,7 +9,6 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
 @Component({
   selector: 'app-medal-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // Grows inside a LoadingFrame, so the empty state can fill it.
   host: { '[class]': 'hostStyles' },
   imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `

@@ -19,7 +19,6 @@ export interface UpdateProfileRequest {
   displayName?: string | null;
   /** `null` removes it. */
   rank?: RankId | null;
-  /** New password */
   password?: string;
   /** Required to change the password. */
   currentPassword?: string;

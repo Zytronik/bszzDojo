@@ -70,13 +70,13 @@
     [checked]="settings.theme() === 'light'"
     (checkedChange)="settings.setTheme($event ? 'light' : 'dark')"
   />
-  @if (settings.saveStatus() === 'error') {
+  @if (settings.saveFailed()) {
   <app-feedback-message [feedback]="themeError" />
   }
 </app-section>
 
 <app-section>
   <h2>Ausloggen</h2>
-  <p [class]="styles.lead">Möchtest du dich wirklich ausloggen?</p>
+  <p [class]="leadStyles">Möchtest du dich wirklich ausloggen?</p>
   <button type="button" appButton [pending]="loggingOut()" (click)="logout()">Logout</button>
 </app-section>
