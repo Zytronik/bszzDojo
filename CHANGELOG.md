@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0](https://github.com/Zytronik/bszzDojo/compare/v3.4.0...v3.5.0) (2026-10-24)
+
+
+### Features
+
+* **web:** add storybook as the design system ([#49](https://github.com/Zytronik/bszzDojo/issues/49)) ([7006ba4](https://github.com/Zytronik/bszzDojo/commit/7006ba42f20c57985979acca1953825ec07ec635))
+
 ## [3.4.0](https://github.com/Zytronik/bszzDojo/compare/v3.3.0...v3.4.0) (2026-10-23)
 
 
