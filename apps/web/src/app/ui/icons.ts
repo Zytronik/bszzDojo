@@ -5,6 +5,7 @@ export {
   faDeleteLeft,
   faEllipsisVertical,
   faGear,
+  faKey,
   faMagnifyingGlass,
   faMobileScreenButton,
   faSquarePlus,

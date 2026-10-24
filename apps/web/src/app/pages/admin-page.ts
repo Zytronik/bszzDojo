@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { formatGermanDate, shownName, type AdminUser } from '@bszz-dojo/shared';
+import { RESET_PASSWORD, formatGermanDate, shownName, type AdminUser } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
 import { AdminApiService } from '../admin/admin-api.service';
 import { AuthStore } from '../auth/auth.store';
@@ -9,7 +9,7 @@ import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { ToastStore } from '../layout/toast.store';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft } from '../ui/icons';
+import { faDeleteLeft, faKey } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
@@ -36,12 +36,15 @@ export class AdminPage {
   private readonly toasts = inject(ToastStore);
 
   protected readonly recordStyles = record();
-  protected readonly icons = { faDeleteLeft };
+  protected readonly icons = { faDeleteLeft, faKey };
+  protected readonly resetPassword = RESET_PASSWORD;
   protected readonly formatDate = formatGermanDate;
 
   protected readonly users = resource({ loader: () => this.api.users() });
   protected readonly userToDelete = signal<AdminUser | null>(null);
   protected readonly deletingUser = signal(false);
+  protected readonly userToReset = signal<AdminUser | null>(null);
+  protected readonly resettingPassword = signal(false);
 
   protected async deleteUser(): Promise<void> {
     const user = this.userToDelete();
@@ -56,6 +59,21 @@ export class AdminPage {
     } finally {
       this.deletingUser.set(false);
       this.userToDelete.set(null);
+    }
+  }
+
+  protected async resetUserPassword(): Promise<void> {
+    const user = this.userToReset();
+    if (!user) return;
+    this.resettingPassword.set(true);
+    try {
+      await this.api.resetPassword(user.id);
+      this.toasts.success(`Das Passwort von ${shownName(user)} ist jetzt ${RESET_PASSWORD}`);
+    } catch (error: unknown) {
+      this.toasts.error(errorMessage(error));
+    } finally {
+      this.resettingPassword.set(false);
+      this.userToReset.set(null);
     }
   }
 }

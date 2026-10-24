@@ -15,4 +15,8 @@ export class AdminApiService {
   async deleteUser(id: string): Promise<void> {
     await firstValueFrom(this.http.delete(apiUrl(`admin/users/${id}`)));
   }
+
+  async resetPassword(id: string): Promise<void> {
+    await firstValueFrom(this.http.post(apiUrl(`admin/users/${id}/reset-password`), null));
+  }
 }

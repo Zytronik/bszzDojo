@@ -16,6 +16,14 @@
         <button
           type="button"
           [class]="recordStyles.action"
+          [attr.aria-label]="'Passwort von ' + (user | shownName) + ' zurücksetzen'"
+          (click)="userToReset.set(user)"
+        >
+          <app-icon [icon]="icons.faKey" />
+        </button>
+        <button
+          type="button"
+          [class]="recordStyles.action"
           [attr.aria-label]="(user | shownName) + ' löschen'"
           (click)="userToDelete.set(user)"
         >
@@ -34,5 +42,13 @@
     [pending]="deletingUser()"
     (confirmed)="deleteUser()"
     (cancelled)="userToDelete.set(null)"
+  />
+  <app-confirm-dialog
+    [open]="userToReset() !== null"
+    [message]="'Passwort von ' + (userToReset() | shownName) + ' auf ' + resetPassword + ' zurücksetzen? Alle Geräte werden ausgeloggt.'"
+    confirmLabel="Ja, zurücksetzen"
+    [pending]="resettingPassword()"
+    (confirmed)="resetUserPassword()"
+    (cancelled)="userToReset.set(null)"
   />
 </app-section>

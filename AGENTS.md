@@ -124,7 +124,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   pipe in templates) and link with `username`. Every shared type with a user name extends
   `UserName`.
 - Passwords are bcrypt hashes; `$2y$` hashes from the old PHP app are accepted (`compatibleHash`).
-  There's no self-service reset (no mail); changing the password needs the current one.
+  There's no self-service reset (no mail); changing the password needs the current one. Admins
+  can reset a user's password to `RESET_PASSWORD` (`Test1234!`), which logs them out everywhere.
 - The session is restored at startup (`provideAppInitializer`) before guards run. Routes that need
   a user use `authGuard`, which redirects to `/login?returnUrl=…`; `adminGuard` only hides pages.
 

@@ -30,7 +30,7 @@ let nextDialogId = 0;
           </button>
           <p [id]="textId" [class]="textStyles">{{ message() }}</p>
           <button type="button" appButton [pending]="pending()" (click)="confirmed.emit()">
-            Ja, löschen
+            {{ confirmLabel() }}
           </button>
           <button type="button" appButton (click)="cancelled.emit()">Abbrechen</button>
         </div>
@@ -41,6 +41,7 @@ let nextDialogId = 0;
 export class ConfirmDialog {
   readonly open = input.required<boolean>();
   readonly message = input.required<string>();
+  readonly confirmLabel = input('Ja, löschen');
   readonly pending = input(false);
   readonly confirmed = output();
   readonly cancelled = output();
