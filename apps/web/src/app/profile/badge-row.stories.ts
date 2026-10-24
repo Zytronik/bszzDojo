@@ -40,6 +40,35 @@ export const Clubturnier: Story = {
     },
   },
 };
+export const NationalesTurnier: Story = {
+  args: {
+    badge: {
+      ...sm,
+      kind: 'tournament',
+      place: 2,
+      eventName: 'Zürich Challenge',
+      tournamentType: 'fita',
+      location: 'Zürich',
+      team: null,
+    },
+  },
+};
+/** Without an event name the location is the title. */
+export const NationalesTurnierOhneName: Story = {
+  args: {
+    badge: {
+      ...sm,
+      kind: 'tournament',
+      place: 3,
+      bowType: 'cp',
+      ageCategory: 'U18',
+      tournamentType: 'field',
+      location: 'Sion',
+      team: null,
+      distance: null,
+    },
+  },
+};
 /** Imported from the old app: only name, year and place */
 export const Imported: Story = {
   args: {
