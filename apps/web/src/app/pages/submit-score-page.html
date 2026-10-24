@@ -61,7 +61,7 @@
       @if (shots().length > 0) {
       <p [class]="leadStyles">
         Tippe auf die Scheibe, wo der markierte Pfeil getroffen hat. Tippe in der Tabelle auf einen
-        Pfeil, um ihn zu verschieben. Mit zwei Fingern zoomen.
+        Pfeil, um ihn zu verschieben. Ziehen verschiebt die Scheibe, mit zwei Fingern zoomen.
       </p>
       <div [class]="targetStyles">
         <app-target-canvas
@@ -77,17 +77,6 @@
             <span>9er: {{ totals().nines }}</span>
             <span>Total: {{ totals().result }}</span>
           </p>
-          <div [class]="actionsStyles">
-            <button
-              type="button"
-              appButton
-              [disabled]="selected() === null || shots()[selected() ?? 0] === null"
-              (click)="removeSelected()"
-            >
-              Pfeil entfernen
-            </button>
-            <button type="button" appButton (click)="removeAll()">Alle entfernen</button>
-          </div>
         </div>
       </div>
       } }

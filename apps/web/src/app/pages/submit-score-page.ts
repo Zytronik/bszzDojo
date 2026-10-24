@@ -155,7 +155,6 @@ export class SubmitScorePage {
     flexWrap: 'wrap',
     marginBlockStart: '10',
   });
-  protected readonly actionsStyles = css({ display: 'flex', gap: '15' });
 
   constructor() {
     revalidateOnChange(this.form);
@@ -199,15 +198,7 @@ export class SubmitScorePage {
     this.selected.set(this.nextEmpty(shots, index));
   }
 
-  protected removeSelected(): void {
-    const index = this.selected();
-    if (index === null) return;
-    const shots = [...this.shots()];
-    shots[index] = null;
-    this.setShots(shots);
-  }
-
-  protected removeAll(): void {
+  private clearShots(): void {
     this.setShots(this.shots().map(() => null));
     this.selected.set(0);
   }
@@ -235,7 +226,7 @@ export class SubmitScorePage {
       this.toasts.success('Score erfolgreich eingetragen.');
       // Bow, target, date and distance usually stay the same for the next round.
       if (this.mode() === 'target') {
-        this.removeAll();
+        this.clearShots();
         this.form.controls.shots.markAsUntouched();
       } else {
         for (const field of ['tens', 'nines', 'arrows', 'result'] as const) {
