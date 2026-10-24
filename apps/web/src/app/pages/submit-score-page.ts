@@ -19,6 +19,7 @@ import {
   POINTS_PER_ARROW,
   TARGET_SIZES,
   scoreFieldErrors,
+  isInnerTen,
   shotPoints,
   shotTotals,
   todayInClub,
@@ -130,6 +131,9 @@ export class SubmitScorePage {
   protected readonly shots = computed(() => this.value().shots ?? []);
   protected readonly points = computed(() =>
     this.shots().map((shot) => (shot ? shotPoints(shot, this.value().isSpot) : null)),
+  );
+  protected readonly inner = computed(() =>
+    this.shots().map((shot) => shot !== null && isInnerTen(shot, this.value().isSpot)),
   );
   protected readonly complete = computed(
     () => this.shots().length > 0 && this.shots().every((shot) => shot !== null),

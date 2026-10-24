@@ -25,6 +25,11 @@ export function shotPoints(shot: Shot, isSpot: boolean): number {
   return ring >= rings ? 0 : 10 - ring;
 }
 
+/** In the inner 10 (X), half as wide as the 10. It still counts 10 points. */
+export function isInnerTen(shot: Shot, isSpot: boolean): boolean {
+  return Math.hypot(shot.x, shot.y) * ringCount(isSpot) < 0.5;
+}
+
 export function shotTotals(
   shots: readonly Shot[],
   isSpot: boolean,
