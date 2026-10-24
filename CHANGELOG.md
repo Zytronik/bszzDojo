@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.0](https://github.com/Zytronik/bszzDojo/compare/v3.8.0...v3.9.0) (2026-10-24)
+
+
+### Features
+
+* enter a round arrow by arrow on the target ([#61](https://github.com/Zytronik/bszzDojo/issues/61)) ([a236463](https://github.com/Zytronik/bszzDojo/commit/a23646306603a6c42987d418e7859890bc27ee31))
+
 ## [3.8.0](https://github.com/Zytronik/bszzDojo/compare/v3.7.1...v3.8.0) (2026-10-24)
 
 
