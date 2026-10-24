@@ -9,7 +9,6 @@ export const checkbox = defineSlotRecipe({
       display: 'flex',
       alignItems: 'center',
       gap: '15',
-      mb: 'stack',
       cursor: 'pointer',
       userSelect: 'none',
       position: 'relative',

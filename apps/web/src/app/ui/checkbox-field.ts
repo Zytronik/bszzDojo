@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
-import { cx } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
 import { checkbox } from 'styled-system/recipes';
 
 let nextCheckboxId = 0;
@@ -7,6 +7,7 @@ let nextCheckboxId = 0;
 @Component({
   selector: 'app-checkbox-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class]': 'hostStyles' },
   template: `
     <label [class]="rootStyles" [for]="id">
       {{ label() }}
@@ -26,6 +27,12 @@ export class CheckboxField {
   readonly label = input.required<string>();
   readonly checked = model(false);
 
+  // Space to the next row only, not at the end of a section.
+  protected readonly hostStyles = css({
+    display: 'block',
+    marginBlockEnd: 'stack',
+    _last: { marginBlockEnd: '0' },
+  });
   protected readonly styles = checkbox();
   // `group` makes the box light up while the whole label is hovered (`_groupHover`).
   protected readonly rootStyles = cx('group', this.styles.root);

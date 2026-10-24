@@ -36,6 +36,7 @@ export const tokens = defineTokens({
     8: { value: '8px' },
     10: { value: '10px' },
     15: { value: '15px' },
+    20: { value: '20px' },
     25: { value: '25px' },
   },
   sizes: {
@@ -48,7 +49,8 @@ export const tokens = defineTokens({
     skeletonLine: { value: '18px' },
     skeletonMeta: { value: '12px' },
     skeletonRank: { value: '28px' },
-    rankBadge: { value: '30px' },
+    /** Inputs, selects and what sits next to them (the Abzeichen) */
+    control: { value: '36px' },
     stepNumber: { value: '28px' },
     header: { value: '60px' },
     footer: { value: '30px' },

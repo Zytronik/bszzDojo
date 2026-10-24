@@ -42,7 +42,7 @@ export const semanticTokens = defineSemanticTokens({
     /** Horizontal page padding, Bootstrap's 15px gutter */
     gutter: { value: '{spacing.15}' },
     /** Vertical padding of a page section */
-    section: { value: '{spacing.15}' },
+    section: { value: '{spacing.20}' },
     /** Between form rows and list blocks */
     stack: { value: '{spacing.15}' },
     /** Between the header's icons */
