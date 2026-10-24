@@ -14,3 +14,5 @@ export const Unchecked: Story = {};
 export const Checked: Story = { args: { checked: true } };
 /** A setting on its own, e.g. the theme */
 export const Inline: Story = { args: { layout: 'inline' } };
+/** Like the target mode's setup once an arrow is placed */
+export const Disabled: Story = { args: { checked: true, disabled: true } };

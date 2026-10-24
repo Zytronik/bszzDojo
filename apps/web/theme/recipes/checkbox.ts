@@ -16,6 +16,7 @@ export const checkbox = defineSlotRecipe({
       cursor: 'pointer',
       userSelect: 'none',
       position: 'relative',
+      '&:has(input:disabled)': { cursor: 'not-allowed' },
     },
     input: {
       position: 'absolute',
@@ -33,7 +34,7 @@ export const checkbox = defineSlotRecipe({
       borderRadius: 'sm',
       transitionProperty: 'background-color',
       transitionDuration: 'normal',
-      _groupHover: { bg: 'accent.default' },
+      '.group:hover input:not(:disabled) ~ &': { bg: 'accent.default' },
       _after: {
         content: '""',
         position: 'absolute',
@@ -51,6 +52,7 @@ export const checkbox = defineSlotRecipe({
         bg: 'accent.default',
         _after: { display: 'block' },
       },
+      'input:disabled ~ &': { opacity: 'inactive' },
       'input:focus-visible ~ &': {
         outlineWidth: 'thick',
         outlineStyle: 'solid',

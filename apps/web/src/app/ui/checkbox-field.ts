@@ -17,6 +17,7 @@ let nextCheckboxId = 0;
         [id]="id"
         [class]="styles.input"
         [checked]="checked()"
+        [disabled]="disabled()"
         (change)="checked.set(box.checked)"
       />
       <span [class]="styles.control" aria-hidden="true"></span>
@@ -27,6 +28,7 @@ export class CheckboxField {
   readonly label = input.required<string>();
   readonly checked = model(false);
   readonly layout = input<'stacked' | 'inline'>('stacked');
+  readonly disabled = input(false);
 
   // Space to the next row only, not at the end of a section.
   protected readonly hostStyles = css({

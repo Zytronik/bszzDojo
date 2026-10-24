@@ -33,6 +33,7 @@
         <app-checkbox-field
           label="Spot:"
           [checked]="form.controls.isSpot.value"
+          [disabled]="locked()"
           (checkedChange)="form.controls.isSpot.setValue($event)"
         />
       </div>
