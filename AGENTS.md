@@ -73,7 +73,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Bow types** (`BOW_TYPES`): Recurve, Compound, Traditionell, Langbogen, Barebow, each with a
   handicap in integer percent (`factorPercent`), applied by `adjustedResult` and rounded down.
 - **Leaderboards** (`GET /api/rankings`, built in `rankings/leaderboard.ts`): only rounds at the
-  `LEADERBOARD_DISTANCES` (18m, 8m) with exactly `LEADERBOARD_ARROWS` (30) arrows count. Each
+  `LEADERBOARD_DISTANCES` (18m, 8m, 30m; the first tab is the default) with exactly `LEADERBOARD_ARROWS` (30) arrows count. Each
   archer's best round by _adjusted_ result, top 10; ties go to whoever shot it first. "Monthly"
   is the current calendar month in `CLUB_TIME_ZONE` (Europe/Zurich), by the day it was shot.
 - **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.

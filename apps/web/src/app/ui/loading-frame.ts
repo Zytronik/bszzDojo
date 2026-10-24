@@ -13,19 +13,12 @@ import { Skeleton } from './skeleton';
   imports: [Skeleton],
   host: { '[class]': 'styles' },
   template: `
-    <app-skeleton
-      [rows]="rows()"
-      [lines]="lines()"
-      [rank]="rank()"
-      [chart]="chart()"
-      [ghost]="!loading()"
-    />
+    <app-skeleton [lines]="lines()" [rank]="rank()" [chart]="chart()" [ghost]="!loading()" />
     <div [class]="contentStyles"><ng-content /></div>
   `,
 })
 export class LoadingFrame {
   readonly loading = input.required<boolean>();
-  readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
   readonly chart = input(false);

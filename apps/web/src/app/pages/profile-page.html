@@ -5,7 +5,7 @@
 } @else { @let p = profile.hasValue() ? profile.value() : null;
 
 <app-section>
-  <app-loading-frame [loading]="!p" [rows]="2" [lines]="3">
+  <app-loading-frame [loading]="!p" [lines]="3">
     @if (p) {
     <h1>{{ p | shownName }}</h1>
     <div [class]="pageStyles.rankRow">
@@ -38,7 +38,7 @@
 
 <app-section>
   <h2>Rekorde</h2>
-  <app-loading-frame [loading]="!p" [rows]="3" [lines]="3" [rank]="true">
+  <app-loading-frame [loading]="!p" [lines]="3" [rank]="true">
     @if (p) { @if (p.personalBests.length === 0) {
     <app-empty-state>Keine Rekorde vorhanden.</app-empty-state>
     } @else {
@@ -69,7 +69,7 @@
 <app-section>
   <app-feedback-message [feedback]="badgeDeleteFeedback()" />
   <h2>Auszeichnungen</h2>
-  <app-loading-frame [loading]="!p" [rows]="2" [lines]="2">
+  <app-loading-frame [loading]="!p" [lines]="2">
     @if (p) { @for (badge of p.badges; track badge.id) {
     <app-badge-row
       [badge]="badge"
@@ -85,7 +85,7 @@
 <app-section>
   <app-feedback-message [feedback]="deleteFeedback()" />
   <h2>Historie</h2>
-  <app-loading-frame [loading]="!p" [rows]="3" [lines]="3">
+  <app-loading-frame [loading]="!p" [lines]="3">
     @if (p) { @for (score of p.history; track score.id) {
     <app-score-row
       [score]="score"

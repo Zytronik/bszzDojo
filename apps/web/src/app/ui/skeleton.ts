@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { css } from 'styled-system/css';
 import { skeleton } from 'styled-system/recipes';
 
 /**
- * Placeholder while a list loads: `rows` with `lines` 1–3 of text (title, details, date) and an
+ * Placeholder while a list loads: one row with `lines` 1–3 of text (title, details, date) and an
  * optional `rank` column, or the progress `chart`'s block.
  */
 @Component({
@@ -22,34 +22,30 @@ import { skeleton } from 'styled-system/recipes';
     @if (chart()) {
       <div [class]="styles.chart" aria-hidden="true"></div>
     } @else {
-      @for (row of indexes(); track row) {
-        <div [class]="styles.row" aria-hidden="true">
-          @if (rank()) {
-            <div [class]="styles.rank"></div>
+      <div [class]="styles.row" aria-hidden="true">
+        @if (rank()) {
+          <div [class]="styles.rank"></div>
+        }
+        <div [class]="styles.body">
+          <div [class]="styles.title"></div>
+          @if (lines() > 1) {
+            <div [class]="styles.line"></div>
           }
-          <div [class]="styles.body">
-            <div [class]="styles.title"></div>
-            @if (lines() > 1) {
-              <div [class]="styles.line"></div>
-            }
-            @if (lines() > 2) {
-              <div [class]="styles.meta"></div>
-            }
-          </div>
+          @if (lines() > 2) {
+            <div [class]="styles.meta"></div>
+          }
         </div>
-      }
+      </div>
     }
   `,
 })
 export class Skeleton {
-  readonly rows = input(3);
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
   readonly chart = input(false);
   /** Invisible, only holding the space (see `LoadingFrame`). */
   readonly ghost = input(false);
 
-  protected readonly indexes = computed(() => Array.from({ length: this.rows() }, (_, i) => i));
   protected readonly styles = skeleton();
   protected readonly srOnly = css({ srOnly: true });
   protected readonly ghostStyles = css({ visibility: 'hidden', '& *': { animation: 'none' } });

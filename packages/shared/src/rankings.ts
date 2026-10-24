@@ -4,7 +4,7 @@ import type { CalendarMonth, IsoDate } from './dates';
 import type { TargetSize } from './scores';
 
 /** In the order of their tabs */
-export const LEADERBOARD_DISTANCES = [18, 8] as const;
+export const LEADERBOARD_DISTANCES = [18, 8, 30] as const;
 export type LeaderboardDistance = (typeof LEADERBOARD_DISTANCES)[number];
 /** Only rounds with exactly this many arrows count, so results are comparable. */
 export const LEADERBOARD_ARROWS = 30;
