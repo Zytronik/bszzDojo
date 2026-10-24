@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.6.0](https://github.com/Zytronik/bszzDojo/compare/v3.5.0...v3.6.0) (2026-10-24)
+
+
+### Features
+
+* add a 30m leaderboard and show one skeleton row per list ([#51](https://github.com/Zytronik/bszzDojo/issues/51)) ([57bea09](https://github.com/Zytronik/bszzDojo/commit/57bea09e9cc4bf750f5b4d710ed8c55e109f87a1))
+
+
+### Bug Fixes
+
+* **web:** build the shared package before storybook ([#52](https://github.com/Zytronik/bszzDojo/issues/52)) ([43f0348](https://github.com/Zytronik/bszzDojo/commit/43f0348fc76367479af9845bbaf0edfe8d2f2987))
+
 ## [3.5.0](https://github.com/Zytronik/bszzDojo/compare/v3.4.0...v3.5.0) (2026-10-24)
 
 
