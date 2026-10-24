@@ -1,7 +1,6 @@
 <app-page-title title="Admin" description="Verwalte das BSZZ Dojo." />
 
 <app-section>
-  <app-feedback-message [feedback]="usersFeedback()" />
   <h2>Alle Benutzer</h2>
   <app-loading-frame [loading]="!users.hasValue() && users.isLoading()" [lines]="2">
     @if (users.hasValue()) { @for (user of users.value(); track user.id) {

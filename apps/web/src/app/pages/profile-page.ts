@@ -18,16 +18,15 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
-import { failure, type Feedback } from '../core/feedback';
 import { BadgesApiService } from '../core/badges-api.service';
 import { ProfilesApiService } from '../core/profiles-api.service';
+import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
 import { ProgressChart } from '../profile/progress-chart';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
-import { FeedbackMessage } from '../ui/feedback-message';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 import { LoadingFrame } from '../ui/loading-frame';
@@ -44,7 +43,6 @@ import { Tabs, type TabItem } from '../ui/tabs';
     BadgeRow,
     ProgressChart,
     ConfirmDialog,
-    FeedbackMessage,
     ShownNamePipe,
     LoadingFrame,
     EmptyState,
@@ -58,6 +56,7 @@ export class ProfilePage {
   private readonly profiles = inject(ProfilesApiService);
   private readonly scores = inject(ScoresApiService);
   private readonly badges = inject(BadgesApiService);
+  private readonly toasts = inject(ToastStore);
 
   protected readonly profile = resource({
     params: () => ({ username: this.username() }),
@@ -77,20 +76,6 @@ export class ProfilePage {
   protected readonly scoreToDelete = signal<string | null>(null);
   protected readonly badgeToDelete = signal<string | null>(null);
   protected readonly deleting = signal(false);
-  private readonly deleteError = signal<string | null>(null);
-  private readonly badgeDeleteError = signal<string | null>(null);
-
-  protected readonly loadError = computed((): Feedback | null =>
-    this.profile.error() ? failure(errorMessage(this.profile.error())) : null,
-  );
-  protected readonly badgeDeleteFeedback = computed((): Feedback | null => {
-    const error = this.badgeDeleteError();
-    return error ? failure(error) : null;
-  });
-  protected readonly deleteFeedback = computed((): Feedback | null => {
-    const error = this.deleteError();
-    return error ? failure(error) : null;
-  });
 
   protected readonly pageStyles = {
     rankRow: css({
@@ -108,6 +93,10 @@ export class ProfilePage {
     }),
     stat: css({ display: 'flex', gap: '15' }),
   };
+
+  constructor() {
+    toastErrors(() => this.profile.error());
+  }
 
   protected distanceTabs(groups: readonly { distance: number }[]): TabItem[] {
     return groups.map(({ distance }) => ({ id: String(distance), label: `${distance}m` }));
@@ -127,11 +116,10 @@ export class ProfilePage {
     this.deleting.set(true);
     try {
       await this.scores.delete(id);
-      this.deleteError.set(null);
       // Records, chart and stats all change, so the whole profile is fetched again.
       this.profile.reload();
     } catch (error: unknown) {
-      this.deleteError.set(errorMessage(error));
+      this.toasts.error(errorMessage(error));
     } finally {
       this.deleting.set(false);
       this.scoreToDelete.set(null);
@@ -144,10 +132,9 @@ export class ProfilePage {
     this.deleting.set(true);
     try {
       await this.badges.delete(id);
-      this.badgeDeleteError.set(null);
       this.profile.reload();
     } catch (error: unknown) {
-      this.badgeDeleteError.set(errorMessage(error));
+      this.toasts.error(errorMessage(error));
     } finally {
       this.deleting.set(false);
       this.badgeToDelete.set(null);

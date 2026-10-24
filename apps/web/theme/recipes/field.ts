@@ -8,6 +8,6 @@ export const field = defineSlotRecipe({
     root: { display: 'flex', flexDirection: 'column', mb: 'stack' },
     label: { mb: '5' },
     hint: { textStyle: 'body.small', layerStyle: 'muted', mt: '5' },
-    error: { textStyle: 'body.small', color: 'status.error.fg', mt: '5', animation: 'fadeIn' },
+    error: { textStyle: 'body.small', color: 'status.error', mt: '5', animation: 'fadeIn' },
   },
 });

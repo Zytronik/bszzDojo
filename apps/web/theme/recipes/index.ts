@@ -5,7 +5,6 @@ import { emptyState } from './empty-state';
 import { field } from './field';
 import { input } from './input';
 import { medal } from './medal';
-import { message } from './message';
 import { modal } from './modal';
 import { rankBadge } from './rank-badge';
 import { record } from './record';
@@ -14,6 +13,7 @@ import { siteHeader } from './site-header';
 import { skeleton } from './skeleton';
 import { spinner } from './spinner';
 import { tabs } from './tabs';
+import { toast } from './toast';
 
 export const recipes = {
   button,
@@ -21,7 +21,6 @@ export const recipes = {
   emptyState,
   input,
   medal,
-  message,
   rankBadge,
   spinner,
 };
@@ -35,4 +34,5 @@ export const slotRecipes = {
   siteHeader,
   skeleton,
   tabs,
+  toast,
 };

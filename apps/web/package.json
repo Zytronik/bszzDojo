@@ -9,7 +9,7 @@
     "lint": "oxlint --threads 1",
     "lint:fix": "oxlint --threads 1 --fix",
     "clean": "rm -rf dist .angular .turbo styled-system storybook-static",
-    "storybook": "panda codegen && storybook dev -p 6006",
+    "storybook": "turbo run build --filter=@bszz-dojo/shared --output-logs=errors-only && panda codegen && storybook dev -p 6006",
     "build-storybook": "panda codegen && storybook build"
   },
   "dependencies": {

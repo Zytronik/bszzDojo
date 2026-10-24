@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, type AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -12,11 +12,10 @@ import {
   isValidUsername,
 } from '@bszz-dojo/shared';
 import { AuthStore } from '../auth/auth.store';
-import { failure, type Feedback } from '../core/feedback';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { ToastStore } from '../layout/toast.store';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -31,16 +30,7 @@ function safeReturnUrl(url: string | undefined): string {
 @Component({
   selector: 'app-login-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    PageTitle,
-    Section,
-    Tabs,
-    FeedbackMessage,
-    FormField,
-    FieldControl,
-    FormButton,
-  ],
+  imports: [ReactiveFormsModule, PageTitle, Section, Tabs, FormField, FieldControl, FormButton],
   templateUrl: './login-page.html',
 })
 export class LoginPage {
@@ -49,6 +39,7 @@ export class LoginPage {
 
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly limits = {
@@ -62,7 +53,6 @@ export class LoginPage {
     { id: 'register', label: 'Register' },
   ];
   protected readonly tab = signal<string>('login');
-  private readonly invalidSubmit = signal(false);
 
   protected readonly login = this.forms.group({
     username: ['', required('Bitte gib deinen Benutzernamen ein.')],
@@ -73,18 +63,6 @@ export class LoginPage {
     displayName: ['', rule(isValidDisplayName, ACCOUNT_FIELD_ERRORS.displayName)],
     password: ['', [required(), rule(isValidPassword, ACCOUNT_FIELD_ERRORS.password)]],
   });
-
-  protected readonly feedback = computed((): Feedback | null => {
-    if (this.invalidSubmit()) return INVALID_FORM;
-    const error = this.auth.error();
-    return error ? failure(error) : null;
-  });
-
-  protected selectTab(tab: string): void {
-    this.tab.set(tab);
-    this.invalidSubmit.set(false);
-    this.auth.clearError();
-  }
 
   protected async submitLogin(): Promise<void> {
     if (!this.validate(this.login)) return;
@@ -98,8 +76,7 @@ export class LoginPage {
 
   private validate(form: AbstractControl): boolean {
     const valid = checkForm(form);
-    this.invalidSubmit.set(!valid);
-    if (!valid) this.auth.clearError();
+    if (!valid) this.toasts.error(INVALID_FORM);
     return valid;
   }
 

@@ -22,14 +22,8 @@ export const semanticTokens = defineSemanticTokens({
       subtle: { value: '{colors.bg.surface}' },
     },
     status: {
-      error: {
-        fg: { value: '{colors.vermilion.500}' },
-        bg: { value: '{colors.vermilion.a20}' },
-      },
-      success: {
-        fg: { value: '{colors.green.600}' },
-        bg: { value: '{colors.green.a20}' },
-      },
+      error: { value: '{colors.vermilion.500}' },
+      success: { value: '{colors.green.600}' },
     },
     medal: {
       gold: { value: '{colors.gold}' },

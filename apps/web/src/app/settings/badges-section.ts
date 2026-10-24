@@ -28,7 +28,6 @@ import {
 import { css } from 'styled-system/css';
 import { BadgesApiService } from '../core/badges-api.service';
 import { errorMessage } from '../core/error-message';
-import { failure, success, type Feedback } from '../core/feedback';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import {
@@ -39,7 +38,7 @@ import {
   revalidateOnChange,
 } from '../forms/validators';
 import { CheckboxField } from '../ui/checkbox-field';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { ToastStore } from '../layout/toast.store';
 import { Dialog } from '../ui/dialog';
 import { Section } from '../ui/section';
 
@@ -53,7 +52,6 @@ const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
   imports: [
     ReactiveFormsModule,
     Section,
-    FeedbackMessage,
     FormField,
     FieldControl,
     FormButton,
@@ -64,6 +62,7 @@ const badgeErrors = (draft: BadgeDraft): ReturnType<typeof badgeFieldErrors> =>
 })
 export class BadgesSection {
   private readonly api = inject(BadgesApiService);
+  private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly currentYear = currentClubMonth().year;
@@ -115,8 +114,6 @@ export class BadgesSection {
   );
 
   protected readonly pending = signal(false);
-  protected readonly feedback = signal<Feedback | null>(null);
-  protected readonly savedFeedback = signal<Feedback | null>(null);
   protected readonly dialogOpen = signal(false);
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
 
@@ -131,12 +128,6 @@ export class BadgesSection {
     revalidateOnChange(this.form);
   }
 
-  protected openDialog(): void {
-    this.savedFeedback.set(null);
-    this.feedback.set(null);
-    this.dialogOpen.set(true);
-  }
-
   protected async submit(): Promise<void> {
     const draft = normalizeBadgeInput(this.form.getRawValue());
     const { kind, place, year, bowType, ageCategory } = draft;
@@ -148,22 +139,21 @@ export class BadgesSection {
       bowType === null ||
       ageCategory === null
     ) {
-      this.feedback.set(INVALID_FORM);
+      this.toasts.error(INVALID_FORM);
       return;
     }
 
     this.pending.set(true);
     try {
       await this.api.create({ ...draft, kind, place, year, bowType, ageCategory });
-      this.feedback.set(null);
-      this.savedFeedback.set(success('Auszeichnung erfasst. Du findest sie in deinem Profil.'));
+      this.toasts.success('Auszeichnung erfasst. Du findest sie in deinem Profil.');
       this.dialogOpen.set(false);
       // Kind, year, bow type, tournament type and age category usually stay the same.
       for (const field of ['place', 'eventName', 'location', 'distance', 'team'] as const) {
         this.form.controls[field].reset();
       }
     } catch (error: unknown) {
-      this.feedback.set(failure(errorMessage(error)));
+      this.toasts.error(errorMessage(error));
     } finally {
       this.pending.set(false);
     }

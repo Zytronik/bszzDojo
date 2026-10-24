@@ -3,10 +3,7 @@ import { isTheme, type Theme, type UserSettings } from '@bszz-dojo/shared';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { AuthStore } from '../auth/auth.store';
 import { UsersApiService } from '../core/users-api.service';
-
-interface SettingsState extends UserSettings {
-  saveFailed: boolean;
-}
+import { ToastStore } from '../layout/toast.store';
 
 /** Quick toggles fire several changes; only the last one in this window is saved. */
 const SAVE_DEBOUNCE_MS = 400;
@@ -24,8 +21,8 @@ function initialTheme(): Theme {
 
 export const SettingsStore = signalStore(
   { providedIn: 'root' },
-  withState<SettingsState>(() => ({ theme: initialTheme(), saveFailed: false })),
-  withMethods((store, api = inject(UsersApiService)) => {
+  withState<UserSettings>(() => ({ theme: initialTheme() })),
+  withMethods((store, api = inject(UsersApiService), toasts = inject(ToastStore)) => {
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
     const cancelPendingSave = (): void => {
@@ -37,9 +34,8 @@ export const SettingsStore = signalStore(
       saveTimer = null;
       try {
         await api.saveSettings({ theme: store.theme() });
-        patchState(store, { saveFailed: false });
       } catch {
-        patchState(store, { saveFailed: true });
+        toasts.error('Das Theme konnte nicht gespeichert werden.');
       }
     };
 
@@ -47,7 +43,7 @@ export const SettingsStore = signalStore(
       /** Replaces the local settings with the account's, without saving them back. */
       load(settings: UserSettings): void {
         cancelPendingSave();
-        patchState(store, { ...settings, saveFailed: false });
+        patchState(store, settings);
       },
 
       setTheme(theme: Theme): void {

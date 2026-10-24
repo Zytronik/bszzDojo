@@ -8,6 +8,7 @@ import {
 } from '@bszz-dojo/shared';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { errorMessage } from '../core/error-message';
+import { ToastStore } from '../layout/toast.store';
 import { AuthApiService } from './auth-api.service';
 
 /** `restoring` until the first refresh attempt at startup has finished. */
@@ -19,7 +20,6 @@ interface AuthState {
   accessToken: string | null;
   status: AuthStatus;
   pending: boolean;
-  error: string | null;
 }
 
 const initialState: AuthState = {
@@ -27,7 +27,6 @@ const initialState: AuthState = {
   accessToken: null,
   status: 'restoring',
   pending: false,
-  error: null,
 };
 
 export const AuthStore = signalStore(
@@ -42,7 +41,7 @@ export const AuthStore = signalStore(
       return current ? shownName(current) : '';
     }),
   })),
-  withMethods((store, api = inject(AuthApiService)) => {
+  withMethods((store, api = inject(AuthApiService), toasts = inject(ToastStore)) => {
     let refreshing: Promise<string | null> | null = null;
 
     const applySession = (session: AuthSession): void => {
@@ -51,7 +50,6 @@ export const AuthStore = signalStore(
         accessToken: session.accessToken,
         status: 'authenticated',
         pending: false,
-        error: null,
       });
     };
 
@@ -60,12 +58,13 @@ export const AuthStore = signalStore(
     };
 
     const submit = async (request: () => Promise<AuthSession>): Promise<boolean> => {
-      patchState(store, { pending: true, error: null });
+      patchState(store, { pending: true });
       try {
         applySession(await request());
         return true;
       } catch (error: unknown) {
-        patchState(store, { pending: false, error: errorMessage(error) });
+        patchState(store, { pending: false });
+        toasts.error(errorMessage(error));
         return false;
       }
     };
@@ -118,10 +117,6 @@ export const AuthStore = signalStore(
       /** After the user changed their own profile. */
       updateUser(user: UserProfile): void {
         patchState(store, { user });
-      },
-
-      clearError(): void {
-        patchState(store, { error: null });
       },
     };
   }),

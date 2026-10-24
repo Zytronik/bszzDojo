@@ -5,10 +5,9 @@ import { record } from 'styled-system/recipes';
 import { AdminApiService } from '../admin/admin-api.service';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
-import { failure, success, type Feedback } from '../core/feedback';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
-import { FeedbackMessage } from '../ui/feedback-message';
+import { ToastStore } from '../layout/toast.store';
 import { Icon } from '../ui/icon';
 import { faDeleteLeft } from '../ui/icons';
 import { PageTitle } from '../ui/page-title';
@@ -23,7 +22,6 @@ import { LoadingFrame } from '../ui/loading-frame';
     RouterLink,
     PageTitle,
     Section,
-    FeedbackMessage,
     ConfirmDialog,
     Icon,
     ShownNamePipe,
@@ -35,6 +33,7 @@ import { LoadingFrame } from '../ui/loading-frame';
 export class AdminPage {
   protected readonly auth = inject(AuthStore);
   private readonly api = inject(AdminApiService);
+  private readonly toasts = inject(ToastStore);
 
   protected readonly recordStyles = record();
   protected readonly icons = { faDeleteLeft };
@@ -43,7 +42,6 @@ export class AdminPage {
   protected readonly users = resource({ loader: () => this.api.users() });
   protected readonly userToDelete = signal<AdminUser | null>(null);
   protected readonly deletingUser = signal(false);
-  protected readonly usersFeedback = signal<Feedback | null>(null);
 
   protected async deleteUser(): Promise<void> {
     const user = this.userToDelete();
@@ -51,10 +49,10 @@ export class AdminPage {
     this.deletingUser.set(true);
     try {
       await this.api.deleteUser(user.id);
-      this.usersFeedback.set(success(`${shownName(user)} wurde gelöscht.`));
+      this.toasts.success(`${shownName(user)} wurde gelöscht.`);
       this.users.reload();
     } catch (error: unknown) {
-      this.usersFeedback.set(failure(errorMessage(error)));
+      this.toasts.error(errorMessage(error));
     } finally {
       this.deletingUser.set(false);
       this.userToDelete.set(null);

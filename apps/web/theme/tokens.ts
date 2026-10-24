@@ -17,11 +17,9 @@ export const tokens = defineTokens({
     /** The torii red of the logo, the app's accent. */
     vermilion: {
       500: { value: '#e43811' },
-      a20: { value: 'rgba(228, 56, 17, 0.2)' },
     },
     green: {
       600: { value: '#0c940c' },
-      a20: { value: 'rgba(12, 148, 12, 0.2)' },
     },
     red: { 400: { value: '#ec4231' } },
     yellow: { 300: { value: '#faf000' } },
@@ -110,9 +108,13 @@ export const tokens = defineTokens({
     spin: { value: 'spin {durations.spin} linear infinite' },
     pulse: { value: 'pulse {durations.pulse} {easings.default} infinite' },
   },
+  shadows: {
+    toast: { value: '0 4px 16px rgba(0, 0, 0, 0.4)' },
+  },
   zIndex: {
     header: { value: '1000' },
     modal: { value: '1100' },
     banner: { value: '1200' },
+    toast: { value: '1300' },
   },
 });

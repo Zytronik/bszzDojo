@@ -171,7 +171,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
   `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, update
-  banner) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
+  banner, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
 - **Networking:** HTTP goes through a `*-api.service.ts` using `HttpClient` with `apiUrl()`
   (relative `/api/...`), typed with the shared types, returning Promises (`firstValueFrom`).
 - **Forms** (`app/forms/`): reactive forms (`NonNullableFormBuilder`) with `novalidate`.
@@ -184,7 +184,11 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     `formRule(scoreFieldErrors, 'arrows')`, with `revalidateOnChange(form)` in the constructor so
     fields that compare each other stay in sync.
   - On submit, `checkForm(form)` marks everything touched; if it's invalid, show `INVALID_FORM`
-    in the form's `<app-feedback-message>`, which also shows the API's answer (success or error).
+    as a toast.
+- **Messages** are toasts, never banners in the page: `ToastStore.success(…)` / `.error(…)`
+  (`layout/toast.store.ts`, shown by `<app-toaster>` under the header, above dialogs). Errors
+  from the API go through `errorMessage()`; a page's `resource` errors through
+  `toastErrors(() => this.x.error())`. `AuthStore` and `SettingsStore` toast their own failures.
   - Buttons are `<button appButton [pending]="…">`: disabled with a spinner while their request
     runs (also the confirm button of `<app-confirm-dialog>`).
   - Long forms open in `<app-dialog title="…">` (the `modal` recipe's `form` tone, so inputs
@@ -209,7 +213,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Templates can't call `css()`, so styles are created in the component class and bound with
   `[class]`. Panda extracts them statically: style objects must be literal, never built from
   runtime values. For variants picked at runtime, call the recipe once per variant up front
-  (see `FeedbackMessage`, `RankBadge`).
+  (see `ToastMessage`, `RankBadge`).
 - The theme lives in `apps/web/theme/`:
   - `tokens.ts`: raw values only (the old app's colors, its 5px spacing grid, Bootstrap 3
     container widths). Components never use raw color tokens.
@@ -218,9 +222,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop, skeleton) and `global-css.ts`.
-  - `recipes/`: `button`, `container`, `emptyState`, `input`, `medal`, `message`, `rankBadge`, `spinner` and the slot
+  - `recipes/`: `button`, `container`, `emptyState`, `input`, `medal`, `rankBadge`, `spinner` and the slot
     recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
-    `siteHeader`, `skeleton`, `tabs`. Prefer extending a recipe over one-off `css()` when a style repeats.
+    `siteHeader`, `skeleton`, `tabs`, `toast`. Prefer extending a recipe over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
   reject them. The canvas target face is the exception, since canvas can't read CSS tokens.
 - Breakpoints are Bootstrap 3's (`sm` 768px, `md` 992px, `lg` 1200px) so the layout matches
@@ -229,7 +233,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 ## Storybook (design system)
 
 - Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook`
-  (http://localhost:6006), `npm run build-storybook` (`storybook-static/`, git-ignored),
+  (http://localhost:6006; it builds the shared package first, also with `-w web`), `npm run build-storybook` (`storybook-static/`, git-ignored),
   which CI builds too, so stories must compile.
 - Every reusable component in `ui/`, `forms/`, `profile/` and `dashboard/` has a story next to
   it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
