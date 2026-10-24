@@ -59,10 +59,6 @@
         />
       </app-form-field>
       @if (shots().length > 0) {
-      <p [class]="leadStyles">
-        Tippe auf die Scheibe, wo der markierte Pfeil getroffen hat. Tippe in der Tabelle auf einen
-        Pfeil, um ihn zu verschieben. Ziehen verschiebt die Scheibe, mit zwei Fingern zoomen.
-      </p>
       <div [class]="targetStyles">
         <app-target-canvas
           [shots]="shots()"
