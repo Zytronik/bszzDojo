@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.1](https://github.com/Zytronik/bszzDojo/compare/v3.7.0...v3.7.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **web:** make toasts stand out and show the update notice as one ([#56](https://github.com/Zytronik/bszzDojo/issues/56)) ([cdccf17](https://github.com/Zytronik/bszzDojo/commit/cdccf17f56e9c66e803a4efe2e02680f67449af4))
+
 ## [3.7.0](https://github.com/Zytronik/bszzDojo/compare/v3.6.0...v3.7.0) (2026-10-24)
 
 
