@@ -170,8 +170,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, update
-  banner, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
+  `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
 - **Networking:** HTTP goes through a `*-api.service.ts` using `HttpClient` with `apiUrl()`
   (relative `/api/...`), typed with the shared types, returning Promises (`firstValueFrom`).
 - **Forms** (`app/forms/`): reactive forms (`NonNullableFormBuilder`) with `novalidate`.
@@ -204,7 +203,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **PWA:** `ngsw-config.json` caches the app shell and assets; `/api` is never cached.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
   worker answers them with the app, which redirects to `/`.
-  `AppUpdateService` shows a banner when a new version is ready. The footer shows `APP_VERSION`.
+  `AppUpdateService` shows a toast with "Aktualisieren" when a new version is ready. The footer shows `APP_VERSION`.
 
 ## Styling (Panda CSS)
 

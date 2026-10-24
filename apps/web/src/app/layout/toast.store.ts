@@ -4,12 +4,12 @@ import { errorMessage } from '../core/error-message';
 
 export interface Toast {
   id: number;
-  status: 'success' | 'error';
+  status: 'success' | 'error' | 'info';
   text: string;
 }
 
 /** Errors stay longer: they usually need reading twice. */
-const DURATION_MS = { success: 4000, error: 7000 } as const;
+const DURATION_MS = { success: 4000, error: 7000, info: 5000 } as const;
 /** Older ones make room, so a burst of messages doesn't cover the page. */
 const MAX_TOASTS = 3;
 
