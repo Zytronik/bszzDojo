@@ -16,6 +16,8 @@ export default meta;
 type Story = StoryObj<RankBadge>;
 
 export const Default: Story = {};
+/** Next to a line of text, as on the profile */
+export const Inline: Story = { args: { size: 'inline' } };
 export const All: Story = {
   render: () => ({
     props: { ranks: RANK_IDS, row },
