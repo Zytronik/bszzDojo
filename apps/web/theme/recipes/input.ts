@@ -6,6 +6,7 @@ export const input = defineRecipe({
   base: {
     layerStyle: 'surface',
     width: 'full',
+    height: 'control',
     px: '8',
     py: '5',
     border: 'none',

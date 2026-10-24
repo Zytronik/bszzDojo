@@ -7,7 +7,7 @@ export const rankBadge = defineRecipe({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 'rankBadge',
+    height: 'control',
     py: '5',
     px: '10',
     borderRadius: 'md',
