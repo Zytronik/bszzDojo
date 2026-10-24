@@ -83,6 +83,7 @@ export const tokens = defineTokens({
     '5xl': { value: '200%' },
   },
   fontWeights: {
+    normal: { value: '400' },
     bold: { value: '700' },
   },
   lineHeights: {

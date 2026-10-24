@@ -13,6 +13,7 @@ export function toScore(score: ScoreEntity): Score {
     tens: score.tens,
     nines: score.nines,
     result: score.result,
+    shots: score.shots,
   };
 }
 

@@ -1,6 +1,7 @@
 import { isBowTypeId, type BowTypeId } from './bow-types';
 import { isValidIsoDate, todayInClub, type IsoDate } from './dates';
 import { isInteger } from './guards';
+import { ARROWS_PER_END, isShot, shotTotals, type Shot } from './target';
 
 /** Target face diameters in cm. */
 export const TARGET_SIZES = [122, 80, 60, 40] as const;
@@ -29,6 +30,11 @@ export interface ScoreInput {
   tens: number;
   nines: number;
   result: number;
+  /**
+   * Every arrow's position when the round was entered on the target, in the order shot; `null`
+   * when only the totals were entered. Then `result`, `tens` and `nines` follow from them.
+   */
+  shots: Shot[] | null;
 }
 
 export interface Score extends ScoreInput {
@@ -40,9 +46,10 @@ export interface RankedScore extends Score {
   rank: number;
 }
 
+/** On the target, a slot stays `null` until its arrow is placed. */
 export type ScoreDraft = {
-  [K in keyof ScoreInput]: ScoreInput[K] | null;
-};
+  [K in Exclude<keyof ScoreInput, 'shots'>]: ScoreInput[K] | null;
+} & { shots: (Shot | null)[] | null };
 
 export type ScoreFieldErrors = Partial<Record<keyof ScoreInput, string>>;
 
@@ -91,6 +98,21 @@ export function scoreFieldErrors(
       errors.result = 'Das Resultat ist kleiner als die Punkte der 10er und 9er.';
     }
   }
+  if (score.shots !== null) {
+    if (isInteger(arrows) && arrows % ARROWS_PER_END !== 0) {
+      errors.arrows ??= `Die Anzahl Pfeile muss durch ${ARROWS_PER_END} teilbar sein.`;
+    }
+    if (!isComplete(score.shots, arrows)) {
+      errors.shots = score.shots.every((shot) => shot === null || isShot(shot))
+        ? 'Setze alle Pfeile auf der Scheibe.'
+        : 'Ungültige Pfeilposition.';
+    } else {
+      const totals = shotTotals(score.shots, score.isSpot === true);
+      if (totals.result !== result || totals.tens !== tens || totals.nines !== nines) {
+        errors.result = 'Das Resultat passt nicht zu den Pfeilen auf der Scheibe.';
+      }
+    }
+  }
   return errors;
 }
 
@@ -101,4 +123,8 @@ export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): 
 /** "40cm Spot" */
 export function targetLabel(score: Pick<ScoreInput, 'targetSize' | 'isSpot'>): string {
   return `${score.targetSize}cm${score.isSpot ? ' Spot' : ''}`;
+}
+
+function isComplete(shots: readonly (Shot | null)[], arrows: number | null): shots is Shot[] {
+  return shots.length === arrows && shots.every(isShot);
 }

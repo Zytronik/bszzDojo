@@ -5,9 +5,16 @@ import {
   type IsoDate,
   type RankedScore,
   type Score,
+  type Shot,
   type TargetSize,
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
+
+export class ShotResponse implements Shot {
+  x: number;
+
+  y: number;
+}
 
 export class ScoreResponse implements Score {
   id: string;
@@ -33,6 +40,9 @@ export class ScoreResponse implements Score {
   nines: number;
 
   result: number;
+
+  /** Every arrow's position when entered on the target, else `null` */
+  shots: ShotResponse[] | null;
 }
 
 export class RankedScoreResponse extends ScoreResponse implements RankedScore {

@@ -80,6 +80,11 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Profiles** (`GET /api/profiles/:username`): stats, the top 3 rounds per distance, the progress
   chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds. Usernames in
   URLs are matched ignoring case.
+- **Scores** are entered two ways (tabs on "Score erfassen"): only the totals, or every arrow on
+  the target (`TargetCanvas`, `ScoreSheet`). On the target the arrow count must be divisible by
+  `ARROWS_PER_END` (3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
+  face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
+  (`shotPoints`: a spot has only rings 6–10, outside is a miss). The API checks they match.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
@@ -238,7 +243,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook`
   (http://localhost:6006; it builds the shared package first, also with `-w web`), `npm run build-storybook` (`storybook-static/`, git-ignored),
   which CI builds too, so stories must compile.
-- Every reusable component in `ui/`, `forms/`, `profile/` and `dashboard/` has a story next to
+- Every reusable component in `ui/`, `forms/`, `profile/`, `dashboard/` and `scores/` has a story next to
   it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
   update it with the component. Pages and the layout frame have none.
 - Foundations (colors, typography, spacing) are MDX pages in `src/stories/`; they read the

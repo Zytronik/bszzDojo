@@ -5,57 +5,100 @@
 
 <app-section>
   <h2>Erfasse einen neuen Score</h2>
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <app-form-field label="Bogenart:">
-      <select appFieldControl formControlName="bowType">
-        @for (bowType of bowTypes; track bowType.id) {
-        <option [ngValue]="bowType.id">{{ bowType.name }}</option>
-        }
-      </select>
-    </app-form-field>
-    <app-form-field label="Scheibengrösse:">
-      <select appFieldControl formControlName="targetSize">
-        @for (size of targetSizes; track size) {
-        <option [ngValue]="size">{{ size }}cm</option>
-        }
-      </select>
-    </app-form-field>
-    <app-checkbox-field
-      label="Spot:"
-      [checked]="form.controls.isSpot.value"
-      (checkedChange)="form.controls.isSpot.setValue($event)"
-    />
-    <app-form-field label="Datum:">
-      <input
-        appFieldControl
-        type="date"
-        formControlName="shotOn"
-        [max]="today"
-        [min]="earliestDate"
+  <app-tabs [tabs]="modes" [(selected)]="mode">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-form-field label="Bogenart:">
+        <select appFieldControl formControlName="bowType">
+          @for (bowType of bowTypes; track bowType.id) {
+          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+          }
+        </select>
+      </app-form-field>
+      <app-form-field label="Scheibengrösse:">
+        <select appFieldControl formControlName="targetSize">
+          @for (size of targetSizes; track size) {
+          <option [ngValue]="size">{{ size }}cm</option>
+          }
+        </select>
+      </app-form-field>
+      <app-checkbox-field
+        label="Spot:"
+        [checked]="form.controls.isSpot.value"
+        (checkedChange)="form.controls.isSpot.setValue($event)"
       />
-    </app-form-field>
-    @for (field of numberFields; track field.name) {
-    <app-form-field [label]="field.label">
-      <input
-        appFieldControl
-        type="number"
-        inputmode="numeric"
-        min="0"
-        [max]="field.max"
-        [formControlName]="field.name"
-      />
-    </app-form-field>
-    }
-    <button type="submit" appButton [pending]="pending()">Speichern</button>
-  </form>
+      <app-form-field label="Datum:">
+        <input
+          appFieldControl
+          type="date"
+          formControlName="shotOn"
+          [max]="today"
+          [min]="earliestDate"
+        />
+      </app-form-field>
+      @for (field of numberFields(); track field.name) {
+      <app-form-field [label]="field.label">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          min="0"
+          [max]="field.max"
+          [formControlName]="field.name"
+        />
+      </app-form-field>
+      } @if (mode() === 'target') {
+      <app-form-field label="Anzahl Pfeile:" hint="Durch 3 teilbar: eine Passe hat 3 Pfeile.">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          min="3"
+          step="3"
+          [max]="maxArrows"
+          formControlName="arrows"
+        />
+      </app-form-field>
+      @if (shots().length > 0) {
+      <p [class]="leadStyles">
+        Tippe auf die Scheibe, wo der markierte Pfeil getroffen hat. Tippe in der Tabelle auf einen
+        Pfeil, um ihn zu verschieben. Mit zwei Fingern zoomen.
+      </p>
+      <div [class]="targetStyles">
+        <app-target-canvas
+          [shots]="shots()"
+          [selected]="selected()"
+          [isSpot]="form.controls.isSpot.value"
+          (placed)="place($event)"
+        />
+        <div>
+          <app-score-sheet [points]="points()" [(selected)]="selected" />
+          <p [class]="summaryStyles" aria-live="polite">
+            <span>10er: {{ totals().tens }}</span>
+            <span>9er: {{ totals().nines }}</span>
+            <span>Total: {{ totals().result }}</span>
+          </p>
+          <div [class]="actionsStyles">
+            <button
+              type="button"
+              appButton
+              [disabled]="selected() === null || shots()[selected() ?? 0] === null"
+              (click)="removeSelected()"
+            >
+              Pfeil entfernen
+            </button>
+            <button type="button" appButton (click)="removeAll()">Alle entfernen</button>
+          </div>
+        </div>
+      </div>
+      } }
+      <button
+        type="submit"
+        appButton
+        [pending]="pending()"
+        [disabled]="mode() === 'target' && !complete()"
+      >
+        Speichern
+      </button>
+    </form>
+  </app-tabs>
 </app-section>
-
-@if (auth.isAdmin()) {
-<app-section>
-  <h2>Scheibe (Beta)</h2>
-  <p [class]="leadStyles">
-    Tippe auf die Scheibe, wo deine Pfeile getroffen haben. Mit zwei Fingern zoomen.
-  </p>
-  <app-target-canvas />
-</app-section>
-}

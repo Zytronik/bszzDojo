@@ -1,0 +1,95 @@
+import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import { ARROWS_PER_END } from '@bszz-dojo/shared';
+import { scoreSheet } from 'styled-system/recipes';
+
+interface End {
+  number: number;
+  /** Indexes into `points` */
+  slots: number[];
+  total: number | null;
+  runningTotal: number | null;
+}
+
+/** "M" for a miss, empty while the arrow isn't placed yet */
+function label(points: number | null | undefined): string {
+  if (points === null || points === undefined) return '';
+  return points === 0 ? 'M' : String(points);
+}
+
+/**
+ * The scorecard: one row per end (Passe) of three arrows, its total and the running total. A
+ * click selects an arrow, whose position the next tap on the target sets.
+ */
+@Component({
+  selector: 'app-score-sheet',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <table [class]="styles.table">
+      <thead>
+        <tr>
+          <th [class]="styles.head" scope="col">Passe</th>
+          @for (arrow of arrowNumbers; track arrow) {
+            <th [class]="styles.head" scope="col">{{ arrow }}</th>
+          }
+          <th [class]="styles.head" scope="col">Summe</th>
+          <th [class]="styles.head" scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (end of ends(); track end.number) {
+          <tr>
+            <th [class]="styles.cell" scope="row">{{ end.number }}</th>
+            @for (slot of end.slots; track slot; let arrow = $index) {
+              <td [class]="styles.cell">
+                <button
+                  type="button"
+                  [class]="styles.shot"
+                  [attr.aria-pressed]="slot === selected()"
+                  [attr.aria-label]="
+                    'Passe ' + end.number + ', Pfeil ' + (arrow + 1) + ': ' + (text(slot) || 'leer')
+                  "
+                  (click)="selected.set(slot)"
+                >
+                  {{ text(slot) }}
+                </button>
+              </td>
+            }
+            <td [class]="styles.total">{{ end.total ?? '' }}</td>
+            <td [class]="styles.total">{{ end.runningTotal ?? '' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  `,
+})
+export class ScoreSheet {
+  /** Per arrow, in the order shot: `null` while it isn't placed */
+  readonly points = input.required<readonly (number | null)[]>();
+  readonly selected = model<number | null>(null);
+
+  protected readonly styles = scoreSheet();
+  protected readonly arrowNumbers = Array.from({ length: ARROWS_PER_END }, (_, i) => i + 1);
+
+  protected readonly ends = computed((): End[] => {
+    const points = this.points();
+    const ends: End[] = [];
+    let running = 0;
+    for (let start = 0; start < points.length; start += ARROWS_PER_END) {
+      const slots = Array.from({ length: ARROWS_PER_END }, (_, i) => start + i);
+      const placed = slots.map((slot) => points[slot]).filter((value) => value != null);
+      const total = placed.length > 0 ? placed.reduce((sum, value) => sum + value, 0) : null;
+      running += total ?? 0;
+      ends.push({
+        number: start / ARROWS_PER_END + 1,
+        slots,
+        total,
+        runningTotal: total === null ? null : running,
+      });
+    }
+    return ends;
+  });
+
+  protected text(slot: number): string {
+    return label(this.points()[slot]);
+  }
+}

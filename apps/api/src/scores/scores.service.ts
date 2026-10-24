@@ -13,7 +13,8 @@ export class ScoresService {
     private readonly scores: Repository<ScoreEntity>,
   ) {}
 
-  async create(userId: string, input: ScoreInput): Promise<Score> {
+  async create(userId: string, body: ScoreInput): Promise<Score> {
+    const input: ScoreInput = { ...body, shots: body.shots ?? null };
     const errors = scoreErrors(input);
     if (errors.length > 0) throw new BadRequestException(errors);
 
