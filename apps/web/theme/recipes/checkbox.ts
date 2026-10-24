@@ -58,4 +58,12 @@ export const checkbox = defineSlotRecipe({
       },
     },
   },
+  variants: {
+    /** `inline`: the label next to the box, for a setting on its own rather than in a form row. */
+    layout: {
+      stacked: {},
+      inline: { root: { flexDirection: 'row', alignItems: 'center', gap: '15' } },
+    },
+  },
+  defaultVariants: { layout: 'stacked' },
 });

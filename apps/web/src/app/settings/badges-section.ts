@@ -96,7 +96,7 @@ export class BadgesSection {
     location: ['', formRule(badgeErrors, 'location')],
     bowType: this.forms.control<BowTypeId>('r', formRule(badgeErrors, 'bowType')),
     // Only the Clubturnier asks for it, so the shared rule (not `required`) decides.
-    distance: this.forms.control<number | null>(null, formRule(badgeErrors, 'distance')),
+    distance: this.forms.control<number | null>(18, formRule(badgeErrors, 'distance')),
     team: false,
     ageCategory: this.forms.control<AgeCategory | null>(null, formRule(badgeErrors, 'ageCategory')),
   });

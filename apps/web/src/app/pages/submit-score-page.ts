@@ -52,6 +52,9 @@ import { formRow } from 'styled-system/recipes';
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
 const DEFAULT_TARGET_ARROWS = 30;
+/** What most rounds in the club are shot at */
+const DEFAULT_DISTANCE = 18;
+const DEFAULT_TARGET_SIZE: TargetSize = 60;
 
 function isValidEndCount(arrows: number | null): arrows is number {
   return (
@@ -108,10 +111,10 @@ export class SubmitScorePage {
 
   protected readonly form = this.forms.group({
     bowType: this.forms.control<BowTypeId>('r'),
-    targetSize: this.forms.control<TargetSize>(TARGET_SIZES[0]),
+    targetSize: this.forms.control<TargetSize>(DEFAULT_TARGET_SIZE),
     isSpot: false,
     shotOn: [this.today, [required(), formRule(scoreFieldErrors, 'shotOn')]],
-    distance: this.numberControl('distance'),
+    distance: this.numberControl('distance', DEFAULT_DISTANCE),
     tens: this.numberControl('tens'),
     nines: this.numberControl('nines'),
     arrows: this.numberControl('arrows'),
@@ -258,7 +261,13 @@ export class SubmitScorePage {
     return null;
   }
 
-  private numberControl(field: NumberField): FormControl<number | null> {
-    return this.forms.control<number | null>(null, [required(), formRule(scoreFieldErrors, field)]);
+  private numberControl(
+    field: NumberField,
+    initial: number | null = null,
+  ): FormControl<number | null> {
+    return this.forms.control<number | null>(initial, [
+      required(),
+      formRule(scoreFieldErrors, field),
+    ]);
   }
 }

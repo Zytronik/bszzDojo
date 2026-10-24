@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { css, cx } from 'styled-system/css';
 import { checkbox } from 'styled-system/recipes';
 
@@ -9,7 +9,7 @@ let nextCheckboxId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class]': 'hostStyles' },
   template: `
-    <label [class]="rootStyles" [for]="id">
+    <label [class]="rootStyles()" [for]="id">
       {{ label() }}
       <input
         #box
@@ -26,6 +26,7 @@ let nextCheckboxId = 0;
 export class CheckboxField {
   readonly label = input.required<string>();
   readonly checked = model(false);
+  readonly layout = input<'stacked' | 'inline'>('stacked');
 
   // Space to the next row only, not at the end of a section.
   protected readonly hostStyles = css({
@@ -34,7 +35,12 @@ export class CheckboxField {
     _last: { marginBlockEnd: '0' },
   });
   protected readonly styles = checkbox();
-  // `group` makes the box light up while the whole label is hovered (`_groupHover`).
-  protected readonly rootStyles = cx('group', this.styles.root);
+  // Both up front: Panda extracts styles statically. `group` makes the box light up while the
+  // whole label is hovered (`_groupHover`).
+  private readonly roots = {
+    stacked: cx('group', this.styles.root),
+    inline: cx('group', checkbox({ layout: 'inline' }).root),
+  };
+  protected readonly rootStyles = computed(() => this.roots[this.layout()]);
   protected readonly id = `checkbox-${nextCheckboxId++}`;
 }

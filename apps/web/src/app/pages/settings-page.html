@@ -63,6 +63,7 @@
   <h2>Settings</h2>
   <app-checkbox-field
     label="Light Theme:"
+    layout="inline"
     [checked]="settings.theme() === 'light'"
     (checkedChange)="settings.setTheme($event ? 'light' : 'dark')"
   />

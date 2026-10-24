@@ -12,3 +12,5 @@ type Story = StoryObj<CheckboxField>;
 
 export const Unchecked: Story = {};
 export const Checked: Story = { args: { checked: true } };
+/** A setting on its own, e.g. the theme */
+export const Inline: Story = { args: { layout: 'inline' } };
