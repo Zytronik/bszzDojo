@@ -4,7 +4,7 @@
 
 <app-section>
   <h2>Profil bearbeiten</h2>
-  <form [class]="formStyles" [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
     <app-form-field label="Benutzername:" hint="Zum Einloggen. Ohne Leerzeichen.">
       <input
         appFieldControl

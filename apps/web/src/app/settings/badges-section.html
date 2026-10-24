@@ -8,30 +8,13 @@
 </app-section>
 
 <app-dialog title="Auszeichnung erfassen" [open]="dialogOpen()" (closed)="dialogOpen.set(false)">
-  <form [class]="formStyles" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <app-form-field label="Art:">
       <select appFieldControl formControlName="kind">
         @for (kind of kinds; track kind.id) {
         <option [ngValue]="kind.id">{{ kind.label }}</option>
         }
       </select>
-    </app-form-field>
-    <app-form-field label="Platzierung:">
-      <select appFieldControl formControlName="place">
-        @for (place of places; track place.value) {
-        <option [ngValue]="place.value">{{ place.label }}</option>
-        }
-      </select>
-    </app-form-field>
-    <app-form-field label="Jahr:">
-      <input
-        appFieldControl
-        type="number"
-        inputmode="numeric"
-        formControlName="year"
-        [min]="limits.BADGE_EARLIEST_YEAR"
-        [max]="currentYear"
-      />
     </app-form-field>
     @if (fields().eventName) {
     <app-form-field label="Name des Events:">
@@ -42,7 +25,22 @@
         [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
       />
     </app-form-field>
-    } @if (fields().tournamentType) {
+    } @if (askTeam()) {
+    <div [class]="rows.wide">
+      <app-form-field label="Turnierart:">
+        <select appFieldControl formControlName="tournamentType">
+          @for (type of tournamentTypes(); track type.id) {
+          <option [ngValue]="type.id">{{ type.label }}</option>
+          }
+        </select>
+      </app-form-field>
+      <app-checkbox-field
+        label="Team:"
+        [checked]="form.controls.team.value"
+        (checkedChange)="form.controls.team.setValue($event)"
+      />
+    </div>
+    } @else if (fields().tournamentType) {
     <app-form-field label="Turnierart:">
       <select appFieldControl formControlName="tournamentType">
         @for (type of tournamentTypes(); track type.id) {
@@ -50,21 +48,50 @@
         }
       </select>
     </app-form-field>
-    } @if (askTeam()) {
-    <app-checkbox-field
-      label="Team:"
-      [checked]="form.controls.team.value"
-      (checkedChange)="form.controls.team.setValue($event)"
-    />
     } @if (fields().location) {
-    <app-form-field label="Ort:">
-      <input
-        appFieldControl
-        formControlName="location"
-        placeholder="bsp: Bern"
-        [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
-      />
-    </app-form-field>
+    <div [class]="rows.even">
+      <app-form-field label="Ort:">
+        <input
+          appFieldControl
+          formControlName="location"
+          placeholder="bsp: Bern"
+          [maxLength]="limits.BADGE_TEXT_MAX_LENGTH"
+        />
+      </app-form-field>
+      <app-form-field label="Jahr:">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          formControlName="year"
+          [min]="limits.BADGE_EARLIEST_YEAR"
+          [max]="currentYear"
+        />
+      </app-form-field>
+    </div>
+    } @else {
+    <div [class]="rows.even">
+      <app-form-field label="Jahr:">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          formControlName="year"
+          [min]="limits.BADGE_EARLIEST_YEAR"
+          [max]="currentYear"
+        />
+      </app-form-field>
+      <app-form-field label="Distanz (m):">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          min="1"
+          [max]="limits.MAX_DISTANCE"
+          formControlName="distance"
+        />
+      </app-form-field>
+    </div>
     }
     <app-form-field label="Bogenkategorie:">
       <select appFieldControl formControlName="bowType">
@@ -73,23 +100,18 @@
         }
       </select>
     </app-form-field>
-    @if (fields().distance) {
-    <app-form-field label="Distanz (m):">
-      <input
-        appFieldControl
-        type="number"
-        inputmode="numeric"
-        min="1"
-        [max]="limits.MAX_DISTANCE"
-        formControlName="distance"
-      />
-    </app-form-field>
-    }
     <app-form-field label="Alterskategorie:">
       <select appFieldControl formControlName="ageCategory">
         <option [ngValue]="null" disabled>Bitte wählen</option>
         @for (category of ageCategories; track category) {
         <option [ngValue]="category">{{ category }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Platzierung:">
+      <select appFieldControl formControlName="place">
+        @for (place of places; track place.value) {
+        <option [ngValue]="place.value">{{ place.label }}</option>
         }
       </select>
     </app-form-field>
