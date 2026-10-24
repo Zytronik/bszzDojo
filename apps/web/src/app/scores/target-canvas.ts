@@ -25,11 +25,22 @@ const SELECTED_COLOR = '#00e5ff';
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
 const FACE_SHARE = 0.8;
-const MIN_ZOOM = 0.5;
-const MAX_ZOOM = 3;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 6;
+const WHEEL_ZOOM_STEP = 1.15;
 const SHOT_RADIUS = 5;
+/** A pointer that moved further than this (CSS px) pans instead of placing an arrow. */
+const TAP_TOLERANCE = 6;
 
-/** Tap where an arrow hit (`placed`); pinch to zoom. Shows `shots`, `selected` highlighted. */
+interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Tap where an arrow hit (`placed`); drag to pan, pinch or scroll to zoom. Shows `shots`, the
+ * `selected` one highlighted.
+ */
 @Component({
   selector: 'app-target-canvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,9 +49,11 @@ const SHOT_RADIUS = 5;
       #canvas
       [class]="canvasStyles"
       aria-label="Zielscheibe: tippe, wo der Pfeil getroffen hat"
-      (click)="onClick($event)"
-      (touchmove)="onTouchMove($event)"
-      (touchend)="lastPinchDistance = 0"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="pointers.delete($event.pointerId)"
+      (wheel)="onWheel($event)"
     ></canvas>
   `,
 })
@@ -52,7 +65,11 @@ export class TargetCanvas {
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private zoom = 1;
-  protected lastPinchDistance = 0;
+  /** Where the face's center is, from the canvas center, in CSS px */
+  private pan: Point = { x: 0, y: 0 };
+  protected readonly pointers = new Map<number, Point>();
+  private tapStart: Point | null = null;
+  private pinchDistance = 0;
 
   protected readonly canvasStyles = css({
     display: 'block',
@@ -74,28 +91,95 @@ export class TargetCanvas {
     });
   }
 
-  protected onClick(event: MouseEvent): void {
-    const rect = this.canvas().nativeElement.getBoundingClientRect();
-    const faceRadius = (rect.width / 2) * FACE_SHARE * this.zoom;
+  protected onPointerDown(event: PointerEvent): void {
+    this.canvas().nativeElement.setPointerCapture(event.pointerId);
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    this.tapStart = this.pointers.size === 1 ? { x: event.clientX, y: event.clientY } : null;
+    this.pinchDistance = this.pointerDistance();
+  }
+
+  protected onPointerMove(event: PointerEvent): void {
+    const previous = this.pointers.get(event.pointerId);
+    if (!previous) return;
+    const current = { x: event.clientX, y: event.clientY };
+    this.pointers.set(event.pointerId, current);
+
+    if (this.pointers.size >= 2) {
+      const distance = this.pointerDistance();
+      if (this.pinchDistance > 0) this.zoomAt(this.pointerCenter(), distance / this.pinchDistance);
+      this.pinchDistance = distance;
+      return;
+    }
+    if (
+      this.tapStart &&
+      Math.hypot(current.x - this.tapStart.x, current.y - this.tapStart.y) > TAP_TOLERANCE
+    ) {
+      this.tapStart = null;
+    }
+    if (!this.tapStart) this.panBy(current.x - previous.x, current.y - previous.y);
+  }
+
+  protected onPointerUp(event: PointerEvent): void {
+    const wasTap = this.tapStart !== null && this.pointers.size === 1;
+    this.pointers.delete(event.pointerId);
+    this.pinchDistance = this.pointerDistance();
+    if (wasTap) this.placeAt(event.clientX, event.clientY);
+    this.tapStart = null;
+  }
+
+  protected onWheel(event: WheelEvent): void {
+    event.preventDefault();
+    this.zoomAt(
+      { x: event.clientX, y: event.clientY },
+      event.deltaY < 0 ? WHEEL_ZOOM_STEP : 1 / WHEEL_ZOOM_STEP,
+    );
+  }
+
+  private placeAt(clientX: number, clientY: number): void {
+    const { center, faceRadius } = this.geometry();
     this.placed.emit({
-      x: (event.clientX - rect.left - rect.width / 2) / faceRadius,
-      y: (event.clientY - rect.top - rect.height / 2) / faceRadius,
+      x: (clientX - center.x) / faceRadius,
+      y: (clientY - center.y) / faceRadius,
     });
   }
 
-  protected onTouchMove(event: TouchEvent): void {
-    const [first, second] = [event.touches[0], event.touches[1]];
-    if (event.touches.length !== 2 || !first || !second) return;
-    event.preventDefault();
-    const distance = Math.hypot(first.pageX - second.pageX, first.pageY - second.pageY);
-    if (this.lastPinchDistance > 0) {
-      this.zoom = Math.min(
-        MAX_ZOOM,
-        Math.max(MIN_ZOOM, this.zoom * (distance / this.lastPinchDistance)),
-      );
-      this.draw();
-    }
-    this.lastPinchDistance = distance;
+  /** Keeps the point under the fingers (or the mouse) where it is while zooming. */
+  private zoomAt(point: Point, factor: number): void {
+    const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.zoom * factor));
+    const { center } = this.geometry();
+    const applied = zoom / this.zoom;
+    this.zoom = zoom;
+    this.panBy((point.x - center.x) * (1 - applied), (point.y - center.y) * (1 - applied));
+  }
+
+  /** At most so far that the face's center stays on the canvas. */
+  private panBy(dx: number, dy: number): void {
+    const limit = (this.canvas().nativeElement.clientWidth / 2) * this.zoom;
+    const clamp = (value: number): number => Math.min(limit, Math.max(-limit, value));
+    this.pan = { x: clamp(this.pan.x + dx), y: clamp(this.pan.y + dy) };
+    this.draw();
+  }
+
+  private geometry(): { center: Point; faceRadius: number } {
+    const rect = this.canvas().nativeElement.getBoundingClientRect();
+    return {
+      center: {
+        x: rect.left + rect.width / 2 + this.pan.x,
+        y: rect.top + rect.height / 2 + this.pan.y,
+      },
+      faceRadius: (rect.width / 2) * FACE_SHARE * this.zoom,
+    };
+  }
+
+  private pointerDistance(): number {
+    const [first, second] = [...this.pointers.values()];
+    return first && second ? Math.hypot(first.x - second.x, first.y - second.y) : 0;
+  }
+
+  private pointerCenter(): Point {
+    const [first, second] = [...this.pointers.values()];
+    if (!first || !second) return first ?? { x: 0, y: 0 };
+    return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
   }
 
   private draw(): void {
@@ -113,7 +197,7 @@ export class TargetCanvas {
     element.height = Math.round(size * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, size, size);
-    context.translate(size / 2, size / 2);
+    context.translate(size / 2 + this.pan.x, size / 2 + this.pan.y);
 
     const faceRadius = (size / 2) * FACE_SHARE * this.zoom;
     const rings = ringCount(isSpot);
@@ -129,6 +213,10 @@ export class TargetCanvas {
       context.lineWidth = 1;
       context.stroke();
     }
+    // The inner 10 (X ring), half as wide as the 10; it counts as a 10.
+    context.beginPath();
+    context.arc(0, 0, ringWidth / 2, 0, Math.PI * 2);
+    context.stroke();
 
     shots.forEach((shot, index) => {
       if (!shot) return;
