@@ -16,6 +16,8 @@ const config: StorybookConfig = {
         alias: { 'styled-system': fileURLToPath(new URL('../styled-system', import.meta.url)) },
       },
       css: { postcss: { plugins: [pandacss()] } },
+      // Not pre-bundled, so a rebuilt shared package is picked up without clearing Vite's cache.
+      optimizeDeps: { exclude: ['@bszz-dojo/shared'] },
     });
   },
 };
