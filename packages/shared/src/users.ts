@@ -24,6 +24,12 @@ export interface UpdateProfileRequest {
   currentPassword?: string;
 }
 
+/**
+ * What `POST /api/admin/users/:id/reset-password` sets: there's no mail for a self-service reset,
+ * so an admin resets it and tells the archer, who should change it right away.
+ */
+export const RESET_PASSWORD = 'Test1234!';
+
 /** Item of `GET /api/admin/users` */
 export interface AdminUser extends UserName {
   id: string;

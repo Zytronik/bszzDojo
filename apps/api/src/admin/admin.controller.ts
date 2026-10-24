@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -38,5 +47,14 @@ export class AdminController {
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<void> {
     return this.admin.deleteUser(admin.id, id);
+  }
+
+  /** Sets the password to `Test1234!` and logs the user out on every device. */
+  @Post('users/:id/reset-password')
+  @HttpCode(204)
+  @ApiNoContentResponse()
+  @ApiNotFoundResponse({ description: 'No such user' })
+  resetPassword(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.admin.resetPassword(id);
   }
 }
