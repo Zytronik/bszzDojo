@@ -17,7 +17,9 @@
       </select>
     </app-form-field>
     @if (fields().eventName) {
-    <app-form-field label="Name des Events:">
+    <app-form-field
+      [label]="fields().eventName === 'optional' ? 'Name des Events (optional):' : 'Name des Events:'"
+    >
       <input
         appFieldControl
         formControlName="eventName"
@@ -69,6 +71,16 @@
         />
       </app-form-field>
     </div>
+    <app-form-field label="Distanz (m, optional):">
+      <input
+        appFieldControl
+        type="number"
+        inputmode="numeric"
+        min="1"
+        [max]="limits.MAX_DISTANCE"
+        formControlName="distance"
+      />
+    </app-form-field>
     } @else {
     <div [class]="rows.even">
       <app-form-field label="Jahr:">

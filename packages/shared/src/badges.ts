@@ -51,25 +51,41 @@ export type AgeCategory = (typeof AGE_CATEGORIES)[number];
 export const BADGE_TEXT_MAX_LENGTH = 100;
 export const BADGE_EARLIEST_YEAR = 1950;
 
-/** The others are always `null`; the team flag isn't asked for when the type is "Team". */
+/**
+ * The others are always `null`; the team flag isn't asked for when the type is "Team". A national
+ * tournament's event name is optional (most are just known by their place), and so is the
+ * distance of an SM or a national tournament.
+ */
 export const BADGE_KIND_FIELDS: Record<
   BadgeKind,
   {
     location: boolean;
-    eventName: boolean;
+    eventName: 'required' | 'optional' | false;
     tournamentType: boolean;
     team: boolean;
-    distance: boolean;
+    distance: 'required' | 'optional' | false;
   }
 > = {
-  sm: { location: true, eventName: false, tournamentType: true, team: true, distance: false },
-  club: { location: false, eventName: true, tournamentType: false, team: false, distance: true },
+  sm: {
+    location: true,
+    eventName: false,
+    tournamentType: true,
+    team: true,
+    distance: 'optional',
+  },
+  club: {
+    location: false,
+    eventName: 'required',
+    tournamentType: false,
+    team: false,
+    distance: 'required',
+  },
   tournament: {
     location: true,
-    eventName: true,
+    eventName: 'optional',
     tournamentType: true,
     team: false,
-    distance: false,
+    distance: 'optional',
   },
 };
 
@@ -163,12 +179,13 @@ export function badgeFieldErrors(
   }
   if (
     fields.distance &&
+    (fields.distance === 'required' || badge.distance !== null) &&
     (!isInteger(badge.distance) || badge.distance < 1 || badge.distance > MAX_DISTANCE)
   ) {
     errors.distance = `Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`;
   }
   if (fields.location && !badge.location) errors.location = 'Bitte gib den Ort ein.';
-  if (fields.eventName && !badge.eventName)
+  if (fields.eventName === 'required' && !badge.eventName)
     errors.eventName = 'Bitte gib den Namen des Events ein.';
   for (const field of ['location', 'eventName'] as const) {
     if ((badge[field]?.length ?? 0) > BADGE_TEXT_MAX_LENGTH) {
@@ -178,9 +195,10 @@ export function badgeFieldErrors(
   return errors;
 }
 
-/** The headline of a placing: "SM FITA", "Chlausschiessen". */
+/** The headline of a placing: "SM FITA", "Chlausschiessen", or the place of an unnamed one. */
 export function badgeTitle(badge: Badge): string {
-  if (badge.kind !== 'sm') return badge.eventName ?? BADGE_KIND_LABELS[badge.kind];
+  if (badge.kind !== 'sm')
+    return badge.eventName ?? badge.location ?? BADGE_KIND_LABELS[badge.kind];
   return badge.tournamentType ? `SM ${TOURNAMENT_TYPE_LABELS[badge.tournamentType]}` : 'SM';
 }
 
@@ -194,7 +212,8 @@ export function badgeDetails(badge: Badge): string {
     badge.bowType ? BOW_TYPES[badge.bowType].name : null,
     badge.distance === null ? null : `${badge.distance}m`,
     badge.team ? 'Team' : null,
-    badge.location,
+    // Already the title of an unnamed national tournament.
+    badge.kind !== 'sm' && badge.eventName === null ? null : badge.location,
     badge.ageCategory,
   ];
   return parts.filter((part) => part !== null).join(' · ');

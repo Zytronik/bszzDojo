@@ -55,7 +55,7 @@ export class BadgeBody implements BadgeInput {
   @MaxLength(BADGE_TEXT_MAX_LENGTH)
   location: string | null;
 
-  /** Clubturnier and Nationales Turnier, else `null`. @example 'Chlausschiessen' */
+  /** Clubturnier (required) and Nationales Turnier (optional), else `null`. @example 'Chlausschiessen' */
   @ApiProperty({ type: String, nullable: true })
   @IsOptional()
   @IsString()
@@ -68,7 +68,7 @@ export class BadgeBody implements BadgeInput {
   @IsBoolean()
   team: boolean | null;
 
-  /** Clubturnier only, in meters, else `null`. @example 18 */
+  /** Meters; required for a Clubturnier, optional otherwise. @example 18 */
   @ApiProperty({ type: Number, nullable: true })
   @IsOptional()
   @IsInt()
