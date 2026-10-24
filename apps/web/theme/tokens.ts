@@ -49,6 +49,7 @@ export const tokens = defineTokens({
     skeletonMeta: { value: '12px' },
     skeletonRank: { value: '28px' },
     rankBadge: { value: '30px' },
+    stepNumber: { value: '28px' },
     header: { value: '60px' },
     footer: { value: '30px' },
     // Bootstrap 3's container widths, which the old layout used.

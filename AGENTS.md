@@ -204,6 +204,10 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
   worker answers them with the app, which redirects to `/`.
   `AppUpdateService` shows a toast with "Aktualisieren" when a new version is ready. The footer shows `APP_VERSION`.
+  On a phone that doesn't run it installed, `InstallService` opens `<app-install-dialog>` once
+  after login (step-by-step for iPhone and Android, `InstallSteps`; Android's own prompt when the
+  browser offers it); closing it is remembered per device in localStorage (`bszz-install-hint-
+dismissed`), and the settings can open it again.
 
 ## Styling (Panda CSS)
 

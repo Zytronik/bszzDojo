@@ -28,6 +28,7 @@ import {
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
+import { InstallService } from '../core/install.service';
 import { UsersApiService } from '../core/users-api.service';
 import { BadgesSection } from '../settings/badges-section';
 import { SettingsStore } from '../settings/settings.store';
@@ -61,6 +62,7 @@ export class SettingsPage {
   protected readonly settings = inject(SettingsStore);
   private readonly users = inject(UsersApiService);
   private readonly toasts = inject(ToastStore);
+  protected readonly install = inject(InstallService);
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, untracked } from '@
 import { Router, RouterOutlet } from '@angular/router';
 import { css } from 'styled-system/css';
 import { AuthStore } from './auth/auth.store';
+import { InstallDialog } from './layout/install-dialog';
 import { SearchOverlay } from './layout/search-overlay';
 import { SiteFooter } from './layout/site-footer';
 import { SiteHeader } from './layout/site-header';
@@ -11,7 +12,7 @@ import { SettingsStore } from './settings/settings.store';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, SiteHeader, SearchOverlay, SiteFooter, Toaster],
+  imports: [RouterOutlet, SiteHeader, SearchOverlay, SiteFooter, Toaster, InstallDialog],
   template: `
     <app-site-header />
     @if (auth.isAuthenticated()) {
@@ -22,6 +23,7 @@ import { SettingsStore } from './settings/settings.store';
     </main>
     <app-site-footer />
     <app-toaster />
+    <app-install-dialog />
   `,
 })
 export class App {
