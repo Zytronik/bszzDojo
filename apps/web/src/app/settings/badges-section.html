@@ -71,6 +71,16 @@
         />
       </app-form-field>
     </div>
+    <app-form-field label="Distanz (m, optional):">
+      <input
+        appFieldControl
+        type="number"
+        inputmode="numeric"
+        min="1"
+        [max]="limits.MAX_DISTANCE"
+        formControlName="distance"
+      />
+    </app-form-field>
     } @else {
     <div [class]="rows.even">
       <app-form-field label="Jahr:">

@@ -51,7 +51,7 @@ export class BadgeResponse implements Badge {
   @ApiProperty({ type: Boolean, nullable: true })
   team: boolean | null;
 
-  /** Clubturnier, in meters */
+  /** Meters */
   @ApiProperty({ type: Number, nullable: true })
   distance: number | null;
 }

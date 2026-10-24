@@ -68,7 +68,7 @@ export class BadgeBody implements BadgeInput {
   @IsBoolean()
   team: boolean | null;
 
-  /** Clubturnier only, in meters, else `null`. @example 18 */
+  /** Meters; required for a Clubturnier, optional otherwise. @example 18 */
   @ApiProperty({ type: Number, nullable: true })
   @IsOptional()
   @IsInt()

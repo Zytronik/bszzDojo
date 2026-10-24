@@ -53,7 +53,8 @@ export const BADGE_EARLIEST_YEAR = 1950;
 
 /**
  * The others are always `null`; the team flag isn't asked for when the type is "Team". A national
- * tournament's event name is optional: most are just known by their place.
+ * tournament's event name is optional (most are just known by their place), and so is the
+ * distance of an SM or a national tournament.
  */
 export const BADGE_KIND_FIELDS: Record<
   BadgeKind,
@@ -62,23 +63,29 @@ export const BADGE_KIND_FIELDS: Record<
     eventName: 'required' | 'optional' | false;
     tournamentType: boolean;
     team: boolean;
-    distance: boolean;
+    distance: 'required' | 'optional' | false;
   }
 > = {
-  sm: { location: true, eventName: false, tournamentType: true, team: true, distance: false },
+  sm: {
+    location: true,
+    eventName: false,
+    tournamentType: true,
+    team: true,
+    distance: 'optional',
+  },
   club: {
     location: false,
     eventName: 'required',
     tournamentType: false,
     team: false,
-    distance: true,
+    distance: 'required',
   },
   tournament: {
     location: true,
     eventName: 'optional',
     tournamentType: true,
     team: false,
-    distance: false,
+    distance: 'optional',
   },
 };
 
@@ -172,6 +179,7 @@ export function badgeFieldErrors(
   }
   if (
     fields.distance &&
+    (fields.distance === 'required' || badge.distance !== null) &&
     (!isInteger(badge.distance) || badge.distance < 1 || badge.distance > MAX_DISTANCE)
   ) {
     errors.distance = `Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`;
