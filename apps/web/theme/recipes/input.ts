@@ -23,5 +23,16 @@ export const input = defineRecipe({
       outlineStyle: 'solid',
       outlineColor: 'status.error',
     },
+    // iOS Safari draws date fields natively: centered, with its own width and height. Only there
+    // (the selector matches no other browser), so Chrome keeps its calendar icon.
+    '@supports (-webkit-touch-callout: none)': {
+      '&[type=date]': {
+        appearance: 'none',
+        display: 'block',
+        minWidth: '0',
+        textAlign: 'start',
+        '&::-webkit-date-and-time-value': { textAlign: 'start' },
+      },
+    },
   },
 });

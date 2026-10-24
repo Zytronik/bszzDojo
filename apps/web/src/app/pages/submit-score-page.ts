@@ -141,7 +141,6 @@ export class SubmitScorePage {
   protected readonly selected = signal<number | null>(0);
 
   protected readonly pending = signal(false);
-  protected readonly leadStyles = css({ marginBlockEnd: '10' });
   protected readonly targetStyles = css({
     display: 'flex',
     flexDir: 'column',
