@@ -11,7 +11,7 @@
     <div [class]="pageStyles.rankRow">
       <p>Abzeichen:</p>
       @if (p.rank) {
-      <app-rank-badge [rankId]="p.rank" />
+      <app-rank-badge [rankId]="p.rank" size="inline" />
       } @else {
       <p>Keines</p>
       }

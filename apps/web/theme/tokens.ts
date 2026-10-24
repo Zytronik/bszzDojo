@@ -50,6 +50,8 @@ export const tokens = defineTokens({
     skeletonRank: { value: '28px' },
     /** Inputs, selects and what sits next to them (the Abzeichen) */
     control: { value: '36px' },
+    /** The Abzeichen next to a line of body text */
+    textLine: { value: '26px' },
     stepNumber: { value: '28px' },
     header: { value: '60px' },
     footer: { value: '30px' },

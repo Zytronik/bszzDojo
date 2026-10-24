@@ -7,13 +7,14 @@ export const rankBadge = defineRecipe({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 'control',
-    py: '5',
-    px: '10',
     borderRadius: 'md',
     '& img': { height: 'full', width: 'auto', objectFit: 'contain' },
   },
   variants: {
+    size: {
+      control: { height: 'control', py: '5', px: '10' },
+      inline: { height: 'textLine', py: '5', px: '8' },
+    },
     rank: {
       roteFeder: { bg: 'rank.red' },
       goldeneFeder: { bg: 'rank.gold' },
@@ -23,4 +24,5 @@ export const rankBadge = defineRecipe({
       goldenerPfeil: { bg: 'rank.gold' },
     },
   },
+  defaultVariants: { size: 'control' },
 });
