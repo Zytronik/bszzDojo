@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.12.0](https://github.com/Zytronik/bszzDojo/compare/v3.11.0...v3.12.0) (2026-10-24)
+
+
+### Features
+
+* let admins reset a user's password to Test1234! ([#73](https://github.com/Zytronik/bszzDojo/issues/73)) ([95c4588](https://github.com/Zytronik/bszzDojo/commit/95c45886782071b79f603986c870f19447695dcc))
+* **web:** default to 60cm and 18m, theme checkbox inline ([#72](https://github.com/Zytronik/bszzDojo/issues/72)) ([4b8976a](https://github.com/Zytronik/bszzDojo/commit/4b8976a6fdff148768acebf9bfe3f0eb03f3cc76))
+
+
+### Bug Fixes
+
+* **api:** sort Omar's imported 3D Clubturnier placing too ([#71](https://github.com/Zytronik/bszzDojo/issues/71)) ([1fe8d8f](https://github.com/Zytronik/bszzDojo/commit/1fe8d8f6d2a3ab07d87cdbead278cd3a481337bd))
+
 ## [3.11.0](https://github.com/Zytronik/bszzDojo/compare/v3.10.1...v3.11.0) (2026-10-24)
 
 
