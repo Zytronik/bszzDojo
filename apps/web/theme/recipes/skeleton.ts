@@ -6,7 +6,7 @@ import { defineSlotRecipe } from '@pandacss/dev';
  */
 export const skeleton = defineSlotRecipe({
   className: 'skeleton',
-  slots: ['row', 'rank', 'body', 'line', 'title', 'meta', 'chart'],
+  slots: ['row', 'rank', 'body', 'line', 'title', 'meta', 'tab', 'chart'],
   base: {
     row: {
       display: 'flex',
@@ -27,6 +27,15 @@ export const skeleton = defineSlotRecipe({
     line: { layerStyle: 'skeleton', height: 'skeletonLine', width: '70%' },
     title: { layerStyle: 'skeleton', height: 'skeletonLine', width: '45%' },
     meta: { layerStyle: 'skeleton', height: 'skeletonMeta', width: '30%' },
+    // Sized by its text like a `tabs` trigger, so the chart's distance tabs take the same height.
+    tab: {
+      layerStyle: 'skeleton',
+      display: 'inline-block',
+      py: '8',
+      px: '15',
+      borderBottomRadius: '0',
+      color: 'transparent',
+    },
     // Chart.js keeps a 2:1 canvas by default.
     chart: { layerStyle: 'skeleton', width: 'full', aspectRatio: '2 / 1' },
   },
