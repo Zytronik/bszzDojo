@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { css } from 'styled-system/css';
-import { skeleton } from 'styled-system/recipes';
+import { skeleton, tabs } from 'styled-system/recipes';
 
 /**
  * Placeholder while a list loads: one row with `lines` 1–3 of text (title, details, date) and an
- * optional `rank` column, or the progress `chart`'s block.
+ * optional `rank` column, or the progress `chart`'s tabs and block.
  */
 @Component({
   selector: 'app-skeleton',
@@ -20,7 +20,10 @@ import { skeleton } from 'styled-system/recipes';
       <span [class]="srOnly">Wird geladen…</span>
     }
     @if (chart()) {
-      <div [class]="styles.chart" aria-hidden="true"></div>
+      <div aria-hidden="true">
+        <div [class]="tabStyles.list"><span [class]="styles.tab">18m</span></div>
+        <div [class]="styles.chart"></div>
+      </div>
     } @else {
       <div [class]="styles.row" aria-hidden="true">
         @if (rank()) {
@@ -47,6 +50,7 @@ export class Skeleton {
   readonly ghost = input(false);
 
   protected readonly styles = skeleton();
+  protected readonly tabStyles = tabs();
   protected readonly srOnly = css({ srOnly: true });
   protected readonly ghostStyles = css({ visibility: 'hidden', '& *': { animation: 'none' } });
 }
