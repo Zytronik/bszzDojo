@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
-  ARROWS_PER_END,
+  arrowsPerEnd,
   BOW_TYPES,
   BOW_TYPE_IDS,
   EARLIEST_SCORE_DATE,
@@ -58,13 +58,13 @@ const SETUP_FIELDS = ['bowType', 'targetSize', 'isSpot', 'shotOn', 'distance', '
 const DEFAULT_DISTANCE = 18;
 const DEFAULT_TARGET_SIZE: TargetSize = 60;
 
-function isValidEndCount(arrows: number | null): arrows is number {
+function isValidEndCount(arrows: number | null, perEnd: number): arrows is number {
   return (
     arrows !== null &&
     Number.isInteger(arrows) &&
     arrows > 0 &&
     arrows <= MAX_ARROWS &&
-    arrows % ARROWS_PER_END === 0
+    arrows % perEnd === 0
   );
 }
 
@@ -129,6 +129,7 @@ export class SubmitScorePage {
     { initialValue: this.form.getRawValue() },
   );
 
+  protected readonly perEnd = computed(() => arrowsPerEnd(this.value().distance));
   protected readonly shots = computed(() => this.value().shots ?? []);
   protected readonly points = computed(() =>
     this.shots().map((shot) =>
@@ -188,10 +189,14 @@ export class SubmitScorePage {
       });
     });
     // `revalidateOnChange` re-emits every control's value, so only real changes count here.
-    this.form.controls.arrows.valueChanges
-      .pipe(distinctUntilChanged(), takeUntilDestroyed())
-      .subscribe((arrows) => {
-        if (this.mode() === 'target') this.resize(arrows);
+    // The distance decides the arrows per end.
+    merge(
+      this.form.controls.arrows.valueChanges.pipe(distinctUntilChanged()),
+      this.form.controls.distance.valueChanges.pipe(distinctUntilChanged()),
+    )
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        if (this.mode() === 'target') this.resize(this.form.controls.arrows.value);
       });
     // A spot and compound score the same positions differently.
     merge(
@@ -263,7 +268,8 @@ export class SubmitScorePage {
   /** One slot per arrow, keeping the arrows placed so far; none while the count is invalid. */
   private resize(arrows: number | null): void {
     const current = this.shots();
-    const shots = isValidEndCount(arrows)
+    const perEnd = arrowsPerEnd(this.form.controls.distance.value);
+    const shots = isValidEndCount(arrows, perEnd)
       ? Array.from({ length: arrows }, (_, index) => current[index] ?? null)
       : [];
     this.setShots(shots);

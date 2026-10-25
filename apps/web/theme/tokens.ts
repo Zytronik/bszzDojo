@@ -52,6 +52,8 @@ export const tokens = defineTokens({
     control: { value: '36px' },
     /** The Abzeichen next to a line of body text */
     textLine: { value: '26px' },
+    /** Scorecard columns with a word in their head (Passe, Summe, Total) */
+    scoreLabel: { value: '50px' },
     stepNumber: { value: '28px' },
     header: { value: '60px' },
     footer: { value: '30px' },

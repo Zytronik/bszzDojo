@@ -82,7 +82,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   URLs are matched ignoring case.
 - **Scores** are entered two ways (tabs on "Score erfassen"): only the totals, or every arrow on
   the target (`TargetCanvas`, `ScoreSheet`). On the target the arrow count must be divisible by
-  `ARROWS_PER_END` (3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
+  the arrows per end (`arrowsPerEnd`: 6 at 30m, otherwise 3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
   face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
   (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format

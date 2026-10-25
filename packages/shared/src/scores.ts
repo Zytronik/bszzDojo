@@ -1,7 +1,7 @@
 import { isBowTypeId, type BowTypeId } from './bow-types';
 import { isValidIsoDate, todayInClub, type IsoDate } from './dates';
 import { isInteger } from './guards';
-import { ARROWS_PER_END, isShot, shotTotals, type Shot } from './target';
+import { arrowsPerEnd, isShot, shotTotals, type Shot } from './target';
 
 /** Target face diameters in cm. */
 export const TARGET_SIZES = [122, 80, 60, 40] as const;
@@ -99,8 +99,9 @@ export function scoreFieldErrors(
     }
   }
   if (score.shots !== null) {
-    if (isInteger(arrows) && arrows % ARROWS_PER_END !== 0) {
-      errors.arrows ??= `Die Anzahl Pfeile muss durch ${ARROWS_PER_END} teilbar sein.`;
+    const perEnd = arrowsPerEnd(score.distance);
+    if (isInteger(arrows) && arrows % perEnd !== 0) {
+      errors.arrows ??= `Die Anzahl Pfeile muss durch ${perEnd} teilbar sein.`;
     }
     if (!isComplete(score.shots, arrows)) {
       errors.shots = score.shots.every((shot) => shot === null || isShot(shot))

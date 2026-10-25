@@ -4,7 +4,7 @@ import { ScoreSheet } from './score-sheet';
 const meta: Meta<ScoreSheet> = {
   title: 'Scores/Score Sheet',
   component: ScoreSheet,
-  args: { points: [10, 9, 8, 5, 10, 0, null, null, null], selected: 6 },
+  args: { points: [10, 9, 8, 5, 10, 0, null, null, null], perEnd: 3, selected: 6 },
 };
 export default meta;
 
@@ -20,5 +20,14 @@ export const Complete: Story = {
     points: [10, 10, 9, 9, 9, 8, 10, 7, 6],
     inner: [true, false, false, false, false, false, true, false, false],
     selected: null,
+  },
+};
+/** At 30m: ends of six */
+export const EndsOfSix: Story = {
+  args: {
+    points: [10, 10, 9, 9, 8, 7, 9, 8, null, null, null, null],
+    inner: [true],
+    perEnd: 6,
+    selected: 8,
   },
 };
