@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.13.1](https://github.com/Zytronik/bszzDojo/compare/v3.13.0...v3.13.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* **web:** show the progress chart's grid and size its skeleton ([#82](https://github.com/Zytronik/bszzDojo/issues/82)) ([0124f74](https://github.com/Zytronik/bszzDojo/commit/0124f744bc3c48bc42a3f7b656ba82fbe0aff71f))
+
 ## [3.13.0](https://github.com/Zytronik/bszzDojo/compare/v3.12.0...v3.13.0) (2026-10-25)
 
 
