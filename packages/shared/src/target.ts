@@ -10,7 +10,10 @@ export interface Shot {
   y: number;
 }
 
-export const ARROWS_PER_END = 3;
+/** Arrows per end (Passe): 6 at 30m, as outdoors, otherwise 3. */
+export function arrowsPerEnd(distance: number | null): number {
+  return distance === 30 ? 6 : 3;
+}
 /** Shots a little outside the face are misses, but still on the drawn canvas. */
 export const MAX_SHOT_OFFSET = 3;
 

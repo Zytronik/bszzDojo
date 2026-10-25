@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
-import { ARROWS_PER_END } from '@bszz-dojo/shared';
 import { scoreSheet } from 'styled-system/recipes';
 
 interface End {
@@ -18,7 +17,7 @@ function label(points: number | null | undefined, inner: boolean): string {
 }
 
 /**
- * The scorecard: one row per end (Passe) of three arrows, its total and the running total. A
+ * The scorecard: one row per end (Passe) of three or six arrows, its total and the running total. A
  * click selects an arrow, whose position the next tap on the target sets.
  */
 @Component({
@@ -28,12 +27,12 @@ function label(points: number | null | undefined, inner: boolean): string {
     <table [class]="styles.table">
       <thead>
         <tr>
-          <th [class]="styles.head" scope="col">Passe</th>
-          @for (arrow of arrowNumbers; track arrow) {
+          <th [class]="styles.label" scope="col">Passe</th>
+          @for (arrow of arrowNumbers(); track arrow) {
             <th [class]="styles.head" scope="col">{{ arrow }}</th>
           }
-          <th [class]="styles.head" scope="col">Summe</th>
-          <th [class]="styles.head" scope="col">Total</th>
+          <th [class]="styles.label" scope="col">Summe</th>
+          <th [class]="styles.label" scope="col">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -71,19 +70,24 @@ export class ScoreSheet {
   readonly selected = model<number | null>(null);
 
   protected readonly styles = scoreSheet();
-  protected readonly arrowNumbers = Array.from({ length: ARROWS_PER_END }, (_, i) => i + 1);
+  /** Arrows per end (`arrowsPerEnd`) */
+  readonly perEnd = input.required<number>();
+  protected readonly arrowNumbers = computed(() =>
+    Array.from({ length: this.perEnd() }, (_, i) => i + 1),
+  );
 
   protected readonly ends = computed((): End[] => {
     const points = this.points();
+    const perEnd = this.perEnd();
     const ends: End[] = [];
     let running = 0;
-    for (let start = 0; start < points.length; start += ARROWS_PER_END) {
-      const slots = Array.from({ length: ARROWS_PER_END }, (_, i) => start + i);
+    for (let start = 0; start < points.length; start += perEnd) {
+      const slots = Array.from({ length: perEnd }, (_, i) => start + i);
       const placed = slots.map((slot) => points[slot]).filter((value) => value != null);
       const total = placed.length > 0 ? placed.reduce((sum, value) => sum + value, 0) : null;
       running += total ?? 0;
       ends.push({
-        number: start / ARROWS_PER_END + 1,
+        number: start / perEnd + 1,
         slots,
         total,
         runningTotal: total === null ? null : running,
