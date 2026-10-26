@@ -33,6 +33,8 @@ import { ScoreSheet } from '../scores/score-sheet';
 import { ScoreSummary } from '../scores/score-summary';
 import { TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
+import { Icon } from '../ui/icon';
+import { faChevronLeft } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -64,6 +66,7 @@ const OTHER_END_COLOR = 'rgba(0, 0, 0, 0.2)';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
+    Icon,
     Section,
     LoadingFrame,
     EmptyState,
@@ -87,18 +90,15 @@ export class ScorePage {
   });
   protected readonly loaded = computed(() => (this.score.hasValue() ? this.score.value() : null));
 
-  /** "Samstag, 24. Oktober 2026": the date as the title, the weekday with the details. */
-  private readonly date = computed(() => {
+  /** "Samstag, 24. Oktober 2026" without the weekday, so the title fits a phone's line. */
+  protected readonly title = computed(() => {
     const score = this.loaded();
-    const [weekday = '', date = ''] = score ? formatGermanDate(score.shotOn).split(', ') : [];
-    return { weekday, date };
+    return score ? (formatGermanDate(score.shotOn).split(', ')[1] ?? '') : 'Score';
   });
-  protected readonly title = computed(() => this.date().date || 'Score');
   protected readonly details = computed(() => {
     const score = this.loaded();
     if (!score) return '';
-    const kind = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
-    return `${this.date().weekday} · ${kind}`;
+    return `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
   });
   protected readonly name = computed(() => {
     const score = this.loaded();
@@ -126,8 +126,24 @@ export class ScorePage {
     );
   });
 
+  protected readonly backIcon = faChevronLeft;
   protected readonly styles = {
-    back: css({ display: 'inline-block', marginBlockEnd: '10' }),
+    back: css({
+      display: 'inline-flex',
+      // The loading frame is a flex column, which would stretch it.
+      alignSelf: 'flex-start',
+      alignItems: 'center',
+      gap: '8',
+      px: '10',
+      py: '5',
+      marginBlockEnd: '15',
+      layerStyle: 'surface',
+      rounded: 'sm',
+      textStyle: 'body.small',
+      transitionProperty: 'opacity',
+      transitionDuration: 'normal',
+      _hover: { opacity: 'muted' },
+    }),
     split: css({
       display: 'flex',
       flexDir: 'column',

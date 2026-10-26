@@ -5,7 +5,10 @@
     @if (score.error()) {
     <app-empty-state>Der Score konnte nicht geladen werden.</app-empty-state>
     } @else if (s) {
-    <a [class]="styles.back" [routerLink]="['/profile', s.username]">← {{ name() }}</a>
+    <a [class]="styles.back" [routerLink]="['/profile', s.username]">
+      <app-icon [icon]="backIcon" />
+      {{ name() }}
+    </a>
     <h1>{{ title() }}</h1>
     <p>{{ details() }}</p>
     }

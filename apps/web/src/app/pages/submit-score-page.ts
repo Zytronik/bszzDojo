@@ -29,6 +29,7 @@ import {
   type TargetSize,
 } from '@bszz-dojo/shared';
 import { distinctUntilChanged, map, merge } from 'rxjs';
+import { Router } from '@angular/router';
 import { css } from 'styled-system/css';
 import { errorMessage } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
@@ -92,14 +93,15 @@ function isValidEndCount(arrows: number | null, perEnd: number): arrows is numbe
 export class SubmitScorePage {
   protected readonly rows = { even: formRow({ split: 'even' }), wide: formRow({ split: 'wide' }) };
   private readonly api = inject(ScoresApiService);
+  private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly modes: TabItem[] = [
-    { id: 'result', label: 'Resultat' },
     { id: 'target', label: 'Scheibe' },
+    { id: 'result', label: 'Resultat' },
   ];
-  protected readonly mode = signal<string>('result');
+  protected readonly mode = signal<string>('target');
 
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
   protected readonly targetSizes = TARGET_SIZES;
@@ -223,11 +225,6 @@ export class SubmitScorePage {
     this.selected.set(this.nextEmpty(shots, index));
   }
 
-  private clearShots(): void {
-    this.setShots(this.shots().map(() => null));
-    this.selected.set(0);
-  }
-
   protected async submit(): Promise<void> {
     const value = this.form.getRawValue();
     const { distance, tens, nines, arrows, result } = value;
@@ -247,17 +244,9 @@ export class SubmitScorePage {
 
     this.pending.set(true);
     try {
-      await this.api.create(score);
+      const saved = await this.api.create(score);
       this.toasts.success('Score erfolgreich eingetragen.');
-      // Bow, target, date and distance usually stay the same for the next round.
-      if (this.mode() === 'target') {
-        this.clearShots();
-        this.form.controls.shots.markAsUntouched();
-      } else {
-        for (const field of ['tens', 'nines', 'arrows', 'result'] as const) {
-          this.form.controls[field].reset(null);
-        }
-      }
+      await this.router.navigate(['/scores', saved.id]);
     } catch (error: unknown) {
       this.toasts.error(errorMessage(error));
     } finally {

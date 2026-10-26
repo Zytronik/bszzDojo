@@ -47,9 +47,6 @@ function signed(difference: number): string {
         <p [class]="styles.caption">Erster Score mit {{ sameKind() }}</p>
       }
     </div>
-    @if (basis(); as basis) {
-      <p [class]="styles.basis">{{ basis }}</p>
-    }
     <dl [class]="figures().length % 3 === 0 ? styles.figures.thirds : styles.figures.halves">
       @for (figure of figures(); track figure.label) {
         <div [class]="styles.figure">
@@ -92,13 +89,6 @@ export class ScoreSummary {
     if (comparison.best === null) return null;
     if (result > comparison.best) return 'Persönlicher Rekord';
     return result === comparison.best ? 'Rekord egalisiert' : null;
-  });
-
-  protected readonly basis = computed(() => {
-    const { rounds } = this.score().comparison;
-    if (rounds === 0) return null;
-    const scores = rounds === 1 ? 'einem anderen Score' : `${rounds} anderen Scores`;
-    return `Verglichen mit ${scores} (${this.sameKind()})`;
   });
 
   protected readonly figures = computed((): Figure[] => {
@@ -150,21 +140,20 @@ export class ScoreSummary {
     reference: css({ fontSize: 'xl', fontWeight: 'bold' }),
     better: css({ textStyle: 'body.small', color: 'status.success', fontWeight: 'bold' }),
     badge: css({ textStyle: 'body.small', color: 'medal.gold', fontWeight: 'bold' }),
-    basis: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
     // Rows that come out even: six figures (with shots) in threes, four in twos.
     figures: {
       thirds: css({
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '10',
-        marginBlockStart: '15',
+        marginBlockStart: '10',
         sm: { gridTemplateColumns: 'repeat(6, 1fr)' },
       }),
       halves: css({
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '10',
-        marginBlockStart: '15',
+        marginBlockStart: '10',
         sm: { gridTemplateColumns: 'repeat(4, 1fr)' },
       }),
     },
