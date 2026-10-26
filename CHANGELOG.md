@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.16.0](https://github.com/Zytronik/bszzDojo/compare/v3.15.0...v3.16.0) (2026-10-26)
+
+
+### Features
+
+* **web:** start score erfassen with the last round's setup ([#89](https://github.com/Zytronik/bszzDojo/issues/89)) ([b210d4b](https://github.com/Zytronik/bszzDojo/commit/b210d4b1d5d02e4124ea9c7fed281a19d2781d13))
+
 ## [3.15.0](https://github.com/Zytronik/bszzDojo/compare/v3.14.0...v3.15.0) (2026-10-26)
 
 
