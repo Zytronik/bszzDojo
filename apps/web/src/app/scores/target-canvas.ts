@@ -23,6 +23,8 @@ const RING_LINE_COLOR = '#000000';
 const SHOT_COLOR = '#ffae00';
 const SELECTED_COLOR = '#00e5ff';
 const GROUP_SHADOW_COLOR = 'rgba(0, 0, 0, 0.6)';
+const AREA_TINT = 0.12;
+const HALF_TINT = 0.2;
 const GROUP_CROSS = 9;
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
@@ -277,7 +279,7 @@ export class TargetCanvas {
     if (group && groupColors) this.drawCross(context, group, faceRadius, groupColors);
   }
 
-  /** Lines only, under the arrows, and the cross on top: they hide as little as possible. */
+  /** Lightly filled outlines under the arrows, the cross on top: they hide as little as possible. */
   private drawGroup(
     context: CanvasRenderingContext2D,
     group: ShotGroup,
@@ -304,6 +306,7 @@ export class TargetCanvas {
       6,
     );
     context.stroke();
+    this.tint(context, colors.area, AREA_TINT);
 
     context.strokeStyle = colors.half;
     context.lineWidth = 2.5;
@@ -317,6 +320,17 @@ export class TargetCanvas {
       Math.PI * 2,
     );
     context.stroke();
+    this.tint(context, colors.half, HALF_TINT);
+    context.restore();
+  }
+
+  /** A light fill of the current path, without the shadow, so the shapes read as areas. */
+  private tint(context: CanvasRenderingContext2D, color: string, alpha: number): void {
+    context.save();
+    context.shadowColor = 'transparent';
+    context.globalAlpha = alpha;
+    context.fillStyle = color;
+    context.fill();
     context.restore();
   }
 

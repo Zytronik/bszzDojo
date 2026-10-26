@@ -188,6 +188,7 @@ export class ScorePage {
         borderWidth: 'thick',
         borderStyle: 'solid',
         borderColor: 'group.half',
+        bg: 'group.half/20',
       }),
       area: css({
         w: 'dot',
@@ -196,6 +197,7 @@ export class ScorePage {
         borderWidth: 'thick',
         borderStyle: 'dashed',
         borderColor: 'group.area',
+        bg: 'group.area/12',
       }),
     },
     legend: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
