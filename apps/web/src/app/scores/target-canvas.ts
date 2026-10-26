@@ -22,7 +22,8 @@ const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as c
 const RING_LINE_COLOR = '#000000';
 const SHOT_COLOR = '#ffae00';
 const SELECTED_COLOR = '#00e5ff';
-const GROUP_COLOR = '#00e5ff';
+const GROUP_COLOR = '#000000';
+const GROUP_HALO_COLOR = '#ffffff';
 const GROUP_CROSS = 9;
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
@@ -268,31 +269,39 @@ export class TargetCanvas {
     if (group) this.drawGroup(context, group, faceRadius);
   }
 
+  /** Black on a white halo, so it stays visible on every ring color and on the arrows. */
   private drawGroup(context: CanvasRenderingContext2D, group: ShotGroup, faceRadius: number): void {
     const x = group.center.x * faceRadius;
     const y = group.center.y * faceRadius;
-    context.strokeStyle = GROUP_COLOR;
-    context.lineWidth = 2;
-    context.setLineDash([5, 4]);
-    context.beginPath();
-    context.arc(x, y, group.halfRadius * faceRadius, 0, Math.PI * 2);
-    context.stroke();
-    context.setLineDash([2, 4]);
-    context.lineWidth = 2;
     const { left, top, right, bottom } = group.area;
-    context.strokeRect(
+
+    const circle = new Path2D();
+    circle.arc(x, y, group.halfRadius * faceRadius, 0, Math.PI * 2);
+    const area = new Path2D();
+    area.rect(
       left * faceRadius - SHOT_RADIUS,
       top * faceRadius - SHOT_RADIUS,
       (right - left) * faceRadius + 2 * SHOT_RADIUS,
       (bottom - top) * faceRadius + 2 * SHOT_RADIUS,
     );
+    const cross = new Path2D();
+    cross.moveTo(x - GROUP_CROSS, y);
+    cross.lineTo(x + GROUP_CROSS, y);
+    cross.moveTo(x, y - GROUP_CROSS);
+    cross.lineTo(x, y + GROUP_CROSS);
+
+    const outlined = (path: Path2D, width: number, dash: number[]): void => {
+      context.setLineDash(dash);
+      context.lineWidth = width + 3;
+      context.strokeStyle = GROUP_HALO_COLOR;
+      context.stroke(path);
+      context.lineWidth = width;
+      context.strokeStyle = GROUP_COLOR;
+      context.stroke(path);
+    };
+    outlined(circle, 2, [6, 4]);
+    outlined(area, 2, [2, 4]);
+    outlined(cross, 3, []);
     context.setLineDash([]);
-    context.lineWidth = 3;
-    context.beginPath();
-    context.moveTo(x - GROUP_CROSS, y);
-    context.lineTo(x + GROUP_CROSS, y);
-    context.moveTo(x, y - GROUP_CROSS);
-    context.lineTo(x, y + GROUP_CROSS);
-    context.stroke();
   }
 }
