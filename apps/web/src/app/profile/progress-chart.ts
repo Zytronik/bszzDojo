@@ -21,6 +21,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { css } from 'styled-system/css';
+import { chartColors } from '../core/chart-colors';
 import { SettingsStore } from '../settings/settings.store';
 
 Chart.register(
@@ -80,7 +81,6 @@ function chartData(progress: DistanceProgress): ProgressChartData {
 @Component({
   selector: 'app-progress-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // Canvas can't read tokens: the host carries the colors and the chart reads them back.
   host: { '[class]': 'hostStyles' },
   template: `<canvas #canvas aria-label="Entwicklung der Resultate" role="img"></canvas>`,
 })
@@ -98,10 +98,9 @@ export class ProgressChart {
       const progress = this.progress();
       // Read so the chart is redrawn in the new text color when the theme changes.
       this.settings.theme();
-      const style = getComputedStyle(this.host.nativeElement);
-      const color = style.color;
-      // Chart.js draws its grid in translucent black, which disappears on the dark theme.
-      const grid = { color: style.borderTopColor };
+      const colors = chartColors(this.host.nativeElement);
+      const color = colors.text;
+      const grid = { color: colors.grid };
 
       this.chart?.destroy();
       this.chart = new Chart<'line', (number | null)[], string>(this.canvas().nativeElement, {

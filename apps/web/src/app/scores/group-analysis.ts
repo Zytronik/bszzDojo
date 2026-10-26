@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { faceUnitsToCm, type ShotGroup, type TargetSize } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
+import { card } from 'styled-system/recipes';
 
 /** Below this the offset is noise, not something to correct with the sight. */
 const SIGHT_HINT_CM = 2;
@@ -114,7 +115,7 @@ export class GroupAnalysis {
 
   protected readonly styles = {
     root: css({ display: 'flex', flexDir: 'column', gap: '10' }),
-    fact: css({ layerStyle: 'surface', rounded: 'sm', p: '10' }),
+    fact: card(),
     title: css({
       display: 'flex',
       alignItems: 'center',

@@ -236,11 +236,15 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
     The light theme is a `_light` value here, nowhere else.
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop, skeleton) and `global-css.ts`.
-  - `recipes/`: `button`, `container`, `emptyState`, `input`, `medal`, `rankBadge`, `spinner` and the slot
-    recipes `checkbox`, `field`, `modal`, `record` (every list row), `searchOverlay`,
-    `siteHeader`, `skeleton`, `tabs`, `toast`. Prefer extending a recipe over one-off `css()` when a style repeats.
+  - `recipes/`: `button`, `card` (a raised block: figures, facts), `container`, `emptyState`,
+    `formRow`, `input`, `medal`, `rankBadge`, `spinner`, `split` (two columns from `md`) and the
+    slot recipes `checkbox`, `field`, `modal`, `record` (every list row), `scoreSheet`,
+    `searchOverlay`, `siteHeader`, `skeleton`, `steps`, `tabs`, `toast`. Prefer extending a recipe
+    over one-off `css()` when a style repeats.
 - No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
-  reject them. The canvas target face is the exception, since canvas can't read CSS tokens.
+  reject them. The canvas target face is the exception. Other canvas drawings read tokens back
+  from CSS: charts through `chartColors()` (`core/chart-colors.ts`), the target's group marks from
+  the `group.*` variables.
 - Breakpoints are Bootstrap 3's (`sm` 768px, `md` 992px, `lg` 1200px) so the layout matches
   the old app.
 

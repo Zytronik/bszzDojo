@@ -20,7 +20,8 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { css } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
+import { chartColors } from '../core/chart-colors';
 import { SettingsStore } from '../settings/settings.store';
 
 Chart.register(
@@ -36,23 +37,12 @@ Chart.register(
 
 type BarTone = 'accent' | 'gold';
 
-/**
- * Canvas can't read tokens: the host carries them (text `color`, grid `borderColor`, bars
- * `outlineColor`, set as `ringColor`) and the chart reads them back. Both tones up front for Panda.
- */
+const hostBase = css({ display: 'block', aspectRatio: '2 / 1', borderColor: 'border.subtle' });
+
+/** The colors for `chartColors`, both tones up front for Panda. */
 const HOST_STYLES: Record<BarTone, string> = {
-  accent: css({
-    display: 'block',
-    aspectRatio: '2 / 1',
-    borderColor: 'border.subtle',
-    ringColor: 'accent.default',
-  }),
-  gold: css({
-    display: 'block',
-    aspectRatio: '2 / 1',
-    borderColor: 'border.subtle',
-    ringColor: 'medal.gold',
-  }),
+  accent: cx(hostBase, css({ ringColor: 'accent.default' })),
+  gold: cx(hostBase, css({ ringColor: 'medal.gold' })),
 };
 
 /** One bar per label, with an optional dashed `average` line across. */
@@ -84,8 +74,8 @@ export class BarChart {
       this.hostStyles();
       // Read so the chart is redrawn in the new colors when the theme changes.
       this.settings.theme();
-      const style = getComputedStyle(this.host.nativeElement);
-      const grid = { color: style.borderTopColor };
+      const colors = chartColors(this.host.nativeElement);
+      const grid = { color: colors.grid };
 
       this.chart?.destroy();
       this.chart = new Chart<'bar' | 'line', number[], string>(this.canvas().nativeElement, {
@@ -93,14 +83,14 @@ export class BarChart {
         data: {
           labels,
           datasets: [
-            { type: 'bar', data: values, backgroundColor: style.outlineColor, borderRadius: 3 },
+            { type: 'bar', data: values, backgroundColor: colors.data, borderRadius: 3 },
             ...(average === null
               ? []
               : [
                   {
                     type: 'line' as const,
                     data: labels.map(() => average),
-                    borderColor: style.color,
+                    borderColor: colors.text,
                     borderDash: [5, 4],
                     borderWidth: 1,
                     pointRadius: 0,
@@ -110,12 +100,12 @@ export class BarChart {
         },
         options: {
           maintainAspectRatio: false,
-          color: style.color,
+          color: colors.text,
           scales: {
-            x: { ticks: { color: style.color }, grid: { display: false } },
+            x: { ticks: { color: colors.text }, grid: { display: false } },
             y: {
               beginAtZero: true,
-              ticks: { color: style.color, precision: 0 },
+              ticks: { color: colors.text, precision: 0 },
               grid,
               border: grid,
             },
