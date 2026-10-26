@@ -27,6 +27,15 @@ export const routes: Routes = [
     title: title('Score erfassen'),
   },
   {
+    // After `scores/new`, which would match too.
+    path: 'scores/:id',
+    canActivate: [authGuard],
+    // Lazy, so Chart.js only downloads when a round is opened.
+    loadComponent: (): Promise<Type<unknown>> =>
+      import('./pages/score-page').then((m) => m.ScorePage),
+    title: title('Score'),
+  },
+  {
     path: 'settings',
     component: SettingsPage,
     canActivate: [authGuard],

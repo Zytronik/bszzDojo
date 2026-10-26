@@ -25,7 +25,16 @@ export const record = defineSlotRecipe({
       _first: { pt: '0' },
     },
     rank: { flexShrink: '0' },
-    body: { flex: '1', minWidth: '0' },
+    body: {
+      flex: '1',
+      minWidth: '0',
+      // A link to the row's detail page, like a score's.
+      '&:is(a)': {
+        transitionProperty: 'opacity',
+        transitionDuration: 'normal',
+        _hover: { opacity: 'muted' },
+      },
+    },
     title: { overflowWrap: 'anywhere' },
     results: { mb: '5' },
     highlight: { color: 'accent.default' },

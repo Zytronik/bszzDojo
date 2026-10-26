@@ -1,5 +1,6 @@
 import type { Score } from '@bszz-dojo/shared';
-import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { provideRouter, withDisabledInitialNavigation } from '@angular/router';
+import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
 import { ScoreRow } from './score-row';
 
 const score: Score = {
@@ -19,6 +20,9 @@ const score: Score = {
 const meta: Meta<ScoreRow> = {
   title: 'Lists/Score Row',
   component: ScoreRow,
+  decorators: [
+    applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] }),
+  ],
   args: { score, variant: 'history', rank: null, deletable: false },
   argTypes: { variant: { control: 'inline-radio', options: ['history', 'records'] } },
 };

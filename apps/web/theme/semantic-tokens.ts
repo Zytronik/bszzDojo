@@ -30,6 +30,16 @@ export const semanticTokens = defineSemanticTokens({
       silver: { value: '{colors.silver}' },
       bronze: { value: '{colors.bronze}' },
     },
+    /**
+     * The group's marks on the target face: colors none of its rings have, the same in both
+     * themes like the face. `TargetCanvas` reads them back, the legend shows them.
+     */
+    group: {
+      // Dark in the light theme, where white would vanish next to the face.
+      center: { value: { base: '{colors.white}', _light: '{colors.black}' } },
+      half: { value: '{colors.green.400}' },
+      area: { value: '{colors.magenta.400}' },
+    },
     /** Backgrounds of the club badges ("Abzeichen") */
     rank: {
       red: { value: '{colors.red.400}' },

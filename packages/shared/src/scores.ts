@@ -1,3 +1,4 @@
+import type { UserName } from './auth';
 import { isBowTypeId, type BowTypeId } from './bow-types';
 import { isValidIsoDate, todayInClub, type IsoDate } from './dates';
 import { isInteger } from './guards';
@@ -39,6 +40,19 @@ export interface ScoreInput {
 
 export interface Score extends ScoreInput {
   id: string;
+}
+
+/** The archer's other rounds with the same bow type, distance and arrow count */
+export interface ScoreComparison {
+  rounds: number;
+  /** Mean result, rounded; `null` without other rounds */
+  average: number | null;
+  best: number | null;
+}
+
+/** Response of `GET /api/scores/:id`: a round with whose it is and how it compares. */
+export interface ScoreDetail extends Score, UserName {
+  comparison: ScoreComparison;
 }
 
 export interface RankedScore extends Score {

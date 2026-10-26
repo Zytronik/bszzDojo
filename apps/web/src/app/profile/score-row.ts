@@ -1,21 +1,22 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { BOW_TYPES, formatGermanDate, targetLabel, type Score } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
 import { faDeleteLeft } from '../ui/icons';
 
-/** `records`: a personal best with its place; `history`: with the distance. */
+/** `records`: a personal best with its place; `history`: with the distance. Opens the round. */
 @Component({
   selector: 'app-score-row',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, RouterLink],
   // The host is the row, so consecutive rows are siblings and the first one loses its top padding.
   host: { '[class]': 'styles.root' },
   template: `
     @if (rank(); as rank) {
       <p [class]="styles.rank">#{{ rank }}</p>
     }
-    <div [class]="styles.body">
+    <a [class]="styles.body" [routerLink]="['/scores', score().id]">
       <p [class]="styles.meta">{{ formatDate(score().shotOn) }}</p>
       <p [class]="styles.info">
         @if (variant() === 'history') {
@@ -33,7 +34,7 @@ import { faDeleteLeft } from '../ui/icons';
         10er: <span [class]="styles.highlight">x{{ score().tens }}</span> 9er:
         <span [class]="styles.highlight">x{{ score().nines }}</span>
       </p>
-    </div>
+    </a>
     @if (deletable()) {
       <div [class]="styles.actions">
         <button
