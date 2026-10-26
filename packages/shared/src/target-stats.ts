@@ -8,32 +8,42 @@ export interface ShotGroup {
   center: Shot;
   /** Half of the arrows lie within this distance of the center. */
   halfRadius: number;
-  /** Sideways and in height, two standard deviations each way: about 95% of the arrows. */
-  width: number;
-  height: number;
+  /** The box around the arrows without the outliers (`OUTLIER_SHARE`), as edges */
+  area: { left: number; top: number; right: number; bottom: number };
+  /** How many arrows are in `area` */
+  areaShots: number;
 }
+
+/** The arrows farthest from the center that the group's area leaves out. */
+export const OUTLIER_SHARE = 0.1;
+/** Fewer arrows than this are all counted: dropping one would be most of the tenth. */
+const MIN_SHOTS_FOR_OUTLIERS = 10;
 
 function mean(values: readonly number[]): number {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-function deviation(values: readonly number[], center: number): number {
-  return Math.sqrt(mean(values.map((value) => (value - center) ** 2)));
-}
-
 export function shotGroup(shots: readonly Shot[]): ShotGroup | null {
   if (shots.length === 0) return null;
-  const xs = shots.map((shot) => shot.x);
-  const ys = shots.map((shot) => shot.y);
-  const center = { x: mean(xs), y: mean(ys) };
-  const distances = shots
-    .map((shot) => Math.hypot(shot.x - center.x, shot.y - center.y))
-    .toSorted((a, b) => a - b);
+  const center = { x: mean(shots.map((shot) => shot.x)), y: mean(shots.map((shot) => shot.y)) };
+  const byDistance = shots
+    .map((shot) => ({ shot, distance: Math.hypot(shot.x - center.x, shot.y - center.y) }))
+    .toSorted((a, b) => a.distance - b.distance);
+  const outliers =
+    shots.length < MIN_SHOTS_FOR_OUTLIERS ? 0 : Math.floor(shots.length * OUTLIER_SHARE);
+  const counted = byDistance.slice(0, shots.length - outliers).map(({ shot }) => shot);
+  const xs = counted.map((shot) => shot.x);
+  const ys = counted.map((shot) => shot.y);
   return {
     center,
-    halfRadius: distances[Math.floor((distances.length - 1) / 2)] ?? 0,
-    width: 4 * deviation(xs, center.x),
-    height: 4 * deviation(ys, center.y),
+    halfRadius: byDistance[Math.floor((byDistance.length - 1) / 2)]?.distance ?? 0,
+    area: {
+      left: Math.min(...xs),
+      top: Math.min(...ys),
+      right: Math.max(...xs),
+      bottom: Math.max(...ys),
+    },
+    areaShots: counted.length,
   };
 }
 

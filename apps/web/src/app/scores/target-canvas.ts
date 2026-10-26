@@ -42,7 +42,8 @@ interface Point {
 /**
  * Tap where an arrow hit (`placed`); drag to pan, pinch or scroll to zoom. Shows `shots`, the
  * `selected` one highlighted. Not `interactive`, it only shows them: zoomed in so they all fit,
- * with the `group` (mean point of impact, half of the arrows in its circle).
+ * with the `group` (mean point of impact, half of the arrows in its circle, the area without
+ * outliers dotted around the dots).
  */
 @Component({
   selector: 'app-target-canvas',
@@ -276,6 +277,15 @@ export class TargetCanvas {
     context.beginPath();
     context.arc(x, y, group.halfRadius * faceRadius, 0, Math.PI * 2);
     context.stroke();
+    context.setLineDash([2, 4]);
+    context.lineWidth = 2;
+    const { left, top, right, bottom } = group.area;
+    context.strokeRect(
+      left * faceRadius - SHOT_RADIUS,
+      top * faceRadius - SHOT_RADIUS,
+      (right - left) * faceRadius + 2 * SHOT_RADIUS,
+      (bottom - top) * faceRadius + 2 * SHOT_RADIUS,
+    );
     context.setLineDash([]);
     context.lineWidth = 3;
     context.beginPath();

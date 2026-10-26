@@ -43,11 +43,17 @@
         />
       </app-tabs>
       <p [class]="styles.legend">
-        Kreuz: mittlerer Treffpunkt · Kreis: die Hälfte der Pfeile liegt darin
+        Kreuz: mittlerer Treffpunkt · Kreis: die Hälfte der Pfeile · Rechteck: der Bereich ohne
+        Ausreisser
       </p>
     </div>
     @if (a.group; as group) {
-    <app-group-analysis [group]="group" [targetSize]="s.targetSize" [isSpot]="s.isSpot" />
+    <app-group-analysis
+      [group]="group"
+      [targetSize]="s.targetSize"
+      [isSpot]="s.isSpot"
+      [shots]="a.shots.length"
+    />
     }
   </div>
   } @else {

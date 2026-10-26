@@ -88,7 +88,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
   to it, and saving a round opens it. It compares the round with the archer's others of the same bow type, distance and arrow
   count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
-  fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`), the end
+  fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
   totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.

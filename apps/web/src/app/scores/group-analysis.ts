@@ -35,9 +35,11 @@ function cm(value: number): string {
     <div [class]="styles.fact">
       <p [class]="styles.title">Form der Gruppe</p>
       <p>
-        Fast alle Pfeile liegen in einem Bereich von
+        {{ spread().counted }} liegen in einem Bereich von
         <span [class]="styles.value">{{ spread().height }}</span> Höhe und
-        <span [class]="styles.value">{{ spread().width }}</span> Breite{{ spread().shape }}
+        <span [class]="styles.value">{{ spread().width }}</span> Breite (Rechteck){{
+          spread().shape
+        }}
       </p>
     </div>
   `,
@@ -47,6 +49,8 @@ export class GroupAnalysis {
   readonly group = input.required<ShotGroup>();
   readonly targetSize = input.required<TargetSize>();
   readonly isSpot = input(false);
+  /** All arrows of the round, of which the group's area counts `areaShots` */
+  readonly shots = input.required<number>();
 
   private toCm(value: number): number {
     return faceUnitsToCm(value, this.targetSize(), this.isSpot());
@@ -70,8 +74,12 @@ export class GroupAnalysis {
   });
 
   protected readonly spread = computed(() => {
-    const width = this.toCm(this.group().width);
-    const height = this.toCm(this.group().height);
+    const { area, areaShots } = this.group();
+    const width = this.toCm(area.right - area.left);
+    const height = this.toCm(area.bottom - area.top);
+    const total = this.shots();
+    const counted =
+      areaShots === total ? `Alle ${total} Pfeile` : `${areaShots} von ${total} Pfeilen`;
     // Only a clear difference says something about the shape.
     const shape =
       height > width * 1.25
@@ -84,6 +92,7 @@ export class GroupAnalysis {
       width: cm(width),
       height: cm(height),
       shape,
+      counted,
     };
   });
 

@@ -26,7 +26,12 @@ export const Saved: Story = {
   args: {
     interactive: false,
     selected: null,
-    group: { center: { x: -0.05, y: 0.07 }, halfRadius: 0.16, width: 0.38, height: 0.24 },
+    group: {
+      center: { x: -0.05, y: 0.07 },
+      halfRadius: 0.16,
+      area: { left: -0.3, top: -0.04, right: 0.14, bottom: 0.2 },
+      areaShots: 3,
+    },
   },
 };
 /** One end picked out */
