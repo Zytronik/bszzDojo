@@ -35,7 +35,8 @@ export const semanticTokens = defineSemanticTokens({
      * themes like the face. `TargetCanvas` reads them back, the legend shows them.
      */
     group: {
-      center: { value: '{colors.white}' },
+      // Dark in the light theme, where white would vanish next to the face.
+      center: { value: { base: '{colors.white}', _light: '{colors.black}' } },
       half: { value: '{colors.green.400}' },
       area: { value: '{colors.magenta.400}' },
     },
