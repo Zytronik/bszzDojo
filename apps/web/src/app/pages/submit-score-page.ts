@@ -33,6 +33,7 @@ import { Router } from '@angular/router';
 import { css, cx } from 'styled-system/css';
 import { errorMessage } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
+import { loadScoreSetup, saveScoreSetup } from '../scores/score-setup';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import {
@@ -113,15 +114,17 @@ export class SubmitScorePage {
     MAX_RESULT: MAX_ARROWS * POINTS_PER_ARROW,
   };
 
+  private readonly setup = loadScoreSetup();
+
   protected readonly form = this.forms.group({
-    bowType: this.forms.control<BowTypeId>('r'),
-    targetSize: this.forms.control<TargetSize>(DEFAULT_TARGET_SIZE),
-    isSpot: false,
+    bowType: this.forms.control<BowTypeId>(this.setup?.bowType ?? 'r'),
+    targetSize: this.forms.control<TargetSize>(this.setup?.targetSize ?? DEFAULT_TARGET_SIZE),
+    isSpot: this.setup?.isSpot ?? false,
     shotOn: [this.today, [required(), formRule(scoreFieldErrors, 'shotOn')]],
-    distance: this.numberControl('distance', DEFAULT_DISTANCE),
+    distance: this.numberControl('distance', this.setup?.distance ?? DEFAULT_DISTANCE),
     tens: this.numberControl('tens'),
     nines: this.numberControl('nines'),
-    arrows: this.numberControl('arrows'),
+    arrows: this.numberControl('arrows', this.setup?.arrows ?? null),
     result: this.numberControl('result'),
     // `null` in the `result` mode; on the target one slot per arrow, `null` until it's placed.
     shots: this.forms.control<(Shot | null)[] | null>(null, formRule(scoreFieldErrors, 'shots')),
@@ -239,6 +242,13 @@ export class SubmitScorePage {
     this.pending.set(true);
     try {
       const saved = await this.api.create(score);
+      saveScoreSetup({
+        bowType: saved.bowType,
+        targetSize: saved.targetSize,
+        isSpot: saved.isSpot,
+        distance: saved.distance,
+        arrows: saved.arrows,
+      });
       this.toasts.success('Score erfolgreich eingetragen.');
       await this.router.navigate(['/scores', saved.id]);
     } catch (error: unknown) {
