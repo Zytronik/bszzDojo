@@ -25,6 +25,7 @@ import {
   type ShotGroup,
 } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
+import { split } from 'styled-system/recipes';
 import { ScoresApiService } from '../core/scores-api.service';
 import { toastErrors } from '../layout/toast.store';
 import { BarChart } from '../scores/bar-chart';
@@ -147,12 +148,7 @@ export class ScorePage {
       _hover: { opacity: 'muted' },
     }),
     titles: css({ textAlign: 'end' }),
-    split: css({
-      display: 'flex',
-      flexDir: 'column',
-      gap: '25',
-      md: { display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'start' },
-    }),
+    split: split(),
     legend: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
     sheet: css({ maxW: 'canvas' }),
   };

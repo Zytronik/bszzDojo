@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { BOW_TYPES, adjustedResult, isInnerTen, type ScoreDetail } from '@bszz-dojo/shared';
-import { css } from 'styled-system/css';
+import {
+  BOW_TYPES,
+  adjustedResult,
+  isInnerTen,
+  shotPoints,
+  type ScoreDetail,
+} from '@bszz-dojo/shared';
+import { css, cx } from 'styled-system/css';
+import { card } from 'styled-system/recipes';
 
 interface Figure {
   label: string;
@@ -18,6 +25,8 @@ function signed(difference: number): string {
   if (difference === 0) return '±0';
   return difference > 0 ? `+${difference}` : `−${-difference}`;
 }
+
+const figureGrid = css({ display: 'grid', gap: '10', marginBlockStart: '10' });
 
 /** The result, how it compares to the archer's other rounds, and its key figures. */
 @Component({
@@ -60,7 +69,6 @@ function signed(difference: number): string {
 export class ScoreSummary {
   readonly score = input.required<ScoreDetail>();
 
-  /** Compared with rounds of the same bow type, distance and arrow count */
   protected readonly sameKind = computed(() => {
     const { bowType, distance, arrows } = this.score();
     return `${BOW_TYPES[bowType].name}, ${distance}m, ${arrows} Pfeile`;
@@ -105,8 +113,9 @@ export class ScoreSummary {
       { label: '9er', value: String(score.nines) },
     );
     if (score.shots) {
-      // Outside the face is a miss.
-      const misses = score.shots.filter((shot) => Math.hypot(shot.x, shot.y) >= 1).length;
+      const misses = score.shots.filter(
+        (shot) => shotPoints(shot, score.isSpot, score.bowType) === 0,
+      ).length;
       figures.push({ label: 'Misses', value: String(misses) });
     }
     figures.push({
@@ -117,15 +126,15 @@ export class ScoreSummary {
   });
 
   protected readonly styles = {
-    panel: css({
-      layerStyle: 'surface',
-      rounded: 'sm',
-      p: '15',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '20',
-    }),
+    panel: cx(
+      card({ size: 'md' }),
+      css({
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '20',
+      }),
+    ),
     result: css({ display: 'flex', flexDir: 'column' }),
     total: css({ fontSize: '5xl', fontWeight: 'bold', color: 'accent.default' }),
     caption: css({ textStyle: 'body.small', layerStyle: 'muted' }),
@@ -142,30 +151,23 @@ export class ScoreSummary {
     badge: css({ textStyle: 'body.small', color: 'medal.gold', fontWeight: 'bold' }),
     // Rows that come out even: six figures (with shots) in threes, four in twos.
     figures: {
-      thirds: css({
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '10',
-        marginBlockStart: '10',
-        sm: { gridTemplateColumns: 'repeat(6, 1fr)' },
-      }),
-      halves: css({
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '10',
-        marginBlockStart: '10',
-        sm: { gridTemplateColumns: 'repeat(4, 1fr)' },
-      }),
+      thirds: cx(
+        figureGrid,
+        css({
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          sm: { gridTemplateColumns: 'repeat(6, 1fr)' },
+        }),
+      ),
+      halves: cx(
+        figureGrid,
+        css({
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          sm: { gridTemplateColumns: 'repeat(4, 1fr)' },
+        }),
+      ),
     },
     // The label comes first for screen readers, the value is shown on top.
-    figure: css({
-      layerStyle: 'surface',
-      rounded: 'sm',
-      p: '10',
-      display: 'flex',
-      flexDir: 'column-reverse',
-      alignItems: 'center',
-    }),
+    figure: cx(card(), css({ display: 'flex', flexDir: 'column-reverse', alignItems: 'center' })),
     value: css({ fontSize: 'xl', fontWeight: 'bold', m: '0' }),
   };
 }

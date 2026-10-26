@@ -31,8 +31,8 @@ export const semanticTokens = defineSemanticTokens({
       bronze: { value: '{colors.bronze}' },
     },
     /**
-     * The group's marks on the target face: colors none of its rings have, the same in both
-     * themes like the face. `TargetCanvas` reads them back, the legend shows them.
+     * The group's marks on the target face, in colors none of its rings have. `TargetCanvas` reads
+     * them back, `GroupAnalysis` shows them next to their figures.
      */
     group: {
       // Dark in the light theme, where white would vanish next to the face.

@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ringCount, type Shot, type ShotGroup } from '@bszz-dojo/shared';
-import { css } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
 
 /**
  * Canvas can't read CSS tokens, and these are the target face's own colors, not theme colors, so
@@ -36,6 +36,15 @@ const SHOT_RADIUS = 5;
 /** A pointer that moved further than this (CSS px) pans instead of placing an arrow. */
 const TAP_TOLERANCE = 6;
 
+const canvasBase = css({
+  display: 'block',
+  w: 'full',
+  maxW: 'canvas',
+  aspectRatio: '1',
+  mx: 'auto',
+  touchAction: 'none',
+});
+
 interface GroupColors {
   center: string;
   half: string;
@@ -50,8 +59,8 @@ interface Point {
 /**
  * Tap where an arrow hit (`placed`); drag to pan, pinch or scroll to zoom. Shows `shots`, the
  * `selected` one highlighted. Not `interactive`, it only shows them: zoomed in so they all fit,
- * with the `group` (mean point of impact, half of the arrows in its circle, the area without
- * outliers dotted around the dots).
+ * with the `group` (mean point of impact, the circle holding half the arrows, the area without
+ * outliers).
  */
 @Component({
   selector: 'app-target-canvas',
@@ -93,24 +102,8 @@ export class TargetCanvas {
   private fitted = false;
 
   protected readonly canvasStyles = {
-    place: css({
-      display: 'block',
-      w: 'full',
-      maxW: 'canvas',
-      aspectRatio: '1',
-      mx: 'auto',
-      touchAction: 'none',
-      cursor: 'crosshair',
-    }),
-    view: css({
-      display: 'block',
-      w: 'full',
-      maxW: 'canvas',
-      aspectRatio: '1',
-      mx: 'auto',
-      touchAction: 'none',
-      cursor: 'grab',
-    }),
+    place: cx(canvasBase, css({ cursor: 'crosshair' })),
+    view: cx(canvasBase, css({ cursor: 'grab' })),
   };
 
   constructor() {
@@ -256,12 +249,11 @@ export class TargetCanvas {
       context.lineWidth = 1;
       context.stroke();
     }
-    // The inner 10 (X ring), half as wide as the 10; it counts as a 10.
+    // The inner 10 (X ring), half as wide as the 10.
     context.beginPath();
     context.arc(0, 0, ringWidth / 2, 0, Math.PI * 2);
     context.stroke();
 
-    // Under the arrows, so they stay on top.
     const group = this.group();
     const groupColors = group ? this.groupColors() : null;
     if (group && groupColors) this.drawGroup(context, group, faceRadius, groupColors);

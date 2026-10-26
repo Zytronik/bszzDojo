@@ -30,7 +30,7 @@ import {
 } from '@bszz-dojo/shared';
 import { distinctUntilChanged, map, merge } from 'rxjs';
 import { Router } from '@angular/router';
-import { css } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
 import { errorMessage } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
 import { FormButton } from '../forms/form-button';
@@ -49,7 +49,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
-import { formRow } from 'styled-system/recipes';
+import { formRow, split } from 'styled-system/recipes';
 
 type NumberField = 'distance' | 'tens' | 'nines' | 'arrows' | 'result';
 
@@ -152,13 +152,7 @@ export class SubmitScorePage {
   protected readonly selected = signal<number | null>(0);
 
   protected readonly pending = signal(false);
-  protected readonly targetStyles = css({
-    display: 'flex',
-    flexDir: 'column',
-    gap: '15',
-    marginBlockEnd: 'stack',
-    md: { display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'start', gap: '25' },
-  });
+  protected readonly targetStyles = cx(split(), css({ marginBlockEnd: 'stack' }));
   protected readonly summaryStyles = css({
     display: 'flex',
     gap: '15',
