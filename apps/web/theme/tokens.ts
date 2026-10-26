@@ -19,8 +19,10 @@ export const tokens = defineTokens({
       500: { value: '#e43811' },
     },
     green: {
+      400: { value: '#3ee86a' },
       600: { value: '#0c940c' },
     },
+    magenta: { 400: { value: '#ff4df0' } },
     red: { 400: { value: '#ec4231' } },
     yellow: { 300: { value: '#faf000' } },
     blue: { 400: { value: '#00a4e2' } },

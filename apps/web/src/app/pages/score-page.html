@@ -42,10 +42,22 @@
           [group]="end() === 'all' ? a.group : null"
         />
       </app-tabs>
-      <p [class]="styles.legend">
-        Kreuz: mittlerer Treffpunkt · Kreis: die Hälfte der Pfeile · Rechteck: der Bereich ohne
-        Ausreisser
-      </p>
+      @if (end() === 'all') {
+      <ul [class]="styles.marks">
+        <li>
+          <span [class]="styles.swatch"><span [class]="styles.mark.center">+</span></span>
+          mittlerer Treffpunkt
+        </li>
+        <li>
+          <span [class]="styles.swatch"><span [class]="styles.mark.half"></span></span>
+          die Hälfte der Pfeile
+        </li>
+        <li>
+          <span [class]="styles.swatch"><span [class]="styles.mark.area"></span></span>
+          der Bereich ohne Ausreisser
+        </li>
+      </ul>
+      }
     </div>
     @if (a.group; as group) {
     <app-group-analysis

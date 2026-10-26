@@ -22,8 +22,7 @@ const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as c
 const RING_LINE_COLOR = '#000000';
 const SHOT_COLOR = '#ffae00';
 const SELECTED_COLOR = '#00e5ff';
-const GROUP_COLOR = '#000000';
-const GROUP_HALO_COLOR = '#ffffff';
+const GROUP_SHADOW_COLOR = 'rgba(0, 0, 0, 0.6)';
 const GROUP_CROSS = 9;
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
@@ -34,6 +33,12 @@ const WHEEL_ZOOM_STEP = 1.15;
 const SHOT_RADIUS = 5;
 /** A pointer that moved further than this (CSS px) pans instead of placing an arrow. */
 const TAP_TOLERANCE = 6;
+
+interface GroupColors {
+  center: string;
+  half: string;
+  area: string;
+}
 
 interface Point {
   x: number;
@@ -254,6 +259,11 @@ export class TargetCanvas {
     context.arc(0, 0, ringWidth / 2, 0, Math.PI * 2);
     context.stroke();
 
+    // Under the arrows, so they stay on top.
+    const group = this.group();
+    const groupColors = group ? this.groupColors() : null;
+    if (group && groupColors) this.drawGroup(context, group, faceRadius, groupColors);
+
     const colors = this.shotColors();
     shots.forEach((shot, index) => {
       if (!shot) return;
@@ -264,44 +274,79 @@ export class TargetCanvas {
       context.strokeStyle = RING_LINE_COLOR;
       context.stroke();
     });
-
-    const group = this.group();
-    if (group) this.drawGroup(context, group, faceRadius);
+    if (group && groupColors) this.drawCross(context, group, faceRadius, groupColors);
   }
 
-  /** Black on a white halo, so it stays visible on every ring color and on the arrows. */
-  private drawGroup(context: CanvasRenderingContext2D, group: ShotGroup, faceRadius: number): void {
+  /** Lines only, under the arrows, and the cross on top: they hide as little as possible. */
+  private drawGroup(
+    context: CanvasRenderingContext2D,
+    group: ShotGroup,
+    faceRadius: number,
+    colors: GroupColors,
+  ): void {
+    const { left, top, right, bottom } = group.area;
+    const pad = SHOT_RADIUS + 2;
+    context.save();
+    // A soft shadow lifts the lines off the light rings.
+    context.shadowColor = GROUP_SHADOW_COLOR;
+    context.shadowBlur = 3;
+    context.lineCap = 'round';
+
+    context.strokeStyle = colors.area;
+    context.lineWidth = 2;
+    context.setLineDash([8, 5]);
+    context.beginPath();
+    context.roundRect(
+      left * faceRadius - pad,
+      top * faceRadius - pad,
+      (right - left) * faceRadius + 2 * pad,
+      (bottom - top) * faceRadius + 2 * pad,
+      6,
+    );
+    context.stroke();
+
+    context.strokeStyle = colors.half;
+    context.lineWidth = 2.5;
+    context.setLineDash([]);
+    context.beginPath();
+    context.arc(
+      group.center.x * faceRadius,
+      group.center.y * faceRadius,
+      group.halfRadius * faceRadius,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+    context.restore();
+  }
+
+  private drawCross(
+    context: CanvasRenderingContext2D,
+    group: ShotGroup,
+    faceRadius: number,
+    colors: GroupColors,
+  ): void {
     const x = group.center.x * faceRadius;
     const y = group.center.y * faceRadius;
-    const { left, top, right, bottom } = group.area;
+    context.save();
+    context.shadowColor = GROUP_SHADOW_COLOR;
+    context.shadowBlur = 3;
+    context.lineCap = 'round';
+    context.strokeStyle = colors.center;
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(x - GROUP_CROSS, y);
+    context.lineTo(x + GROUP_CROSS, y);
+    context.moveTo(x, y - GROUP_CROSS);
+    context.lineTo(x, y + GROUP_CROSS);
+    context.stroke();
+    context.restore();
+  }
 
-    const circle = new Path2D();
-    circle.arc(x, y, group.halfRadius * faceRadius, 0, Math.PI * 2);
-    const area = new Path2D();
-    area.rect(
-      left * faceRadius - SHOT_RADIUS,
-      top * faceRadius - SHOT_RADIUS,
-      (right - left) * faceRadius + 2 * SHOT_RADIUS,
-      (bottom - top) * faceRadius + 2 * SHOT_RADIUS,
-    );
-    const cross = new Path2D();
-    cross.moveTo(x - GROUP_CROSS, y);
-    cross.lineTo(x + GROUP_CROSS, y);
-    cross.moveTo(x, y - GROUP_CROSS);
-    cross.lineTo(x, y + GROUP_CROSS);
-
-    const outlined = (path: Path2D, width: number, dash: number[]): void => {
-      context.setLineDash(dash);
-      context.lineWidth = width + 3;
-      context.strokeStyle = GROUP_HALO_COLOR;
-      context.stroke(path);
-      context.lineWidth = width;
-      context.strokeStyle = GROUP_COLOR;
-      context.stroke(path);
-    };
-    outlined(circle, 2, [6, 4]);
-    outlined(area, 2, [2, 4]);
-    outlined(cross, 3, []);
-    context.setLineDash([]);
+  /** The `group.*` tokens, as CSS variables Panda defines on the root. */
+  private groupColors(): GroupColors {
+    const style = getComputedStyle(this.canvas().nativeElement);
+    const read = (name: string): string => style.getPropertyValue(`--colors-group-${name}`).trim();
+    return { center: read('center'), half: read('half'), area: read('area') };
   }
 }

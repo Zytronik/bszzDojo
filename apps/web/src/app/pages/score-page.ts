@@ -153,6 +153,51 @@ export class ScorePage {
       gap: '25',
       md: { display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'start' },
     }),
+    marks: css({
+      display: 'flex',
+      flexWrap: 'wrap',
+      columnGap: '15',
+      rowGap: '5',
+      marginBlockStart: '10',
+      textStyle: 'body.small',
+      layerStyle: 'muted',
+      '& li': { display: 'flex', alignItems: 'center', gap: '8' },
+    }),
+    // On a dark tile, as the marks are light like on the face, in both themes.
+    swatch: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      w: 'textLine',
+      h: 'textLine',
+      rounded: 'sm',
+      bg: 'bg.overlay',
+    }),
+    // In the colors and shapes `TargetCanvas` draws.
+    mark: {
+      center: css({
+        color: 'group.center',
+        fontWeight: 'bold',
+        fontSize: 'xl',
+        lineHeight: 'none',
+      }),
+      half: css({
+        w: 'dot',
+        h: 'dot',
+        rounded: 'full',
+        borderWidth: 'thick',
+        borderStyle: 'solid',
+        borderColor: 'group.half',
+      }),
+      area: css({
+        w: 'dot',
+        h: 'dot',
+        rounded: 'sm',
+        borderWidth: 'thick',
+        borderStyle: 'dashed',
+        borderColor: 'group.area',
+      }),
+    },
     legend: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
     sheet: css({ maxW: 'canvas' }),
   };
