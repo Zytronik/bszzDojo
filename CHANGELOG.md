@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.15.0](https://github.com/Zytronik/bszzDojo/compare/v3.14.0...v3.15.0) (2026-10-26)
+
+
+### Features
+
+* **web:** show skeletons for every part of the score page ([#87](https://github.com/Zytronik/bszzDojo/issues/87)) ([12b3ce3](https://github.com/Zytronik/bszzDojo/commit/12b3ce337672a058abe2939deeff52c294c65ae0))
+
 ## [3.14.0](https://github.com/Zytronik/bszzDojo/compare/v3.13.1...v3.14.0) (2026-10-26)
 
 
