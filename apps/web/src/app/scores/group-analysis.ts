@@ -35,8 +35,9 @@ function cm(value: number): string {
     <div [class]="styles.fact">
       <p [class]="styles.title">Form der Gruppe</p>
       <p>
-        <span [class]="styles.value">{{ spread().height }}</span> hoch,
-        <span [class]="styles.value">{{ spread().width }}</span> breit{{ spread().shape }}
+        Fast alle Pfeile liegen in einem Bereich von
+        <span [class]="styles.value">{{ spread().height }}</span> Höhe und
+        <span [class]="styles.value">{{ spread().width }}</span> Breite{{ spread().shape }}
       </p>
     </div>
   `,
@@ -74,9 +75,9 @@ export class GroupAnalysis {
     // Only a clear difference says something about the shape.
     const shape =
       height > width * 1.25
-        ? ': die Pfeile streuen eher in der Höhe.'
+        ? '. Sie streuen eher in der Höhe.'
         : width > height * 1.25
-          ? ': die Pfeile streuen eher seitlich.'
+          ? '. Sie streuen eher seitlich.'
           : '.';
     return {
       half: cm(this.toCm(this.group().halfRadius)),

@@ -8,7 +8,7 @@ export interface ShotGroup {
   center: Shot;
   /** Half of the arrows lie within this distance of the center. */
   halfRadius: number;
-  /** Twice the standard deviation sideways and in height (about 95% of the arrows). */
+  /** Sideways and in height, two standard deviations each way: about 95% of the arrows. */
   width: number;
   height: number;
 }
@@ -32,8 +32,8 @@ export function shotGroup(shots: readonly Shot[]): ShotGroup | null {
   return {
     center,
     halfRadius: distances[Math.floor((distances.length - 1) / 2)] ?? 0,
-    width: 2 * deviation(xs, center.x),
-    height: 2 * deviation(ys, center.y),
+    width: 4 * deviation(xs, center.x),
+    height: 4 * deviation(ys, center.y),
   };
 }
 

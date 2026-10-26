@@ -87,14 +87,18 @@ export class ScorePage {
   });
   protected readonly loaded = computed(() => (this.score.hasValue() ? this.score.value() : null));
 
-  protected readonly title = computed(() => {
+  /** "Samstag, 24. Oktober 2026": the date as the title, the weekday with the details. */
+  private readonly date = computed(() => {
     const score = this.loaded();
-    return score ? `Score vom ${formatGermanDate(score.shotOn)}` : 'Score';
+    const [weekday = '', date = ''] = score ? formatGermanDate(score.shotOn).split(', ') : [];
+    return { weekday, date };
   });
+  protected readonly title = computed(() => this.date().date || 'Score');
   protected readonly details = computed(() => {
     const score = this.loaded();
     if (!score) return '';
-    return `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
+    const kind = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
+    return `${this.date().weekday} · ${kind}`;
   });
   protected readonly name = computed(() => {
     const score = this.loaded();

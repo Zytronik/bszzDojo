@@ -7,27 +7,53 @@ interface Figure {
   value: string;
 }
 
+interface Reference {
+  label: string;
+  value: number;
+  difference: string;
+  better: boolean;
+}
+
+function signed(difference: number): string {
+  if (difference === 0) return '±0';
+  return difference > 0 ? `+${difference}` : `−${-difference}`;
+}
+
 /** The result, how it compares to the archer's other rounds, and its key figures. */
 @Component({
   selector: 'app-score-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="styles.hero">
-      <span [class]="styles.total">{{ score().result }}</span>
-      <div [class]="styles.comparison">
-        @if (versusAverage(); as line) {
-          <span [class]="line.better ? styles.better : ''">{{ line.text }}</span>
-        }
-        <span [class]="record().isRecord ? styles.record : ''">{{ record().text }}</span>
-        @if (basis(); as basis) {
-          <span [class]="styles.basis">{{ basis }}</span>
+    <div [class]="styles.panel">
+      <div [class]="styles.result">
+        <span [class]="styles.total">{{ score().result }}</span>
+        @if (badge(); as badge) {
+          <span [class]="styles.badge">{{ badge }}</span>
+        } @else {
+          <span [class]="styles.caption">Punkte</span>
         }
       </div>
+      @if (references().length > 0) {
+        <dl [class]="styles.references">
+          @for (reference of references(); track reference.label) {
+            <dt [class]="styles.caption">{{ reference.label }}</dt>
+            <dd [class]="styles.reference">{{ reference.value }}</dd>
+            <dd [class]="reference.better ? styles.better : styles.caption">
+              {{ reference.difference }}
+            </dd>
+          }
+        </dl>
+      } @else {
+        <p [class]="styles.caption">Erster Score mit {{ sameKind() }}</p>
+      }
     </div>
+    @if (basis(); as basis) {
+      <p [class]="styles.basis">{{ basis }}</p>
+    }
     <dl [class]="figures().length % 3 === 0 ? styles.figures.thirds : styles.figures.halves">
       @for (figure of figures(); track figure.label) {
         <div [class]="styles.figure">
-          <dt [class]="styles.label">{{ figure.label }}</dt>
+          <dt [class]="styles.caption">{{ figure.label }}</dt>
           <dd [class]="styles.value">{{ figure.value }}</dd>
         </div>
       }
@@ -38,30 +64,34 @@ export class ScoreSummary {
   readonly score = input.required<ScoreDetail>();
 
   /** Compared with rounds of the same bow type, distance and arrow count */
-  private readonly sameKind = computed(() => {
+  protected readonly sameKind = computed(() => {
     const { bowType, distance, arrows } = this.score();
     return `${BOW_TYPES[bowType].name}, ${distance}m, ${arrows} Pfeile`;
   });
 
-  protected readonly versusAverage = computed((): { text: string; better: boolean } | null => {
+  protected readonly references = computed((): Reference[] => {
     const { result, comparison } = this.score();
-    if (comparison.average === null) return null;
-    const difference = result - comparison.average;
-    if (difference === 0)
-      return { text: `Genau im Schnitt (${comparison.average})`, better: false };
-    return difference > 0
-      ? { text: `+${difference} über dem Schnitt (${comparison.average})`, better: true }
-      : { text: `−${-difference} unter dem Schnitt (${comparison.average})`, better: false };
+    const references: Reference[] = [];
+    for (const [label, value] of [
+      ['Schnitt', comparison.average],
+      ['Rekord', comparison.best],
+    ] as const) {
+      if (value === null) continue;
+      references.push({
+        label,
+        value,
+        difference: signed(result - value),
+        better: result > value,
+      });
+    }
+    return references;
   });
 
-  protected readonly record = computed((): { text: string; isRecord: boolean } => {
+  protected readonly badge = computed(() => {
     const { result, comparison } = this.score();
-    if (comparison.best === null) {
-      return { text: `Erster Score mit ${this.sameKind()}`, isRecord: false };
-    }
-    if (result > comparison.best) return { text: 'Persönlicher Rekord', isRecord: true };
-    if (result === comparison.best) return { text: 'Gleich wie der Rekord', isRecord: true };
-    return { text: `Rekord: ${comparison.best}`, isRecord: false };
+    if (comparison.best === null) return null;
+    if (result > comparison.best) return 'Persönlicher Rekord';
+    return result === comparison.best ? 'Rekord egalisiert' : null;
   });
 
   protected readonly basis = computed(() => {
@@ -78,31 +108,49 @@ export class ScoreSummary {
     ];
     if (score.shots) {
       const xs = score.shots.filter((shot) => isInnerTen(shot, score.isSpot)).length;
-      figures.push({ label: 'X', value: String(xs) });
+      figures.push({ label: 'Xer', value: String(xs) });
     }
     figures.push(
       { label: '10er', value: String(score.tens) },
       { label: '9er', value: String(score.nines) },
     );
     if (score.shots) {
-      // Outside the face is a miss: the shots that scored nothing.
+      // Outside the face is a miss.
       const misses = score.shots.filter((shot) => Math.hypot(shot.x, shot.y) >= 1).length;
-      figures.push({ label: 'Fehlschüsse', value: String(misses) });
+      figures.push({ label: 'Misses', value: String(misses) });
     }
     figures.push({
-      label: 'mit Handicap',
+      label: 'mit Faktor',
       value: String(adjustedResult(score.result, score.bowType)),
     });
     return figures;
   });
 
   protected readonly styles = {
-    hero: css({ display: 'flex', alignItems: 'center', gap: '15', flexWrap: 'wrap' }),
+    panel: css({
+      layerStyle: 'surface',
+      rounded: 'sm',
+      p: '15',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '20',
+    }),
+    result: css({ display: 'flex', flexDir: 'column' }),
     total: css({ fontSize: '5xl', fontWeight: 'bold', color: 'accent.default' }),
-    comparison: css({ display: 'flex', flexDir: 'column' }),
-    better: css({ color: 'status.success' }),
-    record: css({ color: 'medal.gold', fontWeight: 'bold' }),
-    basis: css({ textStyle: 'body.small', layerStyle: 'muted' }),
+    caption: css({ textStyle: 'body.small', layerStyle: 'muted' }),
+    references: css({
+      display: 'grid',
+      gridTemplateColumns: 'auto auto auto',
+      alignItems: 'baseline',
+      columnGap: '15',
+      rowGap: '5',
+      '& dd': { m: '0', textAlign: 'end' },
+    }),
+    reference: css({ fontSize: 'xl', fontWeight: 'bold' }),
+    better: css({ textStyle: 'body.small', color: 'status.success', fontWeight: 'bold' }),
+    badge: css({ textStyle: 'body.small', color: 'medal.gold', fontWeight: 'bold' }),
+    basis: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
     // Rows that come out even: six figures (with shots) in threes, four in twos.
     figures: {
       thirds: css({
@@ -130,6 +178,5 @@ export class ScoreSummary {
       alignItems: 'center',
     }),
     value: css({ fontSize: 'xl', fontWeight: 'bold', m: '0' }),
-    label: css({ textStyle: 'body.small', layerStyle: 'muted' }),
   };
 }
