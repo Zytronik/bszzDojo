@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { css } from 'styled-system/css';
-import { Skeleton } from './skeleton';
+import { Skeleton, type SkeletonShape } from './skeleton';
 
 /**
  * The skeleton while `loading`, then the projected content. The skeleton stays in the same grid
@@ -13,7 +13,7 @@ import { Skeleton } from './skeleton';
   imports: [Skeleton],
   host: { '[class]': 'styles' },
   template: `
-    <app-skeleton [lines]="lines()" [rank]="rank()" [chart]="chart()" [ghost]="!loading()" />
+    <app-skeleton [shape]="shape()" [lines]="lines()" [rank]="rank()" [ghost]="!loading()" />
     <div [class]="contentStyles"><ng-content /></div>
   `,
 })
@@ -21,7 +21,7 @@ export class LoadingFrame {
   readonly loading = input.required<boolean>();
   readonly lines = input<1 | 2 | 3>(2);
   readonly rank = input(false);
-  readonly chart = input(false);
+  readonly shape = input<SkeletonShape>('rows');
 
   protected readonly styles = css({
     display: 'grid',

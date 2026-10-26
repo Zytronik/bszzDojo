@@ -53,7 +53,7 @@
 
 <app-section>
   <h2>Entwicklung</h2>
-  <app-loading-frame [loading]="!p" [chart]="true">
+  <app-loading-frame [loading]="!p" shape="chart">
     @if (p) { @if (p.progress.length === 0) {
     <app-empty-state>Keine Rekorde vorhanden.</app-empty-state>
     } @else {
