@@ -128,20 +128,25 @@ export class ScorePage {
 
   protected readonly backIcon = faChevronLeft;
   protected readonly styles = {
-    heading: css({ display: 'flex', alignItems: 'center', gap: '15' }),
+    heading: css({
+      display: 'flex',
+      alignItems: 'stretch',
+      justifyContent: 'space-between',
+      gap: '15',
+    }),
+    // As tall as the title and the details next to it.
     back: css({
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
       flexShrink: '0',
-      w: 'control',
-      h: 'control',
+      px: '15',
       layerStyle: 'surface',
       rounded: 'sm',
       transitionProperty: 'opacity',
       transitionDuration: 'normal',
       _hover: { opacity: 'muted' },
     }),
+    titles: css({ textAlign: 'end' }),
     split: css({
       display: 'flex',
       flexDir: 'column',
