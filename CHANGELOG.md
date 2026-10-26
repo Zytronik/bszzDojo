@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.14.0](https://github.com/Zytronik/bszzDojo/compare/v3.13.1...v3.14.0) (2026-10-26)
+
+
+### Features
+
+* add a page for every score ([#84](https://github.com/Zytronik/bszzDojo/issues/84)) ([4f7e7c0](https://github.com/Zytronik/bszzDojo/commit/4f7e7c0c9769a1b8f3158d3b0643280e9c682e26))
+
+
+### Refactoring
+
+* **web:** share card, split and chart colors, complete the stories ([#85](https://github.com/Zytronik/bszzDojo/issues/85)) ([962fee5](https://github.com/Zytronik/bszzDojo/commit/962fee50d9a57794eba81c3b0c9e8f67fabd3adc))
+
 ## [3.13.1](https://github.com/Zytronik/bszzDojo/compare/v3.13.0...v3.13.1) (2026-10-25)
 
 
