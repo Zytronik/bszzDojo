@@ -84,7 +84,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   the target (`TargetCanvas`, `ScoreSheet`). On the target the arrow count must be divisible by
   the arrows per end (`arrowsPerEnd`: 6 at 30m, otherwise 3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
   face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
-  (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes.
+  (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes. The form starts with the last saved round's bow type, target, spot, distance and arrow count, kept per device in localStorage (`scores/score-setup.ts`).
 - **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
   to it, and saving a round opens it. It compares the round with the archer's others of the same bow type, distance and arrow
   count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
@@ -209,8 +209,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   the old app's; keep their paths, `index.html` and the manifest reference them.
 - **Theme:** dark by default, light as an account setting (`UserSettings.theme`, saved by
   `SettingsStore`). It's applied as `data-theme` on `<html>`. The last theme is cached in
-  localStorage only so `index.html` can apply it before the first paint; don't use localStorage
-  for anything else tied to the user.
+  localStorage only so `index.html` can apply it before the first paint. Otherwise localStorage only
+  holds per-device conveniences (the install hint, the last score setup), never account data.
 - **PWA:** `ngsw-config.json` caches the app shell and assets; `/api` is never cached.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
   worker answers them with the app, which redirects to `/`.
