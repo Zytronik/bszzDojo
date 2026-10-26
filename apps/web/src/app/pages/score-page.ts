@@ -128,18 +128,16 @@ export class ScorePage {
 
   protected readonly backIcon = faChevronLeft;
   protected readonly styles = {
+    heading: css({ display: 'flex', alignItems: 'center', gap: '15' }),
     back: css({
-      display: 'inline-flex',
-      // The loading frame is a flex column, which would stretch it.
-      alignSelf: 'flex-start',
+      display: 'flex',
       alignItems: 'center',
-      gap: '8',
-      px: '10',
-      py: '5',
-      marginBlockEnd: '15',
+      justifyContent: 'center',
+      flexShrink: '0',
+      w: 'control',
+      h: 'control',
       layerStyle: 'surface',
       rounded: 'sm',
-      textStyle: 'body.small',
       transitionProperty: 'opacity',
       transitionDuration: 'normal',
       _hover: { opacity: 'muted' },

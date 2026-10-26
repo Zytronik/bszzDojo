@@ -5,12 +5,19 @@
     @if (score.error()) {
     <app-empty-state>Der Score konnte nicht geladen werden.</app-empty-state>
     } @else if (s) {
-    <a [class]="styles.back" [routerLink]="['/profile', s.username]">
-      <app-icon [icon]="backIcon" />
-      {{ name() }}
-    </a>
-    <h1>{{ title() }}</h1>
-    <p>{{ details() }}</p>
+    <div [class]="styles.heading">
+      <a
+        [class]="styles.back"
+        [routerLink]="['/profile', s.username]"
+        [attr.aria-label]="'Zurück zum Profil von ' + name()"
+      >
+        <app-icon [icon]="backIcon" />
+      </a>
+      <div>
+        <h1>{{ title() }}</h1>
+        <p>{{ details() }}</p>
+      </div>
+    </div>
     }
   </app-loading-frame>
 </app-section>
