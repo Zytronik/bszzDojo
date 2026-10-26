@@ -1,7 +1,8 @@
 @let s = loaded();
+@let loading = score.isLoading();
 
 <app-section>
-  <app-loading-frame [loading]="score.isLoading()" [lines]="3">
+  <app-loading-frame [loading]="loading" shape="heading">
     @if (score.error()) {
     <app-empty-state>Der Score konnte nicht geladen werden.</app-empty-state>
     } @else if (s) {
@@ -22,62 +23,80 @@
   </app-loading-frame>
 </app-section>
 
-@if (s) {
+@if (loading || s) {
 <app-section>
-  <app-score-summary [score]="s" />
+  <app-loading-frame [loading]="loading" shape="summary">
+    @if (s) {
+    <app-score-summary [score]="s" />
+    }
+  </app-loading-frame>
 </app-section>
 
 <app-section>
   <h2>Trefferbild</h2>
-  @if (analysis(); as a) {
-  <div [class]="styles.split">
-    <div>
-      <app-tabs [tabs]="a.ends" [(selected)]="end">
-        <app-target-canvas
-          [shots]="a.shots"
-          [isSpot]="s.isSpot"
-          [interactive]="false"
-          [selected]="selected()"
-          [shotColors]="shotColors()"
-          [group]="end() === 'all' ? a.group : null"
-        />
-      </app-tabs>
+  @if (loading || analysis()) {
+  <app-loading-frame [loading]="loading" shape="target">
+    @if (s && analysis(); as a) {
+    <div [class]="styles.split">
+      <div>
+        <app-tabs [tabs]="a.ends" [(selected)]="end">
+          <app-target-canvas
+            [shots]="a.shots"
+            [isSpot]="s.isSpot"
+            [interactive]="false"
+            [selected]="selected()"
+            [shotColors]="shotColors()"
+            [group]="end() === 'all' ? a.group : null"
+          />
+        </app-tabs>
+      </div>
+      @if (a.group; as group) {
+      <app-group-analysis
+        [group]="group"
+        [targetSize]="s.targetSize"
+        [isSpot]="s.isSpot"
+        [shots]="a.shots.length"
+      />
+      }
     </div>
-    @if (a.group; as group) {
-    <app-group-analysis
-      [group]="group"
-      [targetSize]="s.targetSize"
-      [isSpot]="s.isSpot"
-      [shots]="a.shots.length"
-    />
     }
-  </div>
+  </app-loading-frame>
   } @else {
   <app-empty-state>Dieser Score wurde ohne Pfeile auf der Scheibe erfasst.</app-empty-state>
   }
 </app-section>
+}
 
-@if (analysis(); as a) {
+@if (loading || analysis()) {
+@let a = analysis();
 <app-section>
   <div [class]="styles.split">
     <div>
       <h2>Passen</h2>
-      <app-bar-chart
-        label="Summe jeder Passe"
-        [labels]="a.endLabels"
-        [values]="a.endTotals"
-        [average]="a.endAverage"
-      />
+      <app-loading-frame [loading]="loading" shape="bars">
+        @if (a) {
+        <app-bar-chart
+          label="Summe jeder Passe"
+          [labels]="a.endLabels"
+          [values]="a.endTotals"
+          [average]="a.endAverage"
+        />
+        }
+      </app-loading-frame>
       <p [class]="styles.legend">Gestrichelt: der Schnitt pro Passe in diesem Score</p>
     </div>
     <div>
       <h2>Ringverteilung</h2>
-      <app-bar-chart
-        label="Anzahl Pfeile pro Ring"
-        tone="gold"
-        [labels]="a.ringLabels"
-        [values]="a.ringCounts"
-      />
+      <app-loading-frame [loading]="loading" shape="bars">
+        @if (a) {
+        <app-bar-chart
+          label="Anzahl Pfeile pro Ring"
+          tone="gold"
+          [labels]="a.ringLabels"
+          [values]="a.ringCounts"
+        />
+        }
+      </app-loading-frame>
     </div>
   </div>
 </app-section>
@@ -85,12 +104,16 @@
 <app-section>
   <h2>Scoreblatt</h2>
   <div [class]="styles.sheet">
-    <app-score-sheet
-      [points]="a.points"
-      [inner]="a.inner"
-      [perEnd]="a.perEnd"
-      [(selected)]="selected"
-    />
+    <app-loading-frame [loading]="loading" [lines]="1">
+      @if (a) {
+      <app-score-sheet
+        [points]="a.points"
+        [inner]="a.inner"
+        [perEnd]="a.perEnd"
+        [(selected)]="selected"
+      />
+      }
+    </app-loading-frame>
   </div>
 </app-section>
-} }
+}

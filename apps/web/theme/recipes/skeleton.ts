@@ -1,12 +1,12 @@
 import { defineSlotRecipe } from '@pandacss/dev';
 
 /**
- * Placeholder shapes while a list or chart loads, laid out like `record` rows so the page doesn't
- * jump when the data arrives.
+ * Placeholder shapes while a list, a chart or a round's page loads, laid out like the real elements
+ * so the page doesn't jump when the data arrives.
  */
 export const skeleton = defineSlotRecipe({
   className: 'skeleton',
-  slots: ['row', 'rank', 'body', 'line', 'title', 'meta', 'tab', 'chart'],
+  slots: ['row', 'rank', 'body', 'line', 'title', 'meta', 'tab', 'chart', 'block', 'square'],
   base: {
     row: {
       display: 'flex',
@@ -38,5 +38,16 @@ export const skeleton = defineSlotRecipe({
     },
     // Chart.js keeps a 2:1 canvas by default.
     chart: { layerStyle: 'skeleton', width: 'full', aspectRatio: '2 / 1' },
+    // Holds invisible text in the real element's text styles, so it takes that element's height.
+    block: { layerStyle: 'skeleton', color: 'transparent', userSelect: 'none' },
+    // The target face (`TargetCanvas`)
+    square: {
+      layerStyle: 'skeleton',
+      display: 'block',
+      w: 'full',
+      maxW: 'canvas',
+      aspectRatio: '1',
+      mx: 'auto',
+    },
   },
 });

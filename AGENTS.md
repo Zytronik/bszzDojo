@@ -175,8 +175,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **State:** app-wide state lives in NgRx SignalStores (`*.store.ts`, `providedIn: 'root'`):
   `AuthStore`, `SettingsStore`. Components read store signals and call store methods; only stores
   call `patchState`. Page data is loaded with `resource()` in the page; lists sit in
-  `<app-loading-frame>`, which shows an `<app-skeleton>` shaped like their rows while loading (`chart`
-  for the progress chart) and keeps it invisible afterwards, so the area never shrinks below it and
+  `<app-loading-frame>`, which shows an `<app-skeleton>` shaped like their rows while loading (other
+  `shape`s for charts and the score page) and keeps it invisible afterwards, so the area never shrinks below it and
   the page doesn't jump. Never a plain "Wird geladen…". An empty list shows
   `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
