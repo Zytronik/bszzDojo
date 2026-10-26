@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -20,7 +21,7 @@ import type { AuthUser } from '../auth/auth-user';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ScoreBody } from './dto/score.body';
-import { ScoreResponse } from './dto/score.response';
+import { ScoreDetailResponse, ScoreResponse } from './dto/score.response';
 import { ScoresService } from './scores.service';
 
 @ApiTags('scores')
@@ -36,6 +37,13 @@ export class ScoresController {
   @ApiBadRequestResponse({ description: 'German messages for every invalid field' })
   create(@CurrentUser() user: AuthUser, @Body() body: ScoreBody): Promise<ScoreResponse> {
     return this.scores.create(user.id, body);
+  }
+
+  /** Any archer's round, with how it compares to their other rounds. */
+  @Get(':id')
+  @ApiNotFoundResponse({ description: 'No such round' })
+  findOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<ScoreDetailResponse> {
+    return this.scores.findOne(id);
   }
 
   /** Deletes one of the logged-in user's rounds. */

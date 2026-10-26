@@ -85,6 +85,11 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   the arrows per end (`arrowsPerEnd`: 6 at 30m, otherwise 3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
   face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
   (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes.
+- **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
+  to it. It compares the round with the archer's others of the same bow type, distance and arrow
+  count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
+  fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`), the end
+  totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings

@@ -10,7 +10,7 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { ringCount, type Shot } from '@bszz-dojo/shared';
+import { ringCount, type Shot, type ShotGroup } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 
 /**
@@ -22,6 +22,8 @@ const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as c
 const RING_LINE_COLOR = '#000000';
 const SHOT_COLOR = '#ffae00';
 const SELECTED_COLOR = '#00e5ff';
+const GROUP_COLOR = '#00e5ff';
+const GROUP_CROSS = 9;
 
 /** The face fills this share of the canvas, so arrows just outside it can still be placed. */
 const FACE_SHARE = 0.8;
@@ -39,7 +41,8 @@ interface Point {
 
 /**
  * Tap where an arrow hit (`placed`); drag to pan, pinch or scroll to zoom. Shows `shots`, the
- * `selected` one highlighted.
+ * `selected` one highlighted. Not `interactive`, it only shows them: zoomed in so they all fit,
+ * with the `group` (mean point of impact, half of the arrows in its circle).
  */
 @Component({
   selector: 'app-target-canvas',
@@ -47,8 +50,12 @@ interface Point {
   template: `
     <canvas
       #canvas
-      [class]="canvasStyles"
-      aria-label="Zielscheibe: tippe, wo der Pfeil getroffen hat"
+      [class]="interactive() ? canvasStyles.place : canvasStyles.view"
+      [attr.aria-label]="
+        interactive()
+          ? 'Zielscheibe: tippe, wo der Pfeil getroffen hat'
+          : 'Zielscheibe mit den Pfeilen'
+      "
       (pointerdown)="onPointerDown($event)"
       (pointermove)="onPointerMove($event)"
       (pointerup)="onPointerUp($event)"
@@ -62,6 +69,10 @@ export class TargetCanvas {
   readonly selected = input<number | null>(null);
   readonly isSpot = input(false);
   readonly placed = output<Shot>();
+  readonly interactive = input(true);
+  /** Per shot instead of the default color, e.g. to pick out one end */
+  readonly shotColors = input<readonly string[] | null>(null);
+  readonly group = input<ShotGroup | null>(null);
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private zoom = 1;
@@ -70,16 +81,28 @@ export class TargetCanvas {
   protected readonly pointers = new Map<number, Point>();
   private tapStart: Point | null = null;
   private pinchDistance = 0;
+  private fitted = false;
 
-  protected readonly canvasStyles = css({
-    display: 'block',
-    w: 'full',
-    maxW: 'canvas',
-    aspectRatio: '1',
-    mx: 'auto',
-    touchAction: 'none',
-    cursor: 'crosshair',
-  });
+  protected readonly canvasStyles = {
+    place: css({
+      display: 'block',
+      w: 'full',
+      maxW: 'canvas',
+      aspectRatio: '1',
+      mx: 'auto',
+      touchAction: 'none',
+      cursor: 'crosshair',
+    }),
+    view: css({
+      display: 'block',
+      w: 'full',
+      maxW: 'canvas',
+      aspectRatio: '1',
+      mx: 'auto',
+      touchAction: 'none',
+      cursor: 'grab',
+    }),
+  };
 
   constructor() {
     afterRenderEffect(() => this.draw());
@@ -123,7 +146,7 @@ export class TargetCanvas {
     const wasTap = this.tapStart !== null && this.pointers.size === 1;
     this.pointers.delete(event.pointerId);
     this.pinchDistance = this.pointerDistance();
-    if (wasTap) this.placeAt(event.clientX, event.clientY);
+    if (wasTap && this.interactive()) this.placeAt(event.clientX, event.clientY);
     this.tapStart = null;
   }
 
@@ -182,8 +205,19 @@ export class TargetCanvas {
     return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
   }
 
+  /** Once, when showing a round: as far in as every arrow still fits. */
+  private fit(shots: readonly (Shot | null)[]): void {
+    if (this.fitted || this.interactive()) return;
+    const farthest = Math.max(0, ...shots.map((shot) => (shot ? Math.hypot(shot.x, shot.y) : 0)));
+    if (farthest === 0) return;
+    this.fitted = true;
+    // Visible radius at zoom z is 1 / (FACE_SHARE × z) face units; leave a margin for the dots.
+    this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, 0.85 / (FACE_SHARE * farthest)));
+  }
+
   private draw(): void {
     const shots = this.shots();
+    this.fit(shots);
     const selected = this.selected();
     const isSpot = this.isSpot();
     const element = this.canvas().nativeElement;
@@ -218,14 +252,37 @@ export class TargetCanvas {
     context.arc(0, 0, ringWidth / 2, 0, Math.PI * 2);
     context.stroke();
 
+    const colors = this.shotColors();
     shots.forEach((shot, index) => {
       if (!shot) return;
       context.beginPath();
       context.arc(shot.x * faceRadius, shot.y * faceRadius, SHOT_RADIUS, 0, Math.PI * 2);
-      context.fillStyle = index === selected ? SELECTED_COLOR : SHOT_COLOR;
+      context.fillStyle = index === selected ? SELECTED_COLOR : (colors?.[index] ?? SHOT_COLOR);
       context.fill();
       context.strokeStyle = RING_LINE_COLOR;
       context.stroke();
     });
+
+    const group = this.group();
+    if (group) this.drawGroup(context, group, faceRadius);
+  }
+
+  private drawGroup(context: CanvasRenderingContext2D, group: ShotGroup, faceRadius: number): void {
+    const x = group.center.x * faceRadius;
+    const y = group.center.y * faceRadius;
+    context.strokeStyle = GROUP_COLOR;
+    context.lineWidth = 2;
+    context.setLineDash([5, 4]);
+    context.beginPath();
+    context.arc(x, y, group.halfRadius * faceRadius, 0, Math.PI * 2);
+    context.stroke();
+    context.setLineDash([]);
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(x - GROUP_CROSS, y);
+    context.lineTo(x + GROUP_CROSS, y);
+    context.moveTo(x, y - GROUP_CROSS);
+    context.lineTo(x, y + GROUP_CROSS);
+    context.stroke();
   }
 }

@@ -1,0 +1,84 @@
+@let s = loaded();
+
+<app-section>
+  <app-loading-frame [loading]="score.isLoading()" [lines]="3">
+    @if (score.error()) {
+    <app-empty-state>Der Score konnte nicht geladen werden.</app-empty-state>
+    } @else if (s) {
+    <a [class]="styles.back" [routerLink]="['/profile', s.username]">← {{ name() }}</a>
+    <h1>{{ title() }}</h1>
+    <p>{{ details() }}</p>
+    }
+  </app-loading-frame>
+</app-section>
+
+@if (s) {
+<app-section>
+  <app-score-summary [score]="s" />
+</app-section>
+
+<app-section>
+  <h2>Trefferbild</h2>
+  @if (analysis(); as a) {
+  <div [class]="styles.split">
+    <div>
+      <app-tabs [tabs]="a.ends" [(selected)]="end">
+        <app-target-canvas
+          [shots]="a.shots"
+          [isSpot]="s.isSpot"
+          [interactive]="false"
+          [selected]="selected()"
+          [shotColors]="shotColors()"
+          [group]="end() === 'all' ? a.group : null"
+        />
+      </app-tabs>
+      <p [class]="styles.legend">
+        Kreuz: mittlerer Treffpunkt · Kreis: die Hälfte der Pfeile liegt darin
+      </p>
+    </div>
+    @if (a.group; as group) {
+    <app-group-analysis [group]="group" [targetSize]="s.targetSize" [isSpot]="s.isSpot" />
+    }
+  </div>
+  } @else {
+  <app-empty-state>Dieser Score wurde ohne Pfeile auf der Scheibe erfasst.</app-empty-state>
+  }
+</app-section>
+
+@if (analysis(); as a) {
+<app-section>
+  <div [class]="styles.split">
+    <div>
+      <h2>Passen</h2>
+      <app-bar-chart
+        label="Summe jeder Passe"
+        [labels]="a.endLabels"
+        [values]="a.endTotals"
+        [average]="a.endAverage"
+      />
+      <p [class]="styles.legend">Gestrichelt: der Schnitt pro Passe in diesem Score</p>
+    </div>
+    <div>
+      <h2>Ringverteilung</h2>
+      <app-bar-chart
+        label="Anzahl Pfeile pro Ring"
+        tone="gold"
+        [labels]="a.ringLabels"
+        [values]="a.ringCounts"
+      />
+    </div>
+  </div>
+</app-section>
+
+<app-section>
+  <h2>Scoreblatt</h2>
+  <div [class]="styles.sheet">
+    <app-score-sheet
+      [points]="a.points"
+      [inner]="a.inner"
+      [perEnd]="a.perEnd"
+      [(selected)]="selected"
+    />
+  </div>
+</app-section>
+} }
