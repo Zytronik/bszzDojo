@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.17.0](https://github.com/Zytronik/bszzDojo/compare/v3.16.0...v3.17.0) (2026-10-27)
+
+
+### Features
+
+* **web:** show the last loaded data offline ([#95](https://github.com/Zytronik/bszzDojo/issues/95)) ([c1484af](https://github.com/Zytronik/bszzDojo/commit/c1484af37144a4b03feb76f7a973238fff4e5124))
+
 ## [3.16.0](https://github.com/Zytronik/bszzDojo/compare/v3.15.0...v3.16.0) (2026-10-26)
 
 
