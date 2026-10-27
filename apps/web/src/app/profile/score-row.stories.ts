@@ -34,3 +34,5 @@ export const History: Story = {};
 /** On the user's own profile */
 export const Deletable: Story = { args: { deletable: true } };
 export const Record: Story = { args: { variant: 'records', rank: 1 } };
+/** Saved offline, not uploaded yet: no link to its page */
+export const Pending: Story = { args: { pending: true, deletable: true } };

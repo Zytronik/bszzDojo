@@ -8,8 +8,8 @@
   <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
   <app-tabs [tabs]="distanceTabs" [(selected)]="allTimeTab">
     <app-loading-frame [loading]="loading()" [rank]="true" [lines]="3">
-      @if (rankings.hasValue()) {
-      <app-leaderboard-list [entries]="entries(rankings.value().allTime, allTimeTab())" />
+      @if (shown(); as r) {
+      <app-leaderboard-list [entries]="entries(r.allTime, allTimeTab())" />
       }
     </app-loading-frame>
   </app-tabs>
@@ -20,8 +20,8 @@
   <p [class]="leadStyles">Die besten monatlichen Resultate, mit 30 Pfeilen und Faktor</p>
   <app-tabs [tabs]="distanceTabs" [(selected)]="monthlyTab">
     <app-loading-frame [loading]="loading()" [rank]="true" [lines]="3">
-      @if (rankings.hasValue()) {
-      <app-leaderboard-list [entries]="entries(rankings.value().monthly, monthlyTab())" />
+      @if (shown(); as r) {
+      <app-leaderboard-list [entries]="entries(r.monthly, monthlyTab())" />
       }
     </app-loading-frame>
   </app-tabs>

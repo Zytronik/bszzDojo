@@ -11,6 +11,8 @@ import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
+import { withPendingRankings } from '../scores/pending-merge';
+import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { MedalList } from '../dashboard/medal-list';
 import { toastErrors } from '../layout/toast.store';
 import { LoadingFrame } from '../ui/loading-frame';
@@ -28,7 +30,14 @@ export class DashboardPage {
   protected readonly auth = inject(AuthStore);
   private readonly api = inject(RankingsApiService);
 
+  private readonly pendingScores = inject(PendingScoresStore);
   protected readonly rankings = resource({ loader: () => this.api.get() });
+  /** With the user's rounds still waiting for their upload */
+  protected readonly shown = computed(() =>
+    this.rankings.hasValue()
+      ? withPendingRankings(this.rankings.value(), this.pendingScores.myScores(), this.auth.user())
+      : null,
+  );
   protected readonly loading = computed(
     () => !this.rankings.hasValue() && this.rankings.isLoading(),
   );
@@ -55,5 +64,6 @@ export class DashboardPage {
 
   constructor() {
     toastErrors(() => this.rankings.error());
+    reloadAfterUploads(this.pendingScores, () => this.rankings.reload());
   }
 }

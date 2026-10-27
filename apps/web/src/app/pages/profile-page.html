@@ -2,7 +2,7 @@
 <app-section>
   <app-empty-state>Das Profil konnte nicht geladen werden.</app-empty-state>
 </app-section>
-} @else { @let p = profile.hasValue() ? profile.value() : null;
+} @else { @let p = shown();
 
 <app-section>
   <app-loading-frame [loading]="!p" [lines]="3">
@@ -44,7 +44,12 @@
     } @else {
     <app-tabs [tabs]="distanceTabs(p.personalBests)" [(selected)]="recordsTab">
       @for (score of bestsFor(p.personalBests); track score.id) {
-      <app-score-row [score]="score" variant="records" [rank]="score.rank" />
+      <app-score-row
+        [score]="score"
+        variant="records"
+        [rank]="score.rank"
+        [pending]="pendingIds().has(score.id)"
+      />
       }
     </app-tabs>
     } }
@@ -88,6 +93,7 @@
     <app-score-row
       [score]="score"
       [deletable]="isOwnProfile()"
+      [pending]="pendingIds().has(score.id)"
       (deleted)="scoreToDelete.set(score.id)"
     />
     } @empty {
