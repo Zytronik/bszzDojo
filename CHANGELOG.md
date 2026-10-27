@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.18.0](https://github.com/Zytronik/bszzDojo/compare/v3.17.0...v3.18.0) (2026-10-27)
+
+
+### Features
+
+* save scores offline and upload them once back online ([#97](https://github.com/Zytronik/bszzDojo/issues/97)) ([973a630](https://github.com/Zytronik/bszzDojo/commit/973a630cb952173f7a61f98eb80b1c03710e7ed6))
+
 ## [3.17.0](https://github.com/Zytronik/bszzDojo/compare/v3.16.0...v3.17.0) (2026-10-27)
 
 
