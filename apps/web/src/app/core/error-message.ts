@@ -6,7 +6,10 @@ const FALLBACK = 'Es ist ein Fehler aufgetreten.';
 /** User-facing German message from a failed request; the API's own message when it sent one. */
 export function errorMessage(error: unknown): string {
   if (!(error instanceof HttpErrorResponse)) return FALLBACK;
-  if (error.status === 0) return 'Der Server ist nicht erreichbar. Bist du online?';
+  // 504: what the service worker answers when it has neither a connection nor a cached copy.
+  if (error.status === 0 || error.status === 504) {
+    return 'Der Server ist nicht erreichbar. Bist du online?';
+  }
   const body: unknown = error.error;
   if (!isRecord(body)) return FALLBACK;
   const message = body['message'];
