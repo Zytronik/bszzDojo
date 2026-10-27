@@ -9,30 +9,31 @@
     @if (p) {
     <div [class]="pageStyles.nameRow">
       <h1>{{ p | shownName }}</h1>
-      @if (!isOwnProfile()) { @if (friends.isFriend(p.username)) {
+      @if (isOwnProfile()) {
+      <a [class]="iconButton" routerLink="/friends" aria-label="Meine Freunde">
+        <app-icon [icon]="icons.friends" />
+      </a>
+      } @else if (friends.isFriend(p.username)) {
       <button
         type="button"
-        appButton
-        size="inline"
-        tone="surface"
-        [pending]="friends.changing() === p.username"
+        [class]="iconButton"
+        [attr.aria-label]="(p | shownName) + ' als Freund entfernen'"
+        [disabled]="friends.changing() === p.username"
         (click)="friends.remove(p)"
       >
         <app-icon [icon]="icons.remove" />
-        Freund entfernen
       </button>
       } @else {
       <button
         type="button"
-        appButton
-        size="inline"
-        [pending]="friends.changing() === p.username"
+        [class]="iconButton"
+        [attr.aria-label]="(p | shownName) + ' als Freund hinzufügen'"
+        [disabled]="friends.changing() === p.username"
         (click)="friends.add(p)"
       >
         <app-icon [icon]="icons.add" />
-        Als Freund hinzufügen
       </button>
-      } }
+      }
     </div>
     <div [class]="pageStyles.rankRow">
       <p>Abzeichen:</p>

@@ -91,8 +91,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
   totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
-  anyone can add anyone on their profile ("Als Freund hinzufügen"), without a confirmation and
-  without appearing in the other's list. `FriendsStore` holds the logged-in user's list.
+  anyone can add anyone with the icon button on their profile, without a confirmation and without
+  appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds
+  the logged-in user's list.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
@@ -250,7 +251,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
     backdrop, skeleton) and `global-css.ts`.
   - `recipes/`: `button`, `card` (a raised block: figures, facts), `container`, `emptyState`,
-    `formRow`, `input`, `medal`, `rankBadge`, `spinner`, `split` (two columns from `md`) and the
+    `formRow`, `iconButton`, `input`, `medal`, `rankBadge`, `spinner`, `split` (two columns from `md`) and the
     slot recipes `checkbox`, `field`, `modal`, `record` (every list row), `scoreSheet`,
     `searchOverlay`, `siteHeader`, `skeleton`, `steps`, `tabs`, `toast`. Prefer extending a recipe
     over one-off `css()` when a style repeats.
