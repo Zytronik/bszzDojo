@@ -8,6 +8,7 @@ import { SiteFooter } from './layout/site-footer';
 import { SiteHeader } from './layout/site-header';
 import { Toaster } from './layout/toaster';
 import { ToastStore } from './layout/toast.store';
+import { PendingScoresStore } from './scores/pending-scores.store';
 import { SettingsStore } from './settings/settings.store';
 
 @Component({
@@ -39,6 +40,8 @@ export class App {
   constructor() {
     // Created here so the account's theme is applied on every page, not only on settings.
     inject(SettingsStore);
+    // Created here so rounds entered offline upload as soon as there's a connection again.
+    inject(PendingScoresStore);
     const router = inject(Router);
 
     // A refresh can fail mid-session (expired or revoked on another device): back to login.

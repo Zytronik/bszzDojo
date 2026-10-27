@@ -6,8 +6,8 @@ import {
   POINTS_PER_ARROW,
   TARGET_SIZES,
   type BowTypeId,
+  type CreateScoreRequest,
   type IsoDate,
-  type ScoreInput,
   type Shot,
   type TargetSize,
 } from '@bszz-dojo/shared';
@@ -22,6 +22,7 @@ import {
   IsISO8601,
   IsNumber,
   IsOptional,
+  IsUUID,
   Max,
   Min,
   ValidateNested,
@@ -49,7 +50,15 @@ export class ShotBody implements Shot {
 }
 
 /** Cross-field rules (e.g. not more tens than arrows) are checked with the shared `scoreErrors`. */
-export class ScoreBody implements ScoreInput {
+export class ScoreBody implements CreateScoreRequest {
+  /**
+   * Optional UUID picked by the client (rounds entered offline): sending the same round again
+   * returns the one already recorded instead of a second copy.
+   */
+  @IsOptional()
+  @IsUUID('all', { message: 'Ungültige ID.' })
+  id?: string;
+
   @ApiProperty({ enum: BOW_TYPE_IDS })
   @IsIn(BOW_TYPE_IDS, { message: 'Ungültige Bogenart.' })
   bowType: BowTypeId;

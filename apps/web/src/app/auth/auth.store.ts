@@ -14,8 +14,7 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { HttpErrorResponse } from '@angular/common/http';
-import { errorMessage } from '../core/error-message';
+import { errorMessage, isUnreachable } from '../core/error-message';
 import { ToastStore } from '../layout/toast.store';
 import { AuthApiService } from './auth-api.service';
 import { clearOfflineUser, loadOfflineUser, saveOfflineUser } from './offline-session';
@@ -40,11 +39,6 @@ const initialState: AuthState = {
   status: 'restoring',
   pending: false,
 };
-
-/** No answer from the server: the browser's 0, or the 504 the service worker answers with. */
-function isUnreachable(error: unknown): boolean {
-  return error instanceof HttpErrorResponse && (error.status === 0 || error.status === 504);
-}
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },

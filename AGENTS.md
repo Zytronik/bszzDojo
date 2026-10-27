@@ -210,14 +210,18 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Theme:** dark by default, light as an account setting (`UserSettings.theme`, saved by
   `SettingsStore`). It's applied as `data-theme` on `<html>`. The last theme is cached in
   localStorage only so `index.html` can apply it before the first paint. Otherwise localStorage only
-  holds per-device conveniences (the install hint, the last score setup) and the last user's
-  profile for offline starts, cleared on logout; never tokens.
+  holds per-device conveniences (the install hint, the last score setup), the last user's
+  profile for offline starts (cleared on logout) and rounds waiting for their upload; never tokens.
 - **PWA:** `ngsw-config.json` caches the app shell and assets, and the read-only API routes every
   user may see (`dataGroups`: rankings, profiles, scores; network first, the cached copy after 5s
   or offline). Nothing else under `/api` is cached, never auth or the user's own account.
 - **Offline:** when the server can't be reached at startup or a refresh fails for lack of a
   connection, `AuthStore` goes `offline` with the last user (`auth/offline-session.ts`) instead of
   logging out, so the cached pages still open; it refreshes again on the `online` event.
+  Rounds saved without a connection wait in `PendingScoresStore` (localStorage, per user) and
+  upload one by one once there's a session with a connection again. Each carries a client UUID
+  (`CreateScoreRequest.id`), so `POST /api/scores` returns the recorded round instead of a copy
+  when an upload is repeated.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
   worker answers them with the app, which redirects to `/`.
   `AppUpdateService` shows a toast with "Aktualisieren" when a new version is ready. The footer shows `APP_VERSION`.

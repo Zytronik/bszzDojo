@@ -31,8 +31,10 @@ import {
 import { distinctUntilChanged, map, merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { css, cx } from 'styled-system/css';
-import { errorMessage } from '../core/error-message';
+import { AuthStore } from '../auth/auth.store';
+import { errorMessage, isUnreachable } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
+import { PendingScoresStore } from '../scores/pending-scores.store';
 import { loadScoreSetup, saveScoreSetup } from '../scores/score-setup';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
@@ -95,6 +97,8 @@ export class SubmitScorePage {
   protected readonly rows = { even: formRow({ split: 'even' }), wide: formRow({ split: 'wide' }) };
   private readonly api = inject(ScoresApiService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthStore);
+  protected readonly pendingScores = inject(PendingScoresStore);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
@@ -156,6 +160,11 @@ export class SubmitScorePage {
 
   protected readonly pending = signal(false);
   protected readonly targetStyles = cx(split(), css({ marginBlockEnd: 'stack' }));
+  protected readonly waitingStyles = css({
+    textStyle: 'body.small',
+    layerStyle: 'muted',
+    marginBlockEnd: '10',
+  });
   protected readonly summaryStyles = css({
     display: 'flex',
     gap: '15',
@@ -239,22 +248,40 @@ export class SubmitScorePage {
     const shots = value.shots?.filter((shot) => shot !== null) ?? null;
     const score: ScoreInput = { ...value, distance, tens, nines, arrows, result, shots };
 
+    const { bowType, targetSize, isSpot } = score;
+    saveScoreSetup({ bowType, targetSize, isSpot, distance, arrows });
+    if (this.auth.isOffline()) {
+      this.keepForUpload(score);
+      return;
+    }
+
     this.pending.set(true);
     try {
       const saved = await this.api.create(score);
-      saveScoreSetup({
-        bowType: saved.bowType,
-        targetSize: saved.targetSize,
-        isSpot: saved.isSpot,
-        distance: saved.distance,
-        arrows: saved.arrows,
-      });
       this.toasts.success('Score erfolgreich eingetragen.');
       await this.router.navigate(['/scores', saved.id]);
     } catch (error: unknown) {
-      this.toasts.error(errorMessage(error));
+      if (isUnreachable(error)) this.keepForUpload(score);
+      else this.toasts.error(errorMessage(error));
     } finally {
       this.pending.set(false);
+    }
+  }
+
+  /** Without a connection: kept on the device, and the form is ready for the next round. */
+  private keepForUpload(score: ScoreInput): void {
+    this.pendingScores.add(score);
+    this.toasts.info(
+      'Ohne Verbindung gespeichert. Der Score wird hochgeladen, sobald du wieder online bist.',
+    );
+    if (this.mode() === 'target') {
+      this.setShots(this.shots().map(() => null));
+      this.selected.set(0);
+      this.form.controls.shots.markAsUntouched();
+    } else {
+      for (const field of ['tens', 'nines', 'result'] as const) {
+        this.form.controls[field].reset(null);
+      }
     }
   }
 
