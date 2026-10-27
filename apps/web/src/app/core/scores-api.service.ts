@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { Score, ScoreDetail, ScoreInput } from '@bszz-dojo/shared';
+import type { CreateScoreRequest, Score, ScoreDetail } from '@bszz-dojo/shared';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl } from './api-url';
 
@@ -12,7 +12,7 @@ export class ScoresApiService {
     return firstValueFrom(this.http.get<ScoreDetail>(apiUrl(`scores/${encodeURIComponent(id)}`)));
   }
 
-  create(score: ScoreInput): Promise<Score> {
+  create(score: CreateScoreRequest): Promise<Score> {
     return firstValueFrom(this.http.post<Score>(apiUrl('scores'), score));
   }
 

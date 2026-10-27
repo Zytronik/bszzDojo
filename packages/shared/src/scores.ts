@@ -17,7 +17,7 @@ export function isTargetSize(value: unknown): value is TargetSize {
   return typeof value === 'number' && (TARGET_SIZES as readonly number[]).includes(value);
 }
 
-/** Body of `POST /api/scores` */
+/** A round as it's entered, without its id */
 export interface ScoreInput {
   bowType: BowTypeId;
   targetSize: TargetSize;
@@ -36,6 +36,15 @@ export interface ScoreInput {
    * when only the totals were entered. Then `result`, `tens` and `nines` follow from them.
    */
   shots: Shot[] | null;
+}
+
+/** Body of `POST /api/scores` */
+export interface CreateScoreRequest extends ScoreInput {
+  /**
+   * A UUID the client picked, for rounds entered offline: an upload that's repeated after a lost
+   * answer then doesn't record the round twice.
+   */
+  id?: string;
 }
 
 export interface Score extends ScoreInput {

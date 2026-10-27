@@ -1,7 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   scoreErrors,
+  type CreateScoreRequest,
   type Score,
   type ScoreComparison,
   type ScoreDetail,
@@ -19,12 +25,19 @@ export class ScoresService {
     private readonly scores: Repository<ScoreEntity>,
   ) {}
 
-  async create(userId: string, body: ScoreInput): Promise<Score> {
-    const input: ScoreInput = { ...body, shots: body.shots ?? null };
+  async create(userId: string, body: CreateScoreRequest): Promise<Score> {
+    const { id, ...fields } = body;
+    if (id !== undefined) {
+      const existing = await this.scores.findOneBy({ id });
+      if (existing?.userId === userId) return toScore(existing);
+      if (existing) throw new ConflictException('Diese ID ist bereits vergeben.');
+    }
+
+    const input: ScoreInput = { ...fields, shots: fields.shots ?? null };
     const errors = scoreErrors(input);
     if (errors.length > 0) throw new BadRequestException(errors);
 
-    const score = this.scores.create({ id: randomUUID(), userId, ...input });
+    const score = this.scores.create({ id: id ?? randomUUID(), userId, ...input });
     await this.scores.insert(score);
     return toScore(score);
   }

@@ -2,6 +2,12 @@
 
 <app-section>
   <h2>Erfasse einen neuen Score</h2>
+  @if (pendingScores.mine().length; as waiting) {
+  <p [class]="waitingStyles" aria-live="polite">
+    {{ waiting === 1 ? 'Ein offline erfasster Score wartet' : waiting + ' offline erfasste Scores warten' }}
+    auf den Upload.
+  </p>
+  }
   <app-tabs [tabs]="modes" [(selected)]="mode">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div [class]="rows.even">

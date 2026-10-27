@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiBearerAuth,
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -32,9 +33,10 @@ import { ScoresService } from './scores.service';
 export class ScoresController {
   constructor(private readonly scores: ScoresService) {}
 
-  /** Records a round for the logged-in user. */
+  /** Records a round for the logged-in user; with an `id` already recorded, returns that round. */
   @Post()
   @ApiBadRequestResponse({ description: 'German messages for every invalid field' })
+  @ApiConflictResponse({ description: "The `id` belongs to someone else's round" })
   create(@CurrentUser() user: AuthUser, @Body() body: ScoreBody): Promise<ScoreResponse> {
     return this.scores.create(user.id, body);
   }
