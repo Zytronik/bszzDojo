@@ -6,13 +6,25 @@ import {
   type RegisterRequest,
   type UserProfile,
 } from '@bszz-dojo/shared';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import { HttpErrorResponse } from '@angular/common/http';
 import { errorMessage } from '../core/error-message';
 import { ToastStore } from '../layout/toast.store';
 import { AuthApiService } from './auth-api.service';
+import { clearOfflineUser, loadOfflineUser, saveOfflineUser } from './offline-session';
 
-/** `restoring` until the first refresh attempt at startup has finished. */
-type AuthStatus = 'restoring' | 'authenticated' | 'anonymous';
+/**
+ * `restoring` until the first refresh attempt at startup has finished. `offline`: the server
+ * can't be reached, so there's no token; the last user is shown with the cached data.
+ */
+type AuthStatus = 'restoring' | 'authenticated' | 'offline' | 'anonymous';
 
 interface AuthState {
   user: UserProfile | null;
@@ -29,11 +41,17 @@ const initialState: AuthState = {
   pending: false,
 };
 
+/** No answer from the server: the browser's 0, or the 504 the service worker answers with. */
+function isUnreachable(error: unknown): boolean {
+  return error instanceof HttpErrorResponse && (error.status === 0 || error.status === 504);
+}
+
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState<AuthState>(initialState),
   withComputed(({ status, user }) => ({
-    isAuthenticated: computed(() => status() === 'authenticated'),
+    isAuthenticated: computed(() => status() === 'authenticated' || status() === 'offline'),
+    isOffline: computed(() => status() === 'offline'),
     isAdmin: computed(() => user()?.role === 'admin'),
     username: computed(() => user()?.username ?? ''),
     shownName: computed(() => {
@@ -45,6 +63,7 @@ export const AuthStore = signalStore(
     let refreshing: Promise<string | null> | null = null;
 
     const applySession = (session: AuthSession): void => {
+      saveOfflineUser(session.user);
       patchState(store, {
         user: session.user,
         accessToken: session.accessToken,
@@ -54,7 +73,15 @@ export const AuthStore = signalStore(
     };
 
     const clearSession = (): void => {
+      clearOfflineUser();
       patchState(store, { user: null, accessToken: null, status: 'anonymous', pending: false });
+    };
+
+    /** No connection: keep (or bring back) the last user instead of logging out. */
+    const goOffline = (): void => {
+      const user = store.user() ?? loadOfflineUser();
+      if (user) patchState(store, { user, accessToken: null, status: 'offline', pending: false });
+      else clearSession();
     };
 
     const submit = async (request: () => Promise<AuthSession>): Promise<boolean> => {
@@ -78,8 +105,9 @@ export const AuthStore = signalStore(
             applySession(session);
             return session.accessToken;
           },
-          () => {
-            clearSession();
+          (error: unknown) => {
+            if (isUnreachable(error)) goOffline();
+            else clearSession();
             return null;
           },
         )
@@ -116,8 +144,17 @@ export const AuthStore = signalStore(
 
       /** After the user changed their own profile. */
       updateUser(user: UserProfile): void {
+        saveOfflineUser(user);
         patchState(store, { user });
       },
     };
   }),
+  withHooks((store) => ({
+    onInit(): void {
+      // Back online: get a token again, so changes can be saved.
+      window.addEventListener('online', () => {
+        if (store.isOffline()) void store.refresh();
+      });
+    },
+  })),
 );

@@ -26,5 +26,17 @@
     "!/api",
     "!/api/**",
     "!/api-json"
+  ],
+  "dataGroups": [
+    {
+      "name": "api-reads",
+      "urls": ["/api/rankings", "/api/profiles/**", "/api/scores/*"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "5s",
+        "maxSize": 200,
+        "maxAge": "30d"
+      }
+    }
   ]
 }

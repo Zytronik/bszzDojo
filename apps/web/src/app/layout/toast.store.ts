@@ -32,6 +32,7 @@ export const ToastStore = signalStore(
     return {
       success: (text: string): void => show('success', text),
       error: (text: string): void => show('error', text),
+      info: (text: string): void => show('info', text),
       dismiss,
     };
   }),
