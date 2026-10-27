@@ -5,6 +5,7 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { BadgesModule } from './badges/badges.module';
 import { typeOrmOptions } from './database/typeorm-options';
+import { FriendsModule } from './friends/friends.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { ScoresModule } from './scores/scores.module';
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     RankingsModule,
     ProfilesModule,
     BadgesModule,
+    FriendsModule,
     AdminModule,
   ],
 })

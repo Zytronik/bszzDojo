@@ -90,6 +90,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
   fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
   totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
+- **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
+  anyone can add anyone on their profile ("Als Freund hinzufügen"), without a confirmation and
+  without appearing in the other's list. `FriendsStore` holds the logged-in user's list.
 - A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
   dates with `formatGermanDate`. "Today" is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
@@ -163,7 +166,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
   git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
 - One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
-  `badges/`, `admin/`); cross-cutting helpers in `common/`.
+  `badges/`, `friends/`, `admin/`); cross-cutting helpers in `common/`.
 - Errors are Nest HTTP exceptions with a German message the web app can show as is.
 - `src/main.ts` is the Vercel entrypoint (NestJS zero-config): it must call `app.listen`.
 
@@ -181,7 +184,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
+  `dashboard/`, `profile/`, `scores/`, `friends/`, `admin/`; the frame (header, search, footer, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
 - **Networking:** HTTP goes through a `*-api.service.ts` using `HttpClient` with `apiUrl()`
   (relative `/api/...`), typed with the shared types, returning Promises (`firstValueFrom`).
 - **Forms** (`app/forms/`): reactive forms (`NonNullableFormBuilder`) with `novalidate`.
@@ -263,7 +266,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook`
   (http://localhost:6006; it builds the shared package first, also with `-w web`), `npm run build-storybook` (`storybook-static/`, git-ignored),
   which CI builds too, so stories must compile.
-- Every reusable component in `ui/`, `forms/`, `profile/`, `dashboard/` and `scores/` has a story next to
+- Every reusable component in `ui/`, `forms/`, `profile/`, `dashboard/`, `scores/` and `friends/` has a story next to
   it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
   update it with the component. Pages and the layout frame have none.
 - Foundations (colors, typography, spacing) are MDX pages in `src/stories/`; they read the

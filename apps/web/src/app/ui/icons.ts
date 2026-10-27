@@ -11,5 +11,8 @@ export {
   faMobileScreenButton,
   faSquarePlus,
   faUser,
+  faUserGroup,
+  faUserMinus,
+  faUserPlus,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';

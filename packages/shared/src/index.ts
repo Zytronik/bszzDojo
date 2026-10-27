@@ -3,6 +3,7 @@ export * from './badges';
 export * from './bow-types';
 export * from './constants';
 export * from './dates';
+export * from './friends';
 export * from './guards';
 export * from './profiles';
 export * from './rankings';

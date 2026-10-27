@@ -22,7 +22,16 @@ export const siteHeader = defineSlotRecipe({
     },
     home: { display: 'flex', alignItems: 'center', height: 'full' },
     logo: { height: 'full', width: 'auto', objectFit: 'contain' },
-    nav: { display: 'flex', alignItems: 'center', gap: 'nav', listStyle: 'none', m: '0', p: '0' },
+    // Narrower on small phones, where an admin's six icons would crowd the logo.
+    nav: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '15',
+      sm: { gap: 'nav' },
+      listStyle: 'none',
+      m: '0',
+      p: '0',
+    },
     link: {
       display: 'flex',
       bg: 'transparent',

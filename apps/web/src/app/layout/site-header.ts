@@ -5,7 +5,7 @@ import { cx } from 'styled-system/css';
 import { pageContainer, siteHeader } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { Icon } from '../ui/icon';
-import { faCirclePlus, faCrown, faGear, faMagnifyingGlass, faUser } from '../ui/icons';
+import { faCirclePlus, faCrown, faGear, faMagnifyingGlass, faUser, faUserGroup } from '../ui/icons';
 import { SearchOverlayState } from './search-overlay.service';
 
 @Component({
@@ -19,7 +19,14 @@ export class SiteHeader {
   protected readonly search = inject(SearchOverlayState);
 
   protected readonly appName = APP_NAME;
-  protected readonly icons = { faCirclePlus, faCrown, faGear, faMagnifyingGlass, faUser };
+  protected readonly icons = {
+    faCirclePlus,
+    faCrown,
+    faGear,
+    faMagnifyingGlass,
+    faUser,
+    faUserGroup,
+  };
   protected readonly styles = siteHeader();
   protected readonly barStyles = cx(pageContainer(), this.styles.bar);
   protected readonly whiteLogo = siteHeader({ logo: 'dark' }).logo;

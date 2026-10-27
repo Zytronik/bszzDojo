@@ -22,7 +22,11 @@ import { BadgesApiService } from '../core/badges-api.service';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
+import { FormButton } from '../forms/form-button';
+import { FriendsStore } from '../friends/friends.store';
 import { ProgressChart } from '../profile/progress-chart';
+import { Icon } from '../ui/icon';
+import { faUserMinus, faUserPlus } from '../ui/icons';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
@@ -46,6 +50,8 @@ import { Tabs, type TabItem } from '../ui/tabs';
     ShownNamePipe,
     LoadingFrame,
     EmptyState,
+    FormButton,
+    Icon,
   ],
   templateUrl: './profile-page.html',
 })
@@ -77,7 +83,19 @@ export class ProfilePage {
   protected readonly badgeToDelete = signal<string | null>(null);
   protected readonly deleting = signal(false);
 
+  protected readonly friends = inject(FriendsStore);
+  protected readonly icons = { add: faUserPlus, remove: faUserMinus };
   protected readonly pageStyles = {
+    nameRow: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      columnGap: '15',
+      rowGap: '5',
+      marginBlockEnd: '5',
+      '& h1': { marginBlockEnd: '0' },
+    }),
     rankRow: css({
       display: 'flex',
       alignItems: 'center',

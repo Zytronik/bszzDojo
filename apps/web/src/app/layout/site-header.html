@@ -36,6 +36,17 @@
           </a>
         </li>
         <li>
+          <a
+            routerLink="/friends"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [class]="styles.link"
+            (click)="search.close()"
+          >
+            <app-icon [icon]="icons.faUserGroup" label="Freunde" />
+          </a>
+        </li>
+        <li>
           <button
             type="button"
             [class]="styles.link"

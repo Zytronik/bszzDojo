@@ -7,7 +7,33 @@
 <app-section>
   <app-loading-frame [loading]="!p" [lines]="3">
     @if (p) {
-    <h1>{{ p | shownName }}</h1>
+    <div [class]="pageStyles.nameRow">
+      <h1>{{ p | shownName }}</h1>
+      @if (!isOwnProfile()) { @if (friends.isFriend(p.username)) {
+      <button
+        type="button"
+        appButton
+        size="inline"
+        tone="surface"
+        [pending]="friends.changing() === p.username"
+        (click)="friends.remove(p)"
+      >
+        <app-icon [icon]="icons.remove" />
+        Freund entfernen
+      </button>
+      } @else {
+      <button
+        type="button"
+        appButton
+        size="inline"
+        [pending]="friends.changing() === p.username"
+        (click)="friends.add(p)"
+      >
+        <app-icon [icon]="icons.add" />
+        Als Freund hinzufügen
+      </button>
+      } }
+    </div>
     <div [class]="pageStyles.rankRow">
       <p>Abzeichen:</p>
       @if (p.rank) {

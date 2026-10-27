@@ -34,6 +34,8 @@ export const button = defineRecipe({
     tone: {
       accent: {},
       neutral: { bg: 'bg.canvas', color: 'fg.default' },
+      /** A secondary action on the page, e.g. undoing something */
+      surface: { bg: 'bg.surface', color: 'fg.default' },
     },
   },
   defaultVariants: { size: 'block', tone: 'accent' },
