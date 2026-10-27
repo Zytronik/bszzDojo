@@ -11,13 +11,19 @@ import { faDeleteLeft } from '../ui/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, RouterLink],
   // The host is the row, so consecutive rows are siblings and the first one loses its top padding.
-  host: { '[class]': 'styles.root' },
+  host: { '[class]': 'styles.root', '[attr.data-pending]': 'pending() || null' },
   template: `
     @if (rank(); as rank) {
       <p [class]="styles.rank">#{{ rank }}</p>
     }
-    <a [class]="styles.body" [routerLink]="['/scores', score().id]">
-      <p [class]="styles.meta">{{ formatDate(score().shotOn) }}</p>
+    <!-- A round still waiting for its upload has no page on the server yet. -->
+    <a [class]="styles.body" [routerLink]="pending() ? null : ['/scores', score().id]">
+      <p [class]="styles.meta">
+        {{ formatDate(score().shotOn) }}
+        @if (pending()) {
+          <span [class]="styles.pending">(wartet auf den Upload)</span>
+        }
+      </p>
       <p [class]="styles.info">
         @if (variant() === 'history') {
           {{ bowTypes[score().bowType].name }}: {{ score().arrows }}P. {{ score().distance }}m ({{
@@ -54,6 +60,8 @@ export class ScoreRow {
   readonly variant = input<'records' | 'history'>('history');
   readonly rank = input<number | null>(null);
   readonly deletable = input(false);
+  /** Saved offline and not uploaded yet */
+  readonly pending = input(false);
   readonly deleted = output();
 
   protected readonly styles = record();

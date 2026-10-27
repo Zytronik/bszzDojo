@@ -23,6 +23,8 @@ import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
 import { ProgressChart } from '../profile/progress-chart';
+import { withPendingProfile } from '../scores/pending-merge';
+import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
@@ -66,12 +68,20 @@ export class ProfilePage {
   protected readonly isOwnProfile = computed(
     () => usernameKey(this.username()) === usernameKey(this.auth.username()),
   );
+  private readonly pendingScores = inject(PendingScoresStore);
+  protected readonly pendingIds = this.pendingScores.pendingIds;
+  /** The own profile with the rounds still waiting for their upload */
+  protected readonly shown = computed(() => {
+    if (!this.profile.hasValue()) return null;
+    const profile = this.profile.value();
+    return this.isOwnProfile()
+      ? withPendingProfile(profile, this.pendingScores.myScores())
+      : profile;
+  });
 
   /** The first distance again whenever another profile is opened. */
-  protected readonly recordsTab = linkedSignal(() =>
-    this.firstTab(this.profile.value()?.personalBests),
-  );
-  protected readonly chartTab = linkedSignal(() => this.firstTab(this.profile.value()?.progress));
+  protected readonly recordsTab = linkedSignal(() => this.firstTab(this.shown()?.personalBests));
+  protected readonly chartTab = linkedSignal(() => this.firstTab(this.shown()?.progress));
 
   protected readonly scoreToDelete = signal<string | null>(null);
   protected readonly badgeToDelete = signal<string | null>(null);
@@ -96,6 +106,7 @@ export class ProfilePage {
 
   constructor() {
     toastErrors(() => this.profile.error());
+    reloadAfterUploads(this.pendingScores, () => this.profile.reload());
   }
 
   protected distanceTabs(groups: readonly { distance: number }[]): TabItem[] {
@@ -113,6 +124,11 @@ export class ProfilePage {
   protected async deleteScore(): Promise<void> {
     const id = this.scoreToDelete();
     if (id === null) return;
+    if (this.pendingIds().has(id)) {
+      this.pendingScores.discard(id);
+      this.scoreToDelete.set(null);
+      return;
+    }
     this.deleting.set(true);
     try {
       await this.scores.delete(id);

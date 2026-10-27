@@ -261,8 +261,10 @@ export class SubmitScorePage {
       this.toasts.success('Score erfolgreich eingetragen.');
       await this.router.navigate(['/scores', saved.id]);
     } catch (error: unknown) {
-      if (isUnreachable(error)) this.keepForUpload(score);
-      else this.toasts.error(errorMessage(error));
+      if (isUnreachable(error)) {
+        this.auth.markOffline();
+        this.keepForUpload(score);
+      } else this.toasts.error(errorMessage(error));
     } finally {
       this.pending.set(false);
     }
