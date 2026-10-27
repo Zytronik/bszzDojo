@@ -5,18 +5,16 @@ import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import type { ShownLeaderboardEntry } from '../scores/pending-merge';
 import { EmptyState } from '../ui/empty-state';
-import { Icon } from '../ui/icon';
-import { faCloudArrowUp } from '../ui/icons';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
 @Component({
   selector: 'app-leaderboard-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class]': 'hostStyles' },
-  imports: [RouterLink, ShownNamePipe, EmptyState, Icon],
+  imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `
     @for (entry of entries(); track entry.username) {
-      <div [class]="styles.root">
+      <div [class]="styles.root" [attr.data-pending]="entry.pending || null">
         <p [class]="styles.rank">#{{ entry.rank }}</p>
         <div [class]="styles.body">
           <a [routerLink]="['/profile', entry.username]" [class]="styles.title">{{
@@ -30,11 +28,7 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
           <p [class]="styles.meta">
             {{ formatDate(entry.shotOn) }}
             @if (entry.pending) {
-              <app-icon
-                [icon]="pendingIcon"
-                label="Wartet auf den Upload"
-                [class]="pendingStyles"
-              />
+              <span [class]="styles.pending">(wartet auf den Upload)</span>
             }
           </p>
           <p [class]="styles.meta">
@@ -52,8 +46,6 @@ export class LeaderboardList {
   readonly entries = input.required<readonly ShownLeaderboardEntry[]>();
 
   protected readonly styles = record();
-  protected readonly pendingIcon = faCloudArrowUp;
-  protected readonly pendingStyles = css({ ms: '5' });
   protected readonly formatDate = formatGermanDate;
   protected readonly bowTypes = BOW_TYPES;
   protected readonly targetLabel = targetLabel;

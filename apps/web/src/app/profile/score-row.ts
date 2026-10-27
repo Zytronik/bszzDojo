@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BOW_TYPES, formatGermanDate, targetLabel, type Score } from '@bszz-dojo/shared';
-import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
-import { faCloudArrowUp, faDeleteLeft } from '../ui/icons';
+import { faDeleteLeft } from '../ui/icons';
 
 /** `records`: a personal best with its place; `history`: with the distance. Opens the round. */
 @Component({
@@ -12,7 +11,7 @@ import { faCloudArrowUp, faDeleteLeft } from '../ui/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, RouterLink],
   // The host is the row, so consecutive rows are siblings and the first one loses its top padding.
-  host: { '[class]': 'styles.root' },
+  host: { '[class]': 'styles.root', '[attr.data-pending]': 'pending() || null' },
   template: `
     @if (rank(); as rank) {
       <p [class]="styles.rank">#{{ rank }}</p>
@@ -22,7 +21,7 @@ import { faCloudArrowUp, faDeleteLeft } from '../ui/icons';
       <p [class]="styles.meta">
         {{ formatDate(score().shotOn) }}
         @if (pending()) {
-          <app-icon [icon]="pendingIcon" label="Wartet auf den Upload" [class]="pendingStyles" />
+          <span [class]="styles.pending">(wartet auf den Upload)</span>
         }
       </p>
       <p [class]="styles.info">
@@ -66,8 +65,6 @@ export class ScoreRow {
   readonly deleted = output();
 
   protected readonly styles = record();
-  protected readonly pendingIcon = faCloudArrowUp;
-  protected readonly pendingStyles = css({ ms: '5' });
   protected readonly deleteIcon = faDeleteLeft;
   protected readonly formatDate = formatGermanDate;
   protected readonly bowTypes = BOW_TYPES;
