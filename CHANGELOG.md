@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.18.1](https://github.com/Zytronik/bszzDojo/compare/v3.18.0...v3.18.1) (2026-10-27)
+
+
+### Bug Fixes
+
+* **web:** upload offline scores without a restart and show them before ([#99](https://github.com/Zytronik/bszzDojo/issues/99)) ([7f70571](https://github.com/Zytronik/bszzDojo/commit/7f70571222126451f621eee5307c9f99e06a3846))
+
 ## [3.18.0](https://github.com/Zytronik/bszzDojo/compare/v3.17.0...v3.18.0) (2026-10-27)
 
 
