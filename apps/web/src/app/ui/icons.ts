@@ -2,6 +2,7 @@ export {
   faArrowUpFromBracket,
   faChevronLeft,
   faCirclePlus,
+  faCloudArrowUp,
   faCrown,
   faDeleteLeft,
   faEllipsisVertical,

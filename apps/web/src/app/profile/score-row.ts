@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BOW_TYPES, formatGermanDate, targetLabel, type Score } from '@bszz-dojo/shared';
+import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft } from '../ui/icons';
+import { faCloudArrowUp, faDeleteLeft } from '../ui/icons';
 
 /** `records`: a personal best with its place; `history`: with the distance. Opens the round. */
 @Component({
@@ -21,7 +22,7 @@ import { faDeleteLeft } from '../ui/icons';
       <p [class]="styles.meta">
         {{ formatDate(score().shotOn) }}
         @if (pending()) {
-          · wartet auf den Upload
+          <app-icon [icon]="pendingIcon" label="Wartet auf den Upload" [class]="pendingStyles" />
         }
       </p>
       <p [class]="styles.info">
@@ -65,6 +66,8 @@ export class ScoreRow {
   readonly deleted = output();
 
   protected readonly styles = record();
+  protected readonly pendingIcon = faCloudArrowUp;
+  protected readonly pendingStyles = css({ ms: '5' });
   protected readonly deleteIcon = faDeleteLeft;
   protected readonly formatDate = formatGermanDate;
   protected readonly bowTypes = BOW_TYPES;

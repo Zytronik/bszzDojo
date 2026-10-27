@@ -5,13 +5,15 @@ import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
 import type { ShownLeaderboardEntry } from '../scores/pending-merge';
 import { EmptyState } from '../ui/empty-state';
+import { Icon } from '../ui/icon';
+import { faCloudArrowUp } from '../ui/icons';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
 @Component({
   selector: 'app-leaderboard-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class]': 'hostStyles' },
-  imports: [RouterLink, ShownNamePipe, EmptyState],
+  imports: [RouterLink, ShownNamePipe, EmptyState, Icon],
   template: `
     @for (entry of entries(); track entry.username) {
       <div [class]="styles.root">
@@ -28,7 +30,11 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
           <p [class]="styles.meta">
             {{ formatDate(entry.shotOn) }}
             @if (entry.pending) {
-              · wartet auf den Upload
+              <app-icon
+                [icon]="pendingIcon"
+                label="Wartet auf den Upload"
+                [class]="pendingStyles"
+              />
             }
           </p>
           <p [class]="styles.meta">
@@ -46,6 +52,8 @@ export class LeaderboardList {
   readonly entries = input.required<readonly ShownLeaderboardEntry[]>();
 
   protected readonly styles = record();
+  protected readonly pendingIcon = faCloudArrowUp;
+  protected readonly pendingStyles = css({ ms: '5' });
   protected readonly formatDate = formatGermanDate;
   protected readonly bowTypes = BOW_TYPES;
   protected readonly targetLabel = targetLabel;
