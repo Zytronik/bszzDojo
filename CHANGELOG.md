@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.19.0](https://github.com/Zytronik/bszzDojo/compare/v3.18.2...v3.19.0) (2026-10-28)
+
+
+### Features
+
+* **web:** delete scores offline and open offline rounds after saving ([#105](https://github.com/Zytronik/bszzDojo/issues/105)) ([6ddd06d](https://github.com/Zytronik/bszzDojo/commit/6ddd06db2d644f555f37b6f2f989473d1d274df0))
+
 ## [3.18.2](https://github.com/Zytronik/bszzDojo/compare/v3.18.1...v3.18.2) (2026-10-28)
 
 
