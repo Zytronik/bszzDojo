@@ -32,10 +32,10 @@ export class DashboardPage {
 
   private readonly pendingScores = inject(PendingScoresStore);
   protected readonly rankings = resource({ loader: () => this.api.get() });
-  /** With the user's rounds still waiting for their upload */
+  /** With the user's rounds still waiting for the sync */
   protected readonly shown = computed(() =>
     this.rankings.hasValue()
-      ? withPendingRankings(this.rankings.value(), this.pendingScores.myScores(), this.auth.user())
+      ? withPendingRankings(this.rankings.value(), this.pendingScores.changes(), this.auth.user())
       : null,
   );
   protected readonly loading = computed(

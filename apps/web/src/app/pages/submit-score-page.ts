@@ -251,7 +251,7 @@ export class SubmitScorePage {
     const { bowType, targetSize, isSpot } = score;
     saveScoreSetup({ bowType, targetSize, isSpot, distance, arrows });
     if (this.auth.isOffline()) {
-      this.keepForUpload(score);
+      await this.keepForUpload(score);
       return;
     }
 
@@ -263,28 +263,20 @@ export class SubmitScorePage {
     } catch (error: unknown) {
       if (isUnreachable(error)) {
         this.auth.markOffline();
-        this.keepForUpload(score);
+        await this.keepForUpload(score);
       } else this.toasts.error(errorMessage(error));
     } finally {
       this.pending.set(false);
     }
   }
 
-  /** Without a connection: kept on the device, and the form is ready for the next round. */
-  private keepForUpload(score: ScoreInput): void {
-    this.pendingScores.add(score);
+  /** Without a connection: kept on the device, and its page opens from there. */
+  private async keepForUpload(score: ScoreInput): Promise<void> {
+    const id = this.pendingScores.add(score);
     this.toasts.info(
       'Ohne Verbindung gespeichert. Der Score wird hochgeladen, sobald du wieder online bist.',
     );
-    if (this.mode() === 'target') {
-      this.setShots(this.shots().map(() => null));
-      this.selected.set(0);
-      this.form.controls.shots.markAsUntouched();
-    } else {
-      for (const field of ['tens', 'nines', 'result'] as const) {
-        this.form.controls[field].reset(null);
-      }
-    }
+    if (id !== null) await this.router.navigate(['/scores', id]);
   }
 
   /** One slot per arrow, keeping the arrows placed so far; none while the count is invalid. */

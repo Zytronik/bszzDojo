@@ -22,14 +22,29 @@ export interface PendingScore {
   score: ScoreInput;
 }
 
+/** A round of the server's deleted without a connection, kept to show the profile without it. */
+export interface PendingDeletion {
+  id: string;
+  userId: string;
+  score: Score;
+}
+
+/** What's waiting for the server, to merge into its answers (`scores/pending-merge.ts`) */
+export interface PendingChanges {
+  added: Score[];
+  deleted: Score[];
+}
+
 /**
- * On this device until uploaded: localStorage, as rounds are small and must survive closing the
+ * On this device until synced: localStorage, as rounds are small and must survive closing the
  * app. Per user, so someone else logging in on the device doesn't upload them as theirs.
  */
 const STORAGE_KEY = 'bszz-pending-scores';
+const DELETIONS_KEY = 'bszz-pending-deletions';
 const RETRY_INTERVAL_MS = 30_000;
 
-function isPendingScore(value: unknown): value is PendingScore {
+/** Both queues have the same shape; the rounds themselves are checked again by the server. */
+function isQueued<T extends PendingScore | PendingDeletion>(value: unknown): value is T {
   return (
     isRecord(value) &&
     typeof value['id'] === 'string' &&
@@ -38,21 +53,18 @@ function isPendingScore(value: unknown): value is PendingScore {
   );
 }
 
-function load(): PendingScore[] {
+function loadQueue<T extends PendingScore | PendingDeletion>(key: string): T[] {
   try {
-    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
-    // The upload checks the rounds again; here only that they're still complete.
-    return Array.isArray(stored)
-      ? stored.filter(isPendingScore).filter(({ score }) => scoreErrors(score).length === 0)
-      : [];
+    const stored: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
+    return Array.isArray(stored) ? stored.filter((entry) => isQueued<T>(entry)) : [];
   } catch {
     return [];
   }
 }
 
-function persist(pending: readonly PendingScore[]): void {
+function persist(key: string, entries: readonly (PendingScore | PendingDeletion)[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
+    localStorage.setItem(key, JSON.stringify(entries));
   } catch {
     // Storage unavailable (private mode): the rounds then only wait while the app stays open.
   }
@@ -60,20 +72,41 @@ function persist(pending: readonly PendingScore[]): void {
 
 export const PendingScoresStore = signalStore(
   { providedIn: 'root' },
-  withState<{ pending: PendingScore[]; syncing: boolean; uploads: number }>(() => ({
-    pending: load(),
+  withState<{
+    pending: PendingScore[];
+    deletions: PendingDeletion[];
+    syncing: boolean;
+    uploads: number;
+  }>(() => ({
+    // Only rounds that are still complete: an upload of one that isn't would fail every time.
+    pending: loadQueue<PendingScore>(STORAGE_KEY).filter(
+      ({ score }) => scoreErrors(score).length === 0,
+    ),
+    deletions: loadQueue<PendingDeletion>(DELETIONS_KEY),
     syncing: false,
-    /** Counts finished uploads, so pages fetch the server's data again */
+    /** Counts syncs that changed something on the server, so pages fetch its data again */
     uploads: 0,
   })),
   withComputed((store, auth = inject(AuthStore)) => ({
     /** The logged-in user's rounds waiting for the upload */
     mine: computed(() => store.pending().filter((entry) => entry.userId === auth.user()?.id)),
+    myDeletions: computed(() =>
+      store.deletions().filter((entry) => entry.userId === auth.user()?.id),
+    ),
   })),
   withComputed((store) => ({
     /** As rounds, to show them with the server's before they're uploaded */
     myScores: computed((): Score[] => store.mine().map(({ id, score }) => ({ ...score, id }))),
     pendingIds: computed(() => new Set(store.mine().map((entry) => entry.id))),
+  })),
+  withComputed((store) => ({
+    changes: computed(
+      (): PendingChanges => ({
+        added: store.myScores(),
+        deleted: store.myDeletions().map((entry) => entry.score),
+      }),
+    ),
+    waiting: computed(() => store.mine().length + store.myDeletions().length),
   })),
   withMethods(
     (
@@ -84,16 +117,44 @@ export const PendingScoresStore = signalStore(
     ) => {
       const update = (pending: PendingScore[]): void => {
         patchState(store, { pending });
-        persist(pending);
+        persist(STORAGE_KEY, pending);
       };
       const remove = (id: string): void =>
         update(store.pending().filter((entry) => entry.id !== id));
+      const updateDeletions = (deletions: PendingDeletion[]): void => {
+        patchState(store, { deletions });
+        persist(DELETIONS_KEY, deletions);
+      };
+      const removeDeletion = (id: string): void =>
+        updateDeletions(store.deletions().filter((entry) => entry.id !== id));
+
+      /** False when the server can't be reached, to stop syncing. */
+      const deleteOnServer = async (entry: PendingDeletion): Promise<boolean> => {
+        try {
+          await api.delete(entry.id);
+        } catch (error: unknown) {
+          if (isUnreachable(error)) {
+            auth.markOffline();
+            return false;
+          }
+          if (!(error instanceof HttpErrorResponse) || error.status >= 500) return false;
+          // 404: already gone, e.g. deleted on another device. Anything else would fail every time.
+          if (error.status !== 404) {
+            toasts.error(
+              `Ein offline gelöschter Score wurde nicht gelöscht: ${errorMessage(error)}`,
+            );
+          }
+        }
+        removeDeletion(entry.id);
+        return true;
+      };
 
       /** One after the other; stops at the first that can't reach the server. */
       const sync = async (): Promise<void> => {
         if (store.syncing() || !auth.isAuthenticated() || auth.isOffline()) return;
         patchState(store, { syncing: true });
         let uploaded = 0;
+        let deleted = 0;
         try {
           for (const entry of store.mine()) {
             try {
@@ -114,11 +175,18 @@ export const PendingScoresStore = signalStore(
               }
             }
           }
+          // Only once the uploads went through, so the server answers.
+          if (store.mine().length === 0) {
+            for (const entry of store.myDeletions()) {
+              if (!(await deleteOnServer(entry))) break;
+              deleted++;
+            }
+          }
         } finally {
           patchState(store, { syncing: false });
         }
+        if (uploaded > 0 || deleted > 0) patchState(store, { uploads: store.uploads() + 1 });
         if (uploaded > 0) {
-          patchState(store, { uploads: store.uploads() + 1 });
           toasts.success(
             uploaded === 1
               ? 'Ein offline erfasster Score wurde hochgeladen.'
@@ -130,18 +198,30 @@ export const PendingScoresStore = signalStore(
       return {
         sync,
 
-        /** Deleted before it was uploaded */
-        discard: remove,
-
-        add(score: ScoreInput): void {
+        /** Without a connection: gone from the views now, from the server once it's back. */
+        deleteLater(score: Score): void {
           const userId = auth.user()?.id;
           if (!userId) return;
-          update([...store.pending(), { id: crypto.randomUUID(), userId, score }]);
+          if (store.pendingIds().has(score.id)) {
+            remove(score.id);
+            return;
+          }
+          if (store.deletions().some((entry) => entry.id === score.id)) return;
+          updateDeletions([...store.deletions(), { id: score.id, userId, score }]);
+        },
+
+        /** The round's id, which it keeps on the server */
+        add(score: ScoreInput): string | null {
+          const userId = auth.user()?.id;
+          if (!userId) return null;
+          const id = crypto.randomUUID();
+          update([...store.pending(), { id, userId, score }]);
+          return id;
         },
 
         /** Offline: try to get a session again first, which syncs once it's back. */
         retry(): void {
-          if (store.mine().length === 0) return;
+          if (store.waiting() === 0) return;
           if (auth.isOffline()) void auth.refresh();
           else void sync();
         },
