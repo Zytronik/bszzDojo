@@ -224,7 +224,8 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   request that finds no connection mid-session sets `AuthStore` offline. Until they're uploaded,
   the dashboard and the own profile show them merged into the server's data (`withPendingRankings`
   / `withPendingProfile` in `scores/pending-merge.ts`, same rules as the API), dimmed (the `record`
-  recipe's `data-pending`) and without a link to a score page. Each carries a client UUID
+  recipe's `data-pending`); their score page is built from the queue (without the comparison)
+  and loads from the API once the round is uploaded. Each carries a client UUID
   (`CreateScoreRequest.id`), so `POST /api/scores` returns the recorded round instead of a copy
   when an upload is repeated.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service

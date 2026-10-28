@@ -52,6 +52,8 @@ const figureGrid = css({ display: 'grid', gap: '10', marginBlockStart: '10' });
             </dd>
           }
         </dl>
+      } @else if (pending()) {
+        <p [class]="styles.caption">Vergleich nach dem Upload</p>
       } @else {
         <p [class]="styles.caption">Erster Score mit {{ sameKind() }}</p>
       }
@@ -68,6 +70,8 @@ const figureGrid = css({ display: 'grid', gap: '10', marginBlockStart: '10' });
 })
 export class ScoreSummary {
   readonly score = input.required<ScoreDetail>();
+  /** Saved offline: the server hasn't compared it with the other rounds yet */
+  readonly pending = input(false);
 
   protected readonly sameKind = computed(() => {
     const { bowType, distance, arrows } = this.score();

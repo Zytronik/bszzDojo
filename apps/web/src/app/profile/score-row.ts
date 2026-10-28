@@ -16,8 +16,7 @@ import { faDeleteLeft } from '../ui/icons';
     @if (rank(); as rank) {
       <p [class]="styles.rank">#{{ rank }}</p>
     }
-    <!-- A round still waiting for its upload has no page on the server yet. -->
-    <a [class]="styles.body" [routerLink]="pending() ? null : ['/scores', score().id]">
+    <a [class]="styles.body" [routerLink]="['/scores', score().id]">
       <p [class]="styles.meta">
         {{ formatDate(score().shotOn) }}
         @if (pending()) {
