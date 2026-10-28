@@ -102,6 +102,8 @@ export const tokens = defineTokens({
   opacity: {
     inactive: { value: '0.4' },
     muted: { value: '0.7' },
+    /** A row whose data isn't on the server yet */
+    pending: { value: '0.5' },
     full: { value: '1' },
   },
   durations: {

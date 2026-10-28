@@ -13,6 +13,7 @@ export const record = defineSlotRecipe({
     'info',
     'meta',
     'actions',
+    'pending',
     'action',
   ],
   base: {
@@ -23,7 +24,11 @@ export const record = defineSlotRecipe({
       py: '10',
       layerStyle: 'divider',
       _first: { pt: '0' },
+      // A round saved offline, until it's uploaded.
+      '&[data-pending]': { opacity: 'pending' },
     },
+    // Says it for screen readers; the dimmed row shows it.
+    pending: { srOnly: true },
     rank: { flexShrink: '0' },
     body: {
       flex: '1',

@@ -13,13 +13,14 @@ import {
   type DistanceProgress,
   type PersonalBests,
   type RankedScore,
+  type Score,
 } from '@bszz-dojo/shared';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { RouterLink } from '@angular/router';
 import { css } from 'styled-system/css';
 import { iconButton } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
-import { errorMessage } from '../core/error-message';
+import { errorMessage, isUnreachable } from '../core/error-message';
 import { BadgesApiService } from '../core/badges-api.service';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
@@ -28,6 +29,8 @@ import { FriendsStore } from '../friends/friends.store';
 import { ProgressChart } from '../profile/progress-chart';
 import { Icon } from '../ui/icon';
 import { faUserGroup, faUserMinus, faUserPlus } from '../ui/icons';
+import { withPendingProfile } from '../scores/pending-merge';
+import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
 import { ConfirmDialog } from '../ui/confirm-dialog';
@@ -73,12 +76,20 @@ export class ProfilePage {
   protected readonly isOwnProfile = computed(
     () => usernameKey(this.username()) === usernameKey(this.auth.username()),
   );
+  private readonly pendingScores = inject(PendingScoresStore);
+  protected readonly pendingIds = this.pendingScores.pendingIds;
+  /** The own profile with the rounds saved or deleted offline */
+  protected readonly shown = computed(() => {
+    if (!this.profile.hasValue()) return null;
+    const profile = this.profile.value();
+    return this.isOwnProfile()
+      ? withPendingProfile(profile, this.pendingScores.changes())
+      : profile;
+  });
 
   /** The first distance again whenever another profile is opened. */
-  protected readonly recordsTab = linkedSignal(() =>
-    this.firstTab(this.profile.value()?.personalBests),
-  );
-  protected readonly chartTab = linkedSignal(() => this.firstTab(this.profile.value()?.progress));
+  protected readonly recordsTab = linkedSignal(() => this.firstTab(this.shown()?.personalBests));
+  protected readonly chartTab = linkedSignal(() => this.firstTab(this.shown()?.progress));
 
   protected readonly scoreToDelete = signal<string | null>(null);
   protected readonly badgeToDelete = signal<string | null>(null);
@@ -114,6 +125,7 @@ export class ProfilePage {
 
   constructor() {
     toastErrors(() => this.profile.error());
+    reloadAfterUploads(this.pendingScores, () => this.profile.reload());
   }
 
   protected distanceTabs(groups: readonly { distance: number }[]): TabItem[] {
@@ -130,14 +142,23 @@ export class ProfilePage {
 
   protected async deleteScore(): Promise<void> {
     const id = this.scoreToDelete();
-    if (id === null) return;
+    const score = this.findShown(id);
+    if (id === null || score === null) return;
+    if (this.pendingIds().has(id) || this.auth.isOffline()) {
+      this.pendingScores.deleteLater(score);
+      this.scoreToDelete.set(null);
+      return;
+    }
     this.deleting.set(true);
     try {
       await this.scores.delete(id);
       // Records, chart and stats all change, so the whole profile is fetched again.
       this.profile.reload();
     } catch (error: unknown) {
-      this.toasts.error(errorMessage(error));
+      if (isUnreachable(error)) {
+        this.auth.markOffline();
+        this.pendingScores.deleteLater(score);
+      } else this.toasts.error(errorMessage(error));
     } finally {
       this.deleting.set(false);
       this.scoreToDelete.set(null);
@@ -157,6 +178,16 @@ export class ProfilePage {
       this.deleting.set(false);
       this.badgeToDelete.set(null);
     }
+  }
+
+  private findShown(id: string | null): Score | null {
+    const profile = this.shown();
+    if (id === null || !profile) return null;
+    return (
+      profile.history.find((score) => score.id === id) ??
+      profile.personalBests.flatMap((group) => group.scores).find((score) => score.id === id) ??
+      null
+    );
   }
 
   private firstTab(groups: readonly { distance: number }[] | undefined): string {

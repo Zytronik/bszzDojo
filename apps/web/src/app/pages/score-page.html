@@ -27,7 +27,7 @@
 <app-section>
   <app-loading-frame [loading]="loading" shape="summary">
     @if (s) {
-    <app-score-summary [score]="s" />
+    <app-score-summary [score]="s" [pending]="pending() !== null" />
     }
   </app-loading-frame>
 </app-section>

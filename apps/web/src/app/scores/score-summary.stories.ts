@@ -39,6 +39,13 @@ export const PersonalBest: Story = {
 export const FirstRound: Story = {
   args: { score: { ...score, comparison: { rounds: 0, average: null, best: null } } },
 };
+/** Saved offline, not uploaded yet */
+export const Pending: Story = {
+  args: {
+    score: { ...score, comparison: { rounds: 0, average: null, best: null } },
+    pending: true,
+  },
+};
 /** Entered as totals only: no X or misses */
 export const WithoutShots: Story = {
   args: { score: { ...score, shots: null, result: 220 } },

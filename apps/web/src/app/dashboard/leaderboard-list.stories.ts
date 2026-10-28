@@ -46,3 +46,9 @@ type Story = StoryObj<LeaderboardList>;
 
 export const Default: Story = {};
 export const Empty: Story = { args: { entries: [] } };
+/** The user's round saved offline, shown before its upload */
+export const WithPending: Story = {
+  args: {
+    entries: entries.map((entry, index) => (index === 0 ? { ...entry, pending: true } : entry)),
+  },
+};

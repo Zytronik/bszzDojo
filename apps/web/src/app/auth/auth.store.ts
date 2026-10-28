@@ -136,6 +136,11 @@ export const AuthStore = signalStore(
         clearSession();
       },
 
+      /** A request found no connection mid-session: keep the user, get a token again later. */
+      markOffline(): void {
+        if (store.status() === 'authenticated') goOffline();
+      },
+
       /** After the user changed their own profile. */
       updateUser(user: UserProfile): void {
         saveOfflineUser(user);

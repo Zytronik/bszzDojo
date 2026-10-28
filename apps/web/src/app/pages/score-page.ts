@@ -26,9 +26,11 @@ import {
 } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { split } from 'styled-system/recipes';
+import { AuthStore } from '../auth/auth.store';
 import { ScoresApiService } from '../core/scores-api.service';
 import { toastErrors } from '../layout/toast.store';
 import { BarChart } from '../scores/bar-chart';
+import { PendingScoresStore } from '../scores/pending-scores.store';
 import { GroupAnalysis } from '../scores/group-analysis';
 import { ScoreSheet } from '../scores/score-sheet';
 import { ScoreSummary } from '../scores/score-summary';
@@ -84,10 +86,31 @@ export class ScorePage {
   readonly id = input.required<string>();
 
   private readonly api = inject(ScoresApiService);
+  private readonly auth = inject(AuthStore);
+  private readonly pendingScores = inject(PendingScoresStore);
+
+  /**
+   * A round saved offline is shown from the device until it's uploaded. It keeps its id on the
+   * server, so once it leaves the queue the same page loads it from the API.
+   */
+  protected readonly pending = computed(
+    () => this.pendingScores.myScores().find((score) => score.id === this.id()) ?? null,
+  );
 
   protected readonly score = resource({
-    params: () => ({ id: this.id() }),
-    loader: ({ params }) => this.api.get(params.id),
+    params: () => ({ id: this.id(), pending: this.pending() }),
+    loader: async ({ params }): Promise<ScoreDetail> => {
+      const user = this.auth.user();
+      if (params.pending && user) {
+        return {
+          ...params.pending,
+          username: user.username,
+          displayName: user.displayName,
+          comparison: { rounds: 0, average: null, best: null },
+        };
+      }
+      return this.api.get(params.id);
+    },
   });
   protected readonly loaded = computed(() => (this.score.hasValue() ? this.score.value() : null));
 

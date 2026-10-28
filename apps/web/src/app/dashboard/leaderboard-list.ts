@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BOW_TYPES, formatGermanDate, targetLabel, type LeaderboardEntry } from '@bszz-dojo/shared';
+import { BOW_TYPES, formatGermanDate, targetLabel } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import { record } from 'styled-system/recipes';
+import type { ShownLeaderboardEntry } from '../scores/pending-merge';
 import { EmptyState } from '../ui/empty-state';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
@@ -13,7 +14,7 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
   imports: [RouterLink, ShownNamePipe, EmptyState],
   template: `
     @for (entry of entries(); track entry.username) {
-      <div [class]="styles.root">
+      <div [class]="styles.root" [attr.data-pending]="entry.pending || null">
         <p [class]="styles.rank">#{{ entry.rank }}</p>
         <div [class]="styles.body">
           <a [routerLink]="['/profile', entry.username]" [class]="styles.title">{{
@@ -24,7 +25,12 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
             10er: <span [class]="styles.highlight">x{{ entry.tens }}</span> 9er:
             <span [class]="styles.highlight">x{{ entry.nines }}</span>
           </p>
-          <p [class]="styles.meta">{{ formatDate(entry.shotOn) }}</p>
+          <p [class]="styles.meta">
+            {{ formatDate(entry.shotOn) }}
+            @if (entry.pending) {
+              <span [class]="styles.pending">(wartet auf den Upload)</span>
+            }
+          </p>
           <p [class]="styles.meta">
             {{ bowTypes[entry.bowType].name }}: ({{ targetLabel(entry) }})
           </p>
@@ -37,7 +43,7 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
 })
 export class LeaderboardList {
   protected readonly hostStyles = css({ flex: '1', display: 'flex', flexDir: 'column' });
-  readonly entries = input.required<readonly LeaderboardEntry[]>();
+  readonly entries = input.required<readonly ShownLeaderboardEntry[]>();
 
   protected readonly styles = record();
   protected readonly formatDate = formatGermanDate;
