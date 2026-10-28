@@ -211,7 +211,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `SettingsStore`). It's applied as `data-theme` on `<html>`. The last theme is cached in
   localStorage only so `index.html` can apply it before the first paint. Otherwise localStorage only
   holds per-device conveniences (the install hint, the last score setup), the last user's
-  profile for offline starts (cleared on logout) and rounds waiting for their upload; never tokens.
+  profile for offline starts (cleared on logout) and rounds saved or deleted offline; never tokens.
 - **PWA:** `ngsw-config.json` caches the app shell and assets, and the read-only API routes every
   user may see (`dataGroups`: rankings, profiles, scores; network first, the cached copy after 5s
   or offline). Nothing else under `/api` is cached, never auth or the user's own account.
@@ -221,11 +221,12 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   Rounds saved without a connection wait in `PendingScoresStore` (localStorage, per user) and
   upload one by one once there's a session with a connection again (on `online`, when the app comes
   to the front and every 30s while rounds wait, as iOS doesn't always report the connection). A
-  request that finds no connection mid-session sets `AuthStore` offline. Until they're uploaded,
-  the dashboard and the own profile show them merged into the server's data (`withPendingRankings`
+  request that finds no connection mid-session sets `AuthStore` offline. Rounds deleted without a
+  connection wait the same way (`deleteLater`) and are deleted on the server after the uploads.
+  Until they're synced, the dashboard and the own profile show both merged into the server's data (`withPendingRankings`
   / `withPendingProfile` in `scores/pending-merge.ts`, same rules as the API), dimmed (the `record`
-  recipe's `data-pending`); their score page is built from the queue (without the comparison)
-  and loads from the API once the round is uploaded. Each carries a client UUID
+  recipe's `data-pending`); their score page is built from the queue (without the comparison),
+  opens right after saving offline too, and loads from the API once the round is uploaded. Each carries a client UUID
   (`CreateScoreRequest.id`), so `POST /api/scores` returns the recorded round instead of a copy
   when an upload is repeated.
   `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service

@@ -13,11 +13,12 @@ import {
   type DistanceProgress,
   type PersonalBests,
   type RankedScore,
+  type Score,
 } from '@bszz-dojo/shared';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
-import { errorMessage } from '../core/error-message';
+import { errorMessage, isUnreachable } from '../core/error-message';
 import { BadgesApiService } from '../core/badges-api.service';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
@@ -70,12 +71,12 @@ export class ProfilePage {
   );
   private readonly pendingScores = inject(PendingScoresStore);
   protected readonly pendingIds = this.pendingScores.pendingIds;
-  /** The own profile with the rounds still waiting for their upload */
+  /** The own profile with the rounds saved or deleted offline */
   protected readonly shown = computed(() => {
     if (!this.profile.hasValue()) return null;
     const profile = this.profile.value();
     return this.isOwnProfile()
-      ? withPendingProfile(profile, this.pendingScores.myScores())
+      ? withPendingProfile(profile, this.pendingScores.changes())
       : profile;
   });
 
@@ -123,9 +124,10 @@ export class ProfilePage {
 
   protected async deleteScore(): Promise<void> {
     const id = this.scoreToDelete();
-    if (id === null) return;
-    if (this.pendingIds().has(id)) {
-      this.pendingScores.discard(id);
+    const score = this.findShown(id);
+    if (id === null || score === null) return;
+    if (this.pendingIds().has(id) || this.auth.isOffline()) {
+      this.pendingScores.deleteLater(score);
       this.scoreToDelete.set(null);
       return;
     }
@@ -135,7 +137,10 @@ export class ProfilePage {
       // Records, chart and stats all change, so the whole profile is fetched again.
       this.profile.reload();
     } catch (error: unknown) {
-      this.toasts.error(errorMessage(error));
+      if (isUnreachable(error)) {
+        this.auth.markOffline();
+        this.pendingScores.deleteLater(score);
+      } else this.toasts.error(errorMessage(error));
     } finally {
       this.deleting.set(false);
       this.scoreToDelete.set(null);
@@ -155,6 +160,16 @@ export class ProfilePage {
       this.deleting.set(false);
       this.badgeToDelete.set(null);
     }
+  }
+
+  private findShown(id: string | null): Score | null {
+    const profile = this.shown();
+    if (id === null || !profile) return null;
+    return (
+      profile.history.find((score) => score.id === id) ??
+      profile.personalBests.flatMap((group) => group.scores).find((score) => score.id === id) ??
+      null
+    );
   }
 
   private firstTab(groups: readonly { distance: number }[] | undefined): string {
