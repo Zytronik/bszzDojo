@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.18.2](https://github.com/Zytronik/bszzDojo/compare/v3.18.1...v3.18.2) (2026-10-28)
+
+
+### Bug Fixes
+
+* **web:** open the score page of rounds waiting for their upload ([#102](https://github.com/Zytronik/bszzDojo/issues/102)) ([97a0507](https://github.com/Zytronik/bszzDojo/commit/97a0507a6ec88c004f439d5794ae67f92db69a9a))
+
 ## [3.18.1](https://github.com/Zytronik/bszzDojo/compare/v3.18.0...v3.18.1) (2026-10-27)
 
 
