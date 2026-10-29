@@ -188,7 +188,7 @@ export class ProfilePage {
       await this.scores.delete(id);
       const older = this.older();
       if (older) {
-        this.older.set({ ...older, scores: older.scores.filter((score) => score.id !== id) });
+        this.older.set({ ...older, scores: older.scores.filter((row) => row.id !== id) });
       }
       // Records, chart and stats all change, so the whole profile is fetched again.
       this.profile.reload();

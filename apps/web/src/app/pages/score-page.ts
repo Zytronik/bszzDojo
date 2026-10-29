@@ -169,7 +169,7 @@ export class ScorePage {
       layerStyle: 'surface',
       border: 'none',
       rounded: 'sm',
-      color: 'inherit',
+      color: 'fg.default',
       cursor: 'pointer',
       transitionProperty: 'opacity',
       transitionDuration: 'normal',
