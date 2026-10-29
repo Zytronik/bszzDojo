@@ -11,6 +11,8 @@ export const tokens = defineTokens({
     gray: {
       50: { value: 'rgb(230, 230, 230)' },
       200: { value: 'rgb(200, 200, 200)' },
+      400: { value: 'rgb(160, 160, 160)' },
+      600: { value: 'rgb(100, 100, 100)' },
       800: { value: 'rgb(40, 40, 40)' },
       900: { value: 'rgb(20, 20, 20)' },
     },

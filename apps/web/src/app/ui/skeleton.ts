@@ -5,7 +5,7 @@ import { card, skeleton, split, tabs } from 'styled-system/recipes';
 /**
  * - `rows`: one list row with `lines` 1–3 of text (title, details, date) and an optional `rank`
  * - `chart`: the progress chart's tabs and block; `bars`: a chart's block alone
- * - `heading`: a page title with a back button and a line of details (the score page)
+ * - `heading`: a page title and a line of details (the score page)
  * - `summary`: a round's result panel and its six figures (`ScoreSummary`)
  * - `target`: the target with its end tabs next to the group analysis
  */
@@ -36,11 +36,8 @@ export type SkeletonShape = 'rows' | 'chart' | 'bars' | 'heading' | 'summary' | 
       }
       @case ('heading') {
         <div [class]="layout.heading" aria-hidden="true">
-          <div [class]="layout.back"></div>
-          <div [class]="layout.titles">
-            <h1 [class]="styles.block">26. Oktober</h1>
-            <p [class]="styles.block">Recurve · 18m</p>
-          </div>
+          <h1 [class]="styles.block">26. Oktober</h1>
+          <p [class]="styles.block">Recurve · 18m</p>
         </div>
       }
       @case ('summary') {
@@ -120,14 +117,7 @@ export class Skeleton {
   ];
   // The real elements' boxes and text styles, filled with the skeleton's color.
   protected readonly layout = {
-    heading: css({
-      display: 'flex',
-      alignItems: 'stretch',
-      justifyContent: 'space-between',
-      gap: '15',
-    }),
-    back: cx(this.styles.block, css({ w: 'control', flexShrink: '0' })),
-    titles: css({ display: 'flex', flexDir: 'column', alignItems: 'flex-end' }),
+    heading: css({ display: 'flex', flexDir: 'column', alignItems: 'flex-start' }),
     panel: cx(card({ size: 'md' }), this.styles.block, css({ display: 'flex', flexDir: 'column' })),
     total: css({ fontSize: '5xl', fontWeight: 'bold' }),
     caption: css({ textStyle: 'body.small' }),

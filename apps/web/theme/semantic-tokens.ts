@@ -13,6 +13,8 @@ export const semanticTokens = defineSemanticTokens({
     },
     fg: {
       default: { value: { base: '{colors.white}', _light: '{colors.black}' } },
+      /** Text that steps back without fading what's behind it, e.g. the offline pill */
+      muted: { value: { base: '{colors.gray.400}', _light: '{colors.gray.600}' } },
       onAccent: { value: '{colors.white}' },
     },
     accent: {

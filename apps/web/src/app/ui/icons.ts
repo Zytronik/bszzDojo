@@ -1,5 +1,6 @@
 export {
   faArrowUpFromBracket,
+  faArrowsRotate,
   faChevronLeft,
   faCirclePlus,
   faCrown,

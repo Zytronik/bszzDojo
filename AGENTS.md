@@ -87,7 +87,7 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
   (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes. The form starts with the last saved round's bow type, target, spot, distance and arrow count, kept per device in localStorage (`scores/score-setup.ts`).
 - **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
-  to it, and saving a round opens it. Its share button opens the phone's share sheet with the
+  to it, and saving a round opens it. Its share button (in the header) opens the phone's share sheet with the
   page's link (copied where there's none); not for rounds still waiting for their upload. It compares the round with the archer's others of the same bow type, distance and arrow
   count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
   fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
@@ -181,6 +181,10 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   `shape`s for charts and the score page) and keeps it invisible afterwards, so the area never shrinks below it and
   the page doesn't jump. Never a plain "Wird geladen…". An empty list shows
   `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
+- **Header:** detail pages put a back link and their own buttons in the header instead of the
+  logo and the navigation: `<ng-template appPageHeader [back]="…" label="…" backLabel="…">`
+  (`layout/page-header.ts`) with buttons styled `siteHeader().link`. The score page does, for
+  sharing.
 - **Layout:** `pages/` holds one component per route; route params and query params arrive as
   `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
   `dashboard/`, `profile/`, `scores/`, `admin/`; the frame (header, search, footer, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
@@ -220,8 +224,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
 - **Offline:** when the server can't be reached at startup or a refresh fails for lack of a
   connection, `AuthStore` goes `offline` with the last user (`auth/offline-session.ts`) instead of
   logging out, so the cached pages still open; it refreshes again on the `online` event. While
-  it's offline the header shows a strip (`siteHeader` recipe's `status`) with how many changes
-  wait, instead of toasts: saving, deleting and uploading offline don't toast, only failures do.
+  it's offline, and while what was changed offline uploads, the header shows a pill on its lower
+  edge (`siteHeader` recipe's `status`) with how many changes wait, instead of toasts: saving,
+  deleting and uploading offline don't toast, only failures do.
   Rounds saved without a connection wait in `PendingScoresStore` (localStorage, per user) and
   upload one by one once there's a session with a connection again (on `online`, when the app comes
   to the front and every 30s while rounds wait, as iOS doesn't always report the connection). A

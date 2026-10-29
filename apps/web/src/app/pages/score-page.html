@@ -1,30 +1,22 @@
 @let s = loaded();
 @let loading = score.isLoading();
 
+<ng-template appPageHeader [back]="back()" [label]="name()" [backLabel]="backLabel()">
+  <!-- A round waiting for its upload has no page others could open yet. -->
+  @if (loaded(); as shown) { @if (pending() === null) {
+  <button type="button" [class]="headerButton" aria-label="Score teilen" (click)="share(shown)">
+    <app-icon [icon]="icons.share" />
+  </button>
+  } }
+</ng-template>
+
 <app-section>
   <app-loading-frame [loading]="loading" shape="heading">
     @if (score.error()) {
     <app-empty-state>Der Score konnte nicht geladen werden.</app-empty-state>
     } @else if (s) {
-    <div [class]="styles.heading">
-      <a
-        [class]="styles.side"
-        [routerLink]="['/profile', s.username]"
-        [attr.aria-label]="'Zurück zum Profil von ' + name()"
-      >
-        <app-icon [icon]="icons.back" />
-      </a>
-      <div [class]="styles.titles">
-        <h1>{{ title() }}</h1>
-        <p>{{ details() }}</p>
-      </div>
-      <!-- A round waiting for its upload has no page others could open yet. -->
-      @if (pending() === null) {
-      <button type="button" [class]="styles.side" aria-label="Score teilen" (click)="share(s)">
-        <app-icon [icon]="icons.share" />
-      </button>
-      }
-    </div>
+    <h1>{{ title() }}</h1>
+    <p [class]="styles.details">{{ details() }}</p>
     }
   </app-loading-frame>
 </app-section>

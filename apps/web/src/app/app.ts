@@ -50,6 +50,5 @@ export class App {
       if (wasAuthenticated && !isAuthenticated) untracked(() => void router.navigate(['/login']));
       wasAuthenticated = isAuthenticated;
     });
-
   }
 }
