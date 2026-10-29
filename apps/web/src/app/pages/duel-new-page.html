@@ -7,7 +7,7 @@
       @if (rival(); as rival) {
       <div [class]="styles.rival">
         <span>{{ name(rival) }}</span>
-        <button type="button" [class]="styles.change" (click)="clearRival()">Ändern</button>
+        <button type="button" [class]="duelStyles.change" (click)="clearRival()">Ändern</button>
       </div>
       } @else {
       <input
@@ -22,7 +22,7 @@
       />
       @for (user of suggestions(); track user.username) {
       <div [class]="suggestionStyles.root">
-        <button type="button" [class]="styles.suggestion" (click)="pick(user)">
+        <button type="button" [class]="duelStyles.suggestion" (click)="pick(user)">
           {{ name(user) }} @if (user.displayName) {<span [class]="suggestionStyles.meta"
             >&#64;{{ user.username }}</span
           >}

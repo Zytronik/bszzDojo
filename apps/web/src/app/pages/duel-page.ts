@@ -34,6 +34,7 @@ import {
   card,
   duel as duelRecipe,
   input as inputRecipe,
+  siteHeader,
   tabs,
 } from 'styled-system/recipes';
 import { DuelsApiService } from '../core/duels-api.service';
@@ -279,13 +280,14 @@ export class DuelPage {
   };
   protected readonly label = arrowLabel;
   protected readonly playerLabel = playerLabel;
-  protected readonly selectStyles = cx(inputRecipe(), css({ marginBlock: '5' }));
+  protected readonly selectStyles = cx(inputRecipe(), css({ my: '5' }));
   protected readonly rematchStyles = button({ tone: 'subtle' });
   protected readonly duelStyles = duelRecipe();
+  protected readonly headerButton = siteHeader().link;
   protected readonly tabStyles = tabs();
   protected readonly cardStyles = card({ size: 'md' });
   protected readonly styles = {
-    stack: css({ display: 'flex', flexDirection: 'column', gap: '10' }),
+    stack: css({ display: 'flex', flexDir: 'column', gap: '10' }),
     row: css({
       display: 'flex',
       alignItems: 'center',
@@ -296,7 +298,7 @@ export class DuelPage {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gap: '10',
-      '& > *': { mt: '0' },
+      '& > *': { marginBlockStart: '0' },
     }),
     muted: css({ textStyle: 'body.small', layerStyle: 'muted' }),
     center: css({ textAlign: 'center' }),
@@ -307,18 +309,9 @@ export class DuelPage {
       display: 'flex',
       justifyContent: 'center',
     }),
-    headerButton: css({
-      display: 'flex',
-      bg: 'transparent',
-      border: 'none',
-      p: '0',
-      color: 'fg.default',
-      cursor: 'pointer',
-      _hover: { opacity: 'muted' },
-    }),
     figures: css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10' }),
     figure: css({ fontSize: 'xl', fontWeight: 'bold' }),
-    target: css({ maxW: 'canvas', mx: 'auto', width: 'full' }),
+    target: css({ maxW: 'canvas', mx: 'auto', w: 'full' }),
   };
 
   constructor() {

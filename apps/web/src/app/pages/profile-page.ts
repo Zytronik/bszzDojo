@@ -172,7 +172,7 @@ export class ProfilePage {
     duelNumber: css({ fontSize: '2xl', fontWeight: 'bold' }),
     duelWins: css({ fontSize: '2xl', fontWeight: 'bold', color: 'status.success' }),
     duelCaption: css({ textStyle: 'body.small', layerStyle: 'muted' }),
-    duelAgainst: css({ marginBlock: '10' }),
+    duelAgainst: css({ my: '10' }),
   };
 
   constructor() {

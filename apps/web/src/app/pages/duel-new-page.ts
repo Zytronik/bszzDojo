@@ -27,7 +27,7 @@ import {
 } from '@bszz-dojo/shared';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { css } from 'styled-system/css';
-import { formRow, input as inputRecipe, record, tabs } from 'styled-system/recipes';
+import { duel, formRow, input as inputRecipe, record, tabs } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { DuelsApiService } from '../core/duels-api.service';
@@ -137,6 +137,7 @@ export class DuelNewPage {
   protected readonly tabStyles = tabs();
   protected readonly searchStyles = inputRecipe();
   protected readonly suggestionStyles = record();
+  protected readonly duelStyles = duel();
   protected readonly styles = {
     hint: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '5' }),
     rival: css({
@@ -149,26 +150,8 @@ export class DuelNewPage {
       px: '10',
       minH: 'control',
     }),
-    change: css({
-      bg: 'transparent',
-      border: 'none',
-      color: 'accent.default',
-      cursor: 'pointer',
-      textStyle: 'body.small',
-    }),
     label: css({ display: 'block', marginBlockEnd: '5' }),
     block: css({ marginBlockEnd: 'stack' }),
-    suggestion: css({
-      display: 'block',
-      width: 'full',
-      textAlign: 'start',
-      bg: 'transparent',
-      border: 'none',
-      color: 'fg.default',
-      cursor: 'pointer',
-      py: '8',
-      _hover: { opacity: 'muted' },
-    }),
   };
 
   constructor() {
