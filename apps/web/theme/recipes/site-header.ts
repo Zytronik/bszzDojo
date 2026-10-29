@@ -46,6 +46,9 @@ export const siteHeader = defineSlotRecipe({
       // Back to the body size: the root's is the icons' and sizes are relative.
       '& > span': {
         fontSize: 'root',
+        // Avenir's tall ascent puts its capitals about 0.1em above the box's centre, so the name
+        // would sit higher than the icons next to it.
+        transform: 'translateY(0.1em)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
