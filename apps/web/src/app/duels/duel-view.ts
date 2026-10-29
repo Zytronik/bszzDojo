@@ -1,16 +1,13 @@
 import {
-  BOW_TYPES,
   arrowLabel,
   centerDistance,
   duelProgress,
   duelScoreLabel,
   endTotal,
   otherSide,
-  shownName,
   type Duel,
   type DuelArrow,
   type DuelFormat,
-  type DuelPlayer,
   type DuelProgress,
   type DuelSide,
 } from '@bszz-dojo/shared';
@@ -39,12 +36,6 @@ export function progressOf(duel: Duel): DuelProgress {
 /** Whether the two shoot different bows, so their points are compared with the factors */
 export function hasHandicap(duel: Duel): boolean {
   return duel.challenger.bowType !== null && duel.challenger.bowType !== duel.opponent.bowType;
-}
-
-/** "Roli Wegmann · Recurve" */
-export function playerLabel(player: DuelPlayer): string {
-  const name = shownName(player);
-  return player.bowType ? `${name} · ${BOW_TYPES[player.bowType].name}` : name;
 }
 
 /** "Satz" in the set system, "Passe" in the total format */

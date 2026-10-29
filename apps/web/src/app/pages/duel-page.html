@@ -23,25 +23,21 @@
   <app-loading-frame [loading]="!d" shape="summary">
     @if (d && p && me() && them()) {
     @if (d.status === 'invited') { @if (d.you === 'opponent') {
-    <div [class]="cardStyles">
-      <h2>{{ them()! | shownName }} fordert dich heraus</h2>
-      <p>{{ settings() }}</p>
-      <p [class]="styles.muted">{{ playerLabel(them()!) }}</p>
-      <label [class]="styles.muted" for="duel-bow">Dein Bogen:</label>
-      <select
-        id="duel-bow"
-        #bow
-        [class]="selectStyles"
-        [value]="acceptBow()"
-        (change)="setBow(bow.value)"
-      >
-        @for (bowType of bowTypes; track bowType.id) {
-        <option [value]="bowType.id">{{ bowType.name }}</option>
+    <div [class]="styles.invite">
+      <h2 [class]="styles.inviteTitle">{{ them()! | shownName }} fordert dich heraus</h2>
+      <dl [class]="styles.facts">
+        @for (fact of invitationFacts(); track fact.label) {
+        <dt>{{ fact.label }}</dt>
+        <dd>{{ fact.value }}</dd>
         }
-      </select>
-      <p [class]="styles.muted">
-        Mit verschiedenen Bogen zählen die Punkte jeder Passe mit dem Faktor des Bogens.
-      </p>
+      </dl>
+      <app-form-field label="Dein Bogen:" [hint]="bowHint()">
+        <select appFieldControl [formControl]="acceptBow">
+          @for (bowType of bowTypes; track bowType.id) {
+          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+          }
+        </select>
+      </app-form-field>
       <div [class]="styles.buttons">
         <button type="button" appButton [pending]="answering()" (click)="accept()">
           Annehmen

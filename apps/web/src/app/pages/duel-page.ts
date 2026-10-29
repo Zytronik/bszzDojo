@@ -11,11 +11,13 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   BOW_TYPES,
   BOW_TYPE_IDS,
   DUEL_ARROWS_PER_END,
+  DUEL_FORMAT_NAMES,
   DUEL_IDLE_HOURS,
   arrowLabel,
   duelScoreLabel,
@@ -30,12 +32,11 @@ import {
   type DuelSide,
   type Shot,
 } from '@bszz-dojo/shared';
-import { css, cx } from 'styled-system/css';
+import { css } from 'styled-system/css';
 import {
   button,
   card,
   duel as duelRecipe,
-  input as inputRecipe,
   siteHeader,
   tabs,
 } from 'styled-system/recipes';
@@ -50,12 +51,12 @@ import {
   hasHandicap,
   progressOf,
   scoreLabels,
-  playerLabel,
   sidesOf,
   totalPoints,
 } from '../duels/duel-view';
 import { DuelsStore } from '../duels/duels.store';
 import { FormButton } from '../forms/form-button';
+import { FieldControl, FormField } from '../forms/form-field';
 import { PageHeader } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadScoreSetup } from '../scores/score-setup';
@@ -82,6 +83,9 @@ type EntryMode = 'keys' | 'target';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
+    ReactiveFormsModule,
+    FormField,
+    FieldControl,
     PageHeader,
     Section,
     LoadingFrame,
@@ -221,7 +225,9 @@ export class DuelPage {
 
   // ---- Invitation ----
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
-  protected readonly acceptBow = signal<BowTypeId>(loadScoreSetup()?.bowType ?? 'r');
+  protected readonly acceptBow = new FormControl<BowTypeId>(loadScoreSetup()?.bowType ?? 'r', {
+    nonNullable: true,
+  });
   protected readonly answering = signal(false);
   protected readonly confirmForfeit = signal(false);
 
@@ -277,6 +283,24 @@ export class DuelPage {
     const duel = this.loaded();
     return duel ? duelSettingsLabel(duel) : '';
   });
+  protected readonly invitationFacts = computed(() => {
+    const duel = this.loaded();
+    if (!duel) return [];
+    return [
+      { label: 'Format', value: DUEL_FORMAT_NAMES[duel.format] },
+      { label: 'Distanz', value: `${duel.distance}m` },
+      { label: 'Scheibe', value: `${duel.targetSize}cm${duel.isSpot ? ' Spot' : ''}` },
+      {
+        label: `Bogen von ${shownName(duel.challenger)}`,
+        value: BOW_TYPES[duel.challenger.bowType ?? 'r'].name,
+      },
+    ];
+  });
+  protected readonly bowHint = computed(() => {
+    const bow = this.loaded()?.challenger.bowType;
+    if (!bow) return undefined;
+    return `Mit einem anderen Bogen als ${BOW_TYPES[bow].name} zählen die Punkte jeder Passe mit dem Faktor.`;
+  });
   protected readonly idleHours = DUEL_IDLE_HOURS;
   protected readonly icons = {
     delete: faDeleteLeft,
@@ -285,8 +309,6 @@ export class DuelPage {
     rematch: faRotateRight,
   };
   protected readonly label = arrowLabel;
-  protected readonly playerLabel = playerLabel;
-  protected readonly selectStyles = cx(inputRecipe(), css({ my: '5' }));
   protected readonly rematchStyles = button({ tone: 'subtle' });
   protected readonly duelStyles = duelRecipe();
   protected readonly headerButton = siteHeader().link;
@@ -294,6 +316,20 @@ export class DuelPage {
   protected readonly cardStyles = card({ size: 'md' });
   protected readonly styles = {
     stack: css({ display: 'flex', flexDir: 'column', gap: '10' }),
+    invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
+    inviteTitle: css({ m: '0' }),
+    facts: css({
+      layerStyle: 'surface',
+      rounded: 'sm',
+      p: '15',
+      m: '0',
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
+      columnGap: '15',
+      rowGap: '8',
+      '& dt': { layerStyle: 'muted' },
+      '& dd': { m: '0', textAlign: 'end' },
+    }),
     row: css({
       display: 'flex',
       alignItems: 'center',
@@ -377,7 +413,7 @@ export class DuelPage {
   }
 
   protected accept(): Promise<void> {
-    return this.answer((id) => this.api.accept(id, { bowType: this.acceptBow() }));
+    return this.answer((id) => this.api.accept(id, { bowType: this.acceptBow.value }));
   }
 
   protected decline(): Promise<void> {
@@ -391,11 +427,6 @@ export class DuelPage {
   protected async forfeit(): Promise<void> {
     await this.answer((id) => this.api.forfeit(id));
     this.confirmForfeit.set(false);
-  }
-
-  protected setBow(value: string): void {
-    const bow = BOW_TYPE_IDS.find((id) => id === value);
-    if (bow) this.acceptBow.set(bow);
   }
 
   private put(arrow: DuelArrow): void {
