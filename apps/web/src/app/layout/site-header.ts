@@ -22,10 +22,8 @@ export class SiteHeader {
 
   protected readonly offlineText = computed(() => {
     const waiting = this.pendingScores.waiting();
-    if (waiting === 0) return 'Offline: du siehst die zuletzt geladenen Daten';
-    return waiting === 1
-      ? 'Offline: 1 Änderung wartet auf den Upload'
-      : `Offline: ${waiting} Änderungen warten auf den Upload`;
+    if (waiting === 0) return 'Offline: zuletzt geladene Daten';
+    return waiting === 1 ? 'Offline: 1 Änderung wartet' : `Offline: ${waiting} Änderungen warten`;
   });
 
   protected readonly appName = APP_NAME;

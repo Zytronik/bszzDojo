@@ -1,6 +1,6 @@
 import { effect, inject, untracked } from '@angular/core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { errorMessage } from '../core/error-message';
+import { errorMessage, isUnreachable } from '../core/error-message';
 
 export interface Toast {
   id: number;
@@ -38,11 +38,14 @@ export const ToastStore = signalStore(
   }),
 );
 
-/** Shows a toast whenever `error` turns into an error, e.g. a `resource`'s. Injection context only. */
+/**
+ * Shows a toast whenever `error` turns into an error, e.g. a `resource`'s. Injection context only.
+ * Not for a missing connection: the page shows that it couldn't load, the header that it's offline.
+ */
 export function toastErrors(error: () => unknown): void {
   const toasts = inject(ToastStore);
   effect(() => {
     const current = error();
-    if (current) untracked(() => toasts.error(errorMessage(current)));
+    if (current && !isUnreachable(current)) untracked(() => toasts.error(errorMessage(current)));
   });
 }

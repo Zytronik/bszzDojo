@@ -43,13 +43,14 @@ export const siteHeader = defineSlotRecipe({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8',
       py: '5',
       layerStyle: 'surface',
       borderBlockStartWidth: 'thick',
       borderBlockStartStyle: 'solid',
       borderColor: 'bg.canvas',
-      textStyle: 'body.small',
+      // Back to the body size first: the root's is the icons' and sizes are relative.
+      fontSize: 'root',
+      '& > span': { display: 'flex', alignItems: 'center', gap: '8', textStyle: 'body.small' },
     },
   },
   variants: {
