@@ -31,7 +31,7 @@
         <dd>{{ fact.value }}</dd>
         }
       </dl>
-      <app-form-field label="Dein Bogen:" [hint]="bowHint()">
+      <app-form-field label="Bogenart:" [hint]="bowHint()">
         <select appFieldControl [formControl]="acceptBow">
           @for (bowType of bowTypes; track bowType.id) {
           <option [ngValue]="bowType.id">{{ bowType.name }}</option>

@@ -37,6 +37,6 @@ export class DuelScoreboard {
   protected readonly styles = duel();
 
   protected bowName(player: DuelPlayer): string {
-    return player.bowType ? BOW_TYPES[player.bowType].name : 'Bogen noch offen';
+    return player.bowType ? BOW_TYPES[player.bowType].name : 'Bogenart noch offen';
   }
 }

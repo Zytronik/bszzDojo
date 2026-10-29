@@ -59,7 +59,7 @@ import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { PageHeader } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
-import { loadScoreSetup } from '../scores/score-setup';
+import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { TargetCanvas } from '../scores/target-canvas';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
@@ -230,7 +230,7 @@ export class DuelPage {
 
   // ---- Invitation ----
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
-  protected readonly acceptBow = new FormControl<BowTypeId>(loadScoreSetup()?.bowType ?? 'r', {
+  protected readonly acceptBow = new FormControl<BowTypeId>(loadDuelSetup().bowType ?? 'r', {
     nonNullable: true,
   });
   protected readonly answering = signal(false);
@@ -293,18 +293,18 @@ export class DuelPage {
     if (!duel) return [];
     return [
       { label: 'Format', value: DUEL_FORMAT_NAMES[duel.format] },
-      { label: 'Distanz', value: `${duel.distance}m` },
-      { label: 'Scheibe', value: `${duel.targetSize}cm${duel.isSpot ? ' Spot' : ''}` },
       {
-        label: `Bogen von ${shownName(duel.challenger)}`,
+        label: `Bogenart von ${shownName(duel.challenger)}`,
         value: BOW_TYPES[duel.challenger.bowType ?? 'r'].name,
       },
+      { label: 'Scheibengrösse', value: `${duel.targetSize}cm${duel.isSpot ? ' Spot' : ''}` },
+      { label: 'Distanz', value: `${duel.distance}m` },
     ];
   });
   protected readonly bowHint = computed(() => {
     const bow = this.loaded()?.challenger.bowType;
     if (!bow) return undefined;
-    return `Mit einem anderen Bogen als ${BOW_TYPES[bow].name} zählen die Punkte jeder Passe mit dem Faktor.`;
+    return `Mit einer anderen Bogenart als ${BOW_TYPES[bow].name} zählen die Punkte jeder Passe mit dem Faktor.`;
   });
   protected readonly idleHours = DUEL_IDLE_HOURS;
   protected readonly icons = {
@@ -418,7 +418,13 @@ export class DuelPage {
   }
 
   protected accept(): Promise<void> {
-    return this.answer((id) => this.api.accept(id, { bowType: this.acceptBow.value }));
+    const duel = this.loaded();
+    const bowType = this.acceptBow.value;
+    if (duel) {
+      const { format, distance, targetSize, isSpot } = duel;
+      saveDuelSetup({ format, bowType, distance, targetSize, isSpot });
+    }
+    return this.answer((id) => this.api.accept(id, { bowType }));
   }
 
   protected decline(): Promise<void> {

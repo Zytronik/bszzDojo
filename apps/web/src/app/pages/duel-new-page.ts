@@ -32,13 +32,13 @@ import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { DuelsApiService } from '../core/duels-api.service';
 import { UsersApiService } from '../core/users-api.service';
+import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { DuelsStore } from '../duels/duels.store';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
 import { PageHeader } from '../layout/page-header';
 import { ToastStore } from '../layout/toast.store';
-import { loadScoreSetup } from '../scores/score-setup';
 import { CheckboxField } from '../ui/checkbox-field';
 import { Section } from '../ui/section';
 
@@ -85,7 +85,7 @@ export class DuelNewPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
-  private readonly setup = loadScoreSetup();
+  private readonly setup = loadDuelSetup();
 
   /** From the link (a profile's "Herausfordern", a rematch), else picked here */
   protected readonly rival = linkedSignal((): UserSearchResult | null => {
@@ -111,7 +111,7 @@ export class DuelNewPage {
   protected readonly formats = DUEL_FORMATS.map((id) => ({ id, name: DUEL_FORMAT_NAMES[id] }));
   protected readonly chosenFormat = linkedSignal((): DuelFormat => {
     const format = this.format();
-    return isDuelFormat(format) ? format : 'sets';
+    return isDuelFormat(format) ? format : (this.setup.format ?? 'sets');
   });
   protected readonly formatRules = computed(() => FORMAT_RULES[this.chosenFormat()]);
 
@@ -119,8 +119,8 @@ export class DuelNewPage {
   protected readonly targetSizes = TARGET_SIZES;
   protected readonly maxDistance = MAX_DISTANCE;
   protected readonly form = this.forms.group({
-    bowType: this.forms.control<BowTypeId>(this.setup?.bowType ?? 'r'),
-    distance: this.forms.control<number | null>(this.setup?.distance ?? DEFAULT_DISTANCE, [
+    bowType: this.forms.control<BowTypeId>(this.setup.bowType ?? 'r'),
+    distance: this.forms.control<number | null>(this.setup.distance ?? DEFAULT_DISTANCE, [
       required(),
       rule(
         (value: number | null) =>
@@ -128,8 +128,8 @@ export class DuelNewPage {
         `Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`,
       ),
     ]),
-    targetSize: this.forms.control<TargetSize>(this.setup?.targetSize ?? DEFAULT_TARGET_SIZE),
-    isSpot: this.setup?.isSpot ?? false,
+    targetSize: this.forms.control<TargetSize>(this.setup.targetSize ?? DEFAULT_TARGET_SIZE),
+    isSpot: this.setup.isSpot ?? false,
   });
   protected readonly saving = signal(false);
 
@@ -182,16 +182,11 @@ export class DuelNewPage {
     }
     const { bowType, distance, targetSize, isSpot } = this.form.getRawValue();
     if (distance === null) return;
+    const setup = { format: this.chosenFormat(), bowType, distance, targetSize, isSpot };
+    saveDuelSetup(setup);
     this.saving.set(true);
     try {
-      const duel = await this.api.create({
-        opponent: rival.username,
-        format: this.chosenFormat(),
-        bowType,
-        distance,
-        targetSize,
-        isSpot,
-      });
+      const duel = await this.api.create({ opponent: rival.username, ...setup });
       void this.duels.refresh();
       await this.router.navigate(['/duels', duel.id], { replaceUrl: true });
     } catch (error: unknown) {
