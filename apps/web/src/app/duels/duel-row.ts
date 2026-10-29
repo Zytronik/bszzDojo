@@ -8,7 +8,7 @@ import {
   shownName,
   type DuelSummary,
 } from '@bszz-dojo/shared';
-import { css } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
 import { duelRow, record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
 import { faBolt, faChevronRight } from '../ui/icons';
@@ -20,10 +20,12 @@ import { faBolt, faChevronRight } from '../ui/icons';
   imports: [RouterLink, Icon],
   host: { '[class]': 'styles.root' },
   template: `
+    @if (invitation()) {
+      <span [class]="iconStyles"><app-icon [icon]="icons.bolt" /></span>
+    }
     <a [class]="styles.body" [routerLink]="['/duels', duel().id]">
       <p [class]="styles.title">
-        @if (duel().status === 'invited' && duel().you === 'opponent') {
-          <app-icon [icon]="icons.bolt" [class]="rowStyles.icon" />
+        @if (invitation()) {
           <strong>{{ rival() }}</strong> fordert dich heraus
         } @else {
           Gegen <strong>{{ rival() }}</strong>
@@ -31,7 +33,7 @@ import { faBolt, faChevronRight } from '../ui/icons';
       </p>
       <p [class]="rowStyles.line">
         <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state() }}</span>
-        <span [class]="styles.meta">{{ details() }}</span>
+        <span [class]="styles.meta">· {{ details() }}</span>
       </p>
     </a>
     @if (score(); as score) {
@@ -50,9 +52,14 @@ export class DuelRow {
   protected readonly icons = { bolt: faBolt, open: faChevronRight };
   protected readonly styles = record();
   protected readonly rowStyles = duelRow();
+  /** In the column the rankings show "#1" in, so the name lines up the same way */
+  protected readonly iconStyles = cx(this.styles.rank, this.rowStyles.icon);
   protected readonly openStyles = css({ layerStyle: 'muted', fontSize: 'sm', flexShrink: '0' });
 
   protected readonly rival = computed(() => shownName(this.duel().rival));
+  protected readonly invitation = computed(
+    () => this.duel().status === 'invited' && this.duel().you === 'opponent',
+  );
   protected readonly details = computed(() => {
     const duel = this.duel();
     const settings = duelSettingsLabel(duel);

@@ -5,22 +5,19 @@ export const duelRow = defineSlotRecipe({
   className: 'duel-row',
   slots: ['icon', 'line', 'badge', 'score'],
   base: {
-    icon: { marginInlineEnd: '5', color: 'accent.default' },
+    icon: { color: 'accent.default' },
     line: {
       display: 'flex',
       flexWrap: 'wrap',
       alignItems: 'baseline',
-      columnGap: '8',
+      columnGap: '5',
       marginBlockStart: '5',
     },
+    // The outcome as text, like the accented figures of the rankings
     badge: {
       textStyle: 'body.small',
-      lineHeight: 'snug',
-      rounded: 'sm',
-      px: '5',
-      layerStyle: 'surface',
-      // A win, or the viewer's turn
-      '&[data-tone=accent]': { bg: 'accent.default', color: 'fg.onAccent' },
+      layerStyle: 'muted',
+      '&[data-tone=accent]': { color: 'accent.default', opacity: 'full' },
     },
     score: {
       fontWeight: 'bold',
