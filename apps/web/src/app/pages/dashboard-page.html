@@ -4,6 +4,18 @@
 />
 
 <app-section>
+  <h2>Duelle</h2>
+  @for (duel of duels.invitations(); track duel.id) {
+  <app-duel-row [duel]="duel" />
+  } @for (duel of duels.open(); track duel.id) {
+  <app-duel-row [duel]="duel" />
+  }
+  <a routerLink="/duels/new" [class]="newDuelStyles">
+    <app-icon [icon]="boltIcon" /> Neues Duell
+  </a>
+</app-section>
+
+<app-section>
   <h2>Top 10 - Allzeit</h2>
   <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>
   <app-tabs [tabs]="distanceTabs" [(selected)]="allTimeTab">

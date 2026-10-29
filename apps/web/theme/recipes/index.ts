@@ -1,6 +1,7 @@
 import { button } from './button';
 import { card } from './card';
 import { checkbox } from './checkbox';
+import { duel } from './duel';
 import { pageContainer } from './container';
 import { emptyState } from './empty-state';
 import { field } from './field';
@@ -35,6 +36,7 @@ export const recipes = {
 
 export const slotRecipes = {
   checkbox,
+  duel,
   field,
   modal,
   record,

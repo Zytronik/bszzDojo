@@ -32,7 +32,43 @@
       </div>
       }
     </div>
-    }
+    @if (!isOwnProfile()) {
+    <a [class]="challengeStyles" routerLink="/duels/new" [queryParams]="{ opponent: p.username }">
+      <app-icon [icon]="boltIcon" /> Herausfordern
+    </a>
+    } }
+  </app-loading-frame>
+</app-section>
+
+<app-section>
+  <h2>Duelle</h2>
+  <app-loading-frame [loading]="duels.isLoading() && !duels.hasValue()" [lines]="2">
+    @if (duels.hasValue()) { @let ds = duels.value();
+    <div [class]="pageStyles.duelFigures">
+      <div [class]="pageStyles.duelFigure">
+        <p [class]="pageStyles.duelWins">{{ ds.record.wins }}</p>
+        <p [class]="pageStyles.duelCaption">Siege</p>
+      </div>
+      <div [class]="pageStyles.duelFigure">
+        <p [class]="pageStyles.duelNumber">{{ ds.record.losses }}</p>
+        <p [class]="pageStyles.duelCaption">Niederlagen</p>
+      </div>
+      <div [class]="pageStyles.duelFigure">
+        <p [class]="pageStyles.duelNumber">{{ winRate(ds.record) }}</p>
+        <p [class]="pageStyles.duelCaption">Siegquote</p>
+      </div>
+    </div>
+    @if (ds.againstYou; as against) { @if (against.wins + against.losses > 0) {
+    <p [class]="pageStyles.duelAgainst">
+      Deine Bilanz gegen {{ shown() ? (shown()! | shownName) : username() }}: {{ against.wins }}
+      {{ against.wins === 1 ? 'Sieg' : 'Siege' }}, {{ against.losses }}
+      {{ against.losses === 1 ? 'Niederlage' : 'Niederlagen' }}
+    </p>
+    } } @for (duel of ds.recent; track duel.id) {
+    <app-duel-row [duel]="duel" [owner]="isOwnProfile() ? 'you' : 'them'" />
+    } @empty {
+    <app-empty-state>Keine Duelle vorhanden.</app-empty-state>
+    } }
   </app-loading-frame>
 </app-section>
 

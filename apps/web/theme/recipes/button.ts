@@ -34,6 +34,8 @@ export const button = defineRecipe({
     tone: {
       accent: {},
       neutral: { bg: 'bg.canvas', color: 'fg.default' },
+      /** A second choice on the page, where `neutral` would vanish into the background */
+      subtle: { bg: 'bg.surface', color: 'fg.default' },
     },
   },
   defaultVariants: { size: 'block', tone: 'accent' },
