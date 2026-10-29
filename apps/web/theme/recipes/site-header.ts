@@ -2,7 +2,7 @@ import { defineSlotRecipe } from '@pandacss/dev';
 
 export const siteHeader = defineSlotRecipe({
   className: 'site-header',
-  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link', 'status'],
+  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link', 'back', 'status'],
   base: {
     root: {
       layerStyle: 'surface',
