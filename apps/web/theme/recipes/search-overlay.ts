@@ -9,6 +9,7 @@ export const searchOverlay = defineSlotRecipe({
     'field',
     'input',
     'clear',
+    'heading',
     'results',
     'result',
     'name',
@@ -83,6 +84,7 @@ export const searchOverlay = defineSlotRecipe({
       cursor: 'pointer',
       _hover: { opacity: 'full' },
     },
+    heading: { textStyle: 'body.small', layerStyle: 'muted', px: '8', marginBlockStart: '10' },
     results: { listStyle: 'none', m: '0', p: '0', marginBlockStart: '5' },
     result: {
       display: 'flex',

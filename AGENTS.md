@@ -133,7 +133,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   `siteHeader().link`.
 - Theme: dark default, light per account (`UserSettings.theme`) as `data-theme` on `<html>`.
   localStorage only for per-device conveniences (theme cache for first paint, install hint, score
-  setup), the last user for offline starts, and offline queues; never tokens.
+  setup, recent searches), the last user for offline starts, and offline queues; never tokens.
 - `public/` assets are the old app's; keep their paths.
 - **PWA / offline**: the service worker caches the shell and read-only API routes everyone may see
   (rankings, profiles, scores; network first, cache after 5s). `navigationUrls` must exclude

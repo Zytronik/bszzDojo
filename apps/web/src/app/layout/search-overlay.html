@@ -19,7 +19,7 @@
         role="combobox"
         aria-controls="user-search-results"
         aria-autocomplete="list"
-        [attr.aria-expanded]="(results()?.length ?? 0) > 0"
+        [attr.aria-expanded]="rows().length > 0"
         [attr.aria-activedescendant]="activeId()"
         [value]="query()"
         (input)="query.set(field.value)"
@@ -32,15 +32,25 @@
       }
     </div>
 
-    <div id="user-search-results" role="listbox" aria-label="Treffer" [class]="styles.results">
-      @for (result of results() ?? []; track result.username; let i = $index) {
+    @if (!searching()) { @if (rows().length > 0) {
+    <p [class]="styles.heading">Zuletzt gesucht</p>
+    } @else {
+    <p [class]="styles.empty">Nach Name oder Benutzername suchen</p>
+    } }
+    <div
+      id="user-search-results"
+      role="listbox"
+      [attr.aria-label]="searching() ? 'Treffer' : 'Zuletzt gesucht'"
+      [class]="styles.results"
+    >
+      @for (result of rows(); track result.username; let i = $index) {
       <a
         [id]="'user-search-' + i"
         role="option"
         [attr.aria-selected]="i === active()"
         [routerLink]="['/profile', result.username]"
         [class]="styles.result"
-        (click)="state.close()"
+        (click)="open(result)"
         (mouseenter)="active.set(i)"
       >
         <span [class]="styles.name">
@@ -61,7 +71,7 @@
       </a>
       }
     </div>
-    @if (results()?.length === 0) {
+    @if (searching() && results()?.length === 0) {
     <p [class]="styles.empty" aria-live="polite">Niemand mit «{{ term() }}» gefunden</p>
     }
 

@@ -25,6 +25,7 @@ import {
 import { UsersApiService } from '../core/users-api.service';
 import { Icon } from '../ui/icon';
 import { faChevronRight, faCircleXmark, faMagnifyingGlass } from '../ui/icons';
+import { RecentSearches } from './recent-searches';
 import { SearchOverlayState } from './search-overlay.service';
 
 const SEARCH_DEBOUNCE_MS = 200;
@@ -59,6 +60,7 @@ export class SearchOverlay {
   protected readonly state = inject(SearchOverlayState);
   private readonly users = inject(UsersApiService);
   private readonly router = inject(Router);
+  private readonly recent = inject(RecentSearches);
   private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
 
   protected readonly query = signal('');
@@ -82,14 +84,20 @@ export class SearchOverlay {
     ),
     { initialValue: null },
   );
-  /** The result Enter opens, moved with the arrow keys */
-  protected readonly active = linkedSignal({ source: this.results, computation: () => 0 });
+  /** Before anything is typed, the profiles opened last instead of results */
+  protected readonly searching = computed(() => this.query().trim().length > 0);
+  protected readonly rows = computed(
+    (): UserSearchResult[] =>
+      (this.searching() ? this.results() : this.recent.profiles()) ?? [],
+  );
+  /** The row Enter opens, moved with the arrow keys */
+  protected readonly active = linkedSignal({ source: this.rows, computation: () => 0 });
   protected readonly activeId = computed(() =>
-    (this.results()?.length ?? 0) > 0 ? `user-search-${this.active()}` : null,
+    this.rows().length > 0 ? `user-search-${this.active()}` : null,
   );
   protected readonly count = computed(() => {
     const results = this.results();
-    return results === null ? '' : `${results.length} Treffer`;
+    return this.searching() && results !== null ? `${results.length} Treffer` : '';
   });
 
   protected readonly icons = {
@@ -112,15 +120,21 @@ export class SearchOverlay {
   }
 
   protected nameParts(result: UserSearchResult): TextPart[] {
-    return markMatch(shownName(result), this.term());
+    return markMatch(shownName(result), this.searching() ? this.term() : '');
   }
 
   protected usernameParts(result: UserSearchResult): TextPart[] {
-    return [{ text: '@', match: false }, ...markMatch(result.username, this.term())];
+    const term = this.searching() ? this.term() : '';
+    return [{ text: '@', match: false }, ...markMatch(result.username, term)];
+  }
+
+  protected open(result: UserSearchResult): void {
+    this.recent.add(result);
+    this.state.close();
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    const results = this.results() ?? [];
+    const results = this.rows();
     if (results.length === 0) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -129,8 +143,9 @@ export class SearchOverlay {
     } else if (event.key === 'Enter') {
       event.preventDefault();
       const result = results[this.active()];
-      if (result) void this.router.navigate(['/profile', result.username]);
-      this.state.close();
+      if (!result) return;
+      void this.router.navigate(['/profile', result.username]);
+      this.open(result);
     }
   }
 
