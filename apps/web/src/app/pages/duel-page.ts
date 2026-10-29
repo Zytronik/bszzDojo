@@ -18,6 +18,7 @@ import {
   DUEL_ARROWS_PER_END,
   DUEL_IDLE_HOURS,
   arrowLabel,
+  duelScoreLabel,
   duelSettingsLabel,
   endTotal,
   isInnerTen,
@@ -26,6 +27,7 @@ import {
   type BowTypeId,
   type Duel,
   type DuelArrow,
+  type DuelSide,
   type Shot,
 } from '@bszz-dojo/shared';
 import { css, cx } from 'styled-system/css';
@@ -179,7 +181,8 @@ export class DuelPage {
     const progress = this.progress();
     const sides = this.sides();
     const end = progress?.ends.at(-1);
-    if (!duel || !progress || !sides || !end || progress.phase === 'decided') return null;
+    if (!duel || !progress || !sides || !end) return null;
+    if (duel.status !== 'active' || progress.phase === 'decided') return null;
     const gained = end.setPoints?.[sides.me] ?? null;
     const outcome =
       gained === null
@@ -189,9 +192,12 @@ export class DuelPage {
           : gained === 1
             ? ' · je +1'
             : ` · +2 für ${shownName(duel[sides.them])}`;
-    return `${this.endLabel()} ${progress.ends.length}: ${end.totals[sides.me]} : ${
-      end.totals[sides.them]
-    }${outcome}`;
+    // With different bows the end is decided on the weighted points, so show those.
+    const points = hasHandicap(duel)
+      ? (side: DuelSide): string => duelScoreLabel('total', end.weighted[side])
+      : (side: DuelSide): string => String(end.totals[side]);
+    const score = `${points(sides.me)} : ${points(sides.them)}`;
+    return `${this.endLabel()} ${progress.ends.length}: ${score}${outcome}`;
   });
 
   // ---- Entering an end ----
