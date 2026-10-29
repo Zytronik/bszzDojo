@@ -41,11 +41,8 @@ export const siteHeader = defineSlotRecipe({
       alignItems: 'center',
       gap: '10',
       minW: '0',
-      color: 'fg.default',
-      textDecoration: 'none',
       transitionProperty: 'opacity',
       transitionDuration: 'normal',
-      _hover: { opacity: 'muted' },
       // Back to the body size: the root's is the icons' and sizes are relative.
       '& > span': {
         fontSize: 'root',
