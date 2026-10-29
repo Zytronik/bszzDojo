@@ -28,18 +28,31 @@ export const duel = defineSlotRecipe({
       display: 'grid',
       gridTemplateColumns: '1fr auto 1fr',
       alignItems: 'center',
-      gap: '10',
+      columnGap: '10',
+      rowGap: '15',
     },
     player: {
       minW: '0',
       '&:last-of-type': { textAlign: 'end' },
     },
-    name: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-    bow: { textStyle: 'body.small', layerStyle: 'muted' },
-    score: { fontSize: '5xl', fontWeight: 'bold', lineHeight: 'none', whiteSpace: 'nowrap' },
+    // Names wrap rather than cut off: the score in the middle takes the room it needs.
+    name: { fontWeight: 'bold', overflowWrap: 'anywhere', lineHeight: 'snug' },
+    bow: { textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '5' },
+    score: {
+      fontSize: '5xl',
+      fontWeight: 'bold',
+      lineHeight: 'none',
+      whiteSpace: 'nowrap',
+      // Totals with the factor ("183.6 : 186.48") don't fit a phone at the set-point size.
+      '&[data-long]': { fontSize: '2xl' },
+    },
     separator: { layerStyle: 'muted', fontWeight: 'normal', mx: '5' },
     caption: {
       gridColumn: '1 / -1',
+      paddingBlockStart: '10',
+      borderBlockStartWidth: 'thick',
+      borderBlockStartStyle: 'solid',
+      borderColor: 'bg.canvas',
       textAlign: 'center',
       textStyle: 'body.small',
       layerStyle: 'muted',
@@ -49,7 +62,8 @@ export const duel = defineSlotRecipe({
       borderCollapse: 'collapse',
       textAlign: 'center',
       '& th': { textStyle: 'body.small', layerStyle: 'muted', fontWeight: 'normal', pb: '5' },
-      '& td': { py: '5' },
+      '& td': { py: '8' },
+      '& td:first-child': { layerStyle: 'muted' },
       '& tbody tr + tr td': {
         borderBlockStartWidth: 'thick',
         borderBlockStartStyle: 'solid',
@@ -57,7 +71,7 @@ export const duel = defineSlotRecipe({
       },
       '& small': { display: 'block', textStyle: 'body.small', layerStyle: 'muted' },
     },
-    won: { color: 'status.success' },
+    won: { color: 'accent.default', fontWeight: 'bold' },
     slots: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8' },
     slot: {
       appearance: 'none',
@@ -85,7 +99,13 @@ export const duel = defineSlotRecipe({
         outlineColor: 'accent.default',
       },
     },
-    keys: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8' },
+    keys: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gap: '8',
+      // Six keys (a compound spot) fill two rows of three instead of leaving a gap.
+      '&[data-columns="3"]': { gridTemplateColumns: 'repeat(3, 1fr)' },
+    },
     key: {
       layerStyle: 'surface',
       appearance: 'none',

@@ -9,7 +9,7 @@ import {
   type DuelSummary,
 } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
-import { record } from 'styled-system/recipes';
+import { duelRow, record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
 import { faBolt, faChevronRight } from '../ui/icons';
 
@@ -29,10 +29,15 @@ import { faBolt, faChevronRight } from '../ui/icons';
           Gegen <strong>{{ rival() }}</strong>
         }
       </p>
-      <p [class]="styles.meta">{{ state() }} · {{ settings() }}</p>
+      <p [class]="rowStyles.line">
+        <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state() }}</span>
+        <span [class]="styles.meta">{{ details() }}</span>
+      </p>
     </a>
     @if (score(); as score) {
-      <p [class]="scoreStyles">{{ score }}</p>
+      <p [class]="rowStyles.score" [attr.data-won]="duel().winner === duel().you || null">
+        {{ score }}
+      </p>
     }
     <app-icon [icon]="icons.open" [class]="openStyles" />
   `,
@@ -44,11 +49,23 @@ export class DuelRow {
 
   protected readonly icons = { bolt: faBolt, open: faChevronRight };
   protected readonly styles = record();
-  protected readonly scoreStyles = css({ fontSize: 'xl', fontWeight: 'bold', flexShrink: '0' });
+  protected readonly rowStyles = duelRow();
   protected readonly openStyles = css({ layerStyle: 'muted', fontSize: 'sm', flexShrink: '0' });
 
   protected readonly rival = computed(() => shownName(this.duel().rival));
-  protected readonly settings = computed(() => duelSettingsLabel(this.duel()));
+  protected readonly details = computed(() => {
+    const duel = this.duel();
+    const settings = duelSettingsLabel(duel);
+    if (duel.status !== 'finished') return settings;
+    const day = formatGermanDate(duel.updatedAt).split(', ')[1] ?? '';
+    return `${settings} · ${day}`;
+  });
+  /** Wins and turns stand out in the accent color */
+  protected readonly tone = computed((): 'accent' | 'quiet' => {
+    const duel = this.duel();
+    if (duel.status === 'finished') return duel.winner === duel.you ? 'accent' : 'quiet';
+    return duel.yourTurn && this.owner() === 'you' ? 'accent' : 'quiet';
+  });
 
   protected readonly score = computed((): string | null => {
     const duel = this.duel();
@@ -56,7 +73,7 @@ export class DuelRow {
     const me = duel.you;
     const them = otherSide(me);
     const label = (value: number): string => duelScoreLabel(duel.format, value);
-    return `${label(duel.score[me])}:${label(duel.score[them])}`;
+    return `${label(duel.score[me])} : ${label(duel.score[them])}`;
   });
 
   protected readonly state = computed((): string => {
@@ -66,10 +83,8 @@ export class DuelRow {
         return duel.you === 'opponent' ? 'Einladung' : 'Wartet auf Zusage';
       case 'active':
         return duel.yourTurn && this.owner() === 'you' ? 'Du bist dran' : 'Läuft';
-      case 'finished': {
-        const day = formatGermanDate(duel.updatedAt).split(', ')[1] ?? '';
-        return `${duel.winner === duel.you ? 'Sieg' : 'Niederlage'} · ${day}`;
-      }
+      case 'finished':
+        return duel.winner === duel.you ? 'Sieg' : 'Niederlage';
       default:
         return 'Beendet';
     }

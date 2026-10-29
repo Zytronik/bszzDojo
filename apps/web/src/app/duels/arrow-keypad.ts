@@ -7,7 +7,12 @@ import { duel } from 'styled-system/recipes';
   selector: 'app-arrow-keypad',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="styles.keys" role="group" aria-label="Pfeil eingeben">
+    <div
+      [class]="styles.keys"
+      [attr.data-columns]="choices().length % 4 !== 0 && choices().length % 3 === 0 ? 3 : 4"
+      role="group"
+      aria-label="Pfeil eingeben"
+    >
       @for (choice of choices(); track label(choice)) {
         <button
           type="button"

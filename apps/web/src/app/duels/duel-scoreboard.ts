@@ -14,7 +14,11 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
         <p [class]="styles.name">{{ left().name ?? (left().player | shownName) }}</p>
         <p [class]="styles.bow">{{ bowName(left().player) }}</p>
       </div>
-      <p [class]="styles.score" [attr.aria-label]="'Stand ' + score().left + ' zu ' + score().right">
+      <p
+        [class]="styles.score"
+        [attr.data-long]="score().left.length + score().right.length > 5 || null"
+        [attr.aria-label]="'Stand ' + score().left + ' zu ' + score().right"
+      >
         {{ score().left }}<span [class]="styles.separator">:</span>{{ score().right }}
       </p>
       <div [class]="styles.player">

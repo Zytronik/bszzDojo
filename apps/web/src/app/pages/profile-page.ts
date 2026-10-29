@@ -173,9 +173,9 @@ export class ProfilePage {
       gap: '10',
       marginBlockEnd: '10',
     }),
-    duelFigure: css({ layerStyle: 'surface', rounded: 'sm', p: '10', textAlign: 'center' }),
+    duelFigure: css({ layerStyle: 'surface', rounded: 'sm', p: '15', textAlign: 'center' }),
     duelNumber: css({ fontSize: '2xl', fontWeight: 'bold' }),
-    duelWins: css({ fontSize: '2xl', fontWeight: 'bold', color: 'status.success' }),
+    duelWins: css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' }),
     duelCaption: css({ textStyle: 'body.small', layerStyle: 'muted' }),
     duelAgainst: css({ my: '10' }),
   };

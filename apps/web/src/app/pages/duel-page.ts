@@ -333,7 +333,7 @@ export class DuelPage {
   protected readonly cardStyles = card({ size: 'md' });
   protected readonly fieldRow = formRow({ split: 'even' });
   protected readonly styles = {
-    stack: css({ display: 'flex', flexDir: 'column', gap: '10' }),
+    stack: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     inviteTitle: css({ m: '0' }),
     waiting: css({
@@ -342,7 +342,7 @@ export class DuelPage {
       alignItems: 'center',
       gap: '8',
       textAlign: 'center',
-      paddingBlock: '15',
+      py: '15',
       '& > h2, & > p': { m: '0' },
     }),
     waitingIcon: css({ fontSize: '3xl', layerStyle: 'muted' }),
