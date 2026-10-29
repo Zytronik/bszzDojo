@@ -167,7 +167,12 @@ export class ProfilePage {
       paddingBlockStart: '10',
     }),
     stat: css({ display: 'flex', gap: '15' }),
-    duelFigures: css({ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10' }),
+    duelFigures: css({
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: '10',
+      marginBlockEnd: '10',
+    }),
     duelFigure: css({ layerStyle: 'surface', rounded: 'sm', p: '10', textAlign: 'center' }),
     duelNumber: css({ fontSize: '2xl', fontWeight: 'bold' }),
     duelWins: css({ fontSize: '2xl', fontWeight: 'bold', color: 'status.success' }),
