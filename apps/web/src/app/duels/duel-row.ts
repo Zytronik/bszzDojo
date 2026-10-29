@@ -23,7 +23,7 @@ import { faBolt, faChevronRight } from '../ui/icons';
     <a [class]="styles.body" [routerLink]="['/duels', duel().id]">
       <p [class]="styles.title">
         @if (duel().status === 'invited' && duel().you === 'opponent') {
-          <app-icon [icon]="icons.bolt" />
+          <app-icon [icon]="icons.bolt" [class]="rowStyles.icon" />
           <strong>{{ rival() }}</strong> fordert dich heraus
         } @else {
           Gegen <strong>{{ rival() }}</strong>

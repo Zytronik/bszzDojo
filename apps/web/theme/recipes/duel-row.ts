@@ -3,13 +3,15 @@ import { defineSlotRecipe } from '@pandacss/dev';
 /** The parts of a duel row the `record` recipe doesn't have: outcome badge and score */
 export const duelRow = defineSlotRecipe({
   className: 'duel-row',
-  slots: ['line', 'badge', 'score'],
+  slots: ['icon', 'line', 'badge', 'score'],
   base: {
+    icon: { marginInlineEnd: '5', color: 'accent.default' },
     line: {
       display: 'flex',
       flexWrap: 'wrap',
       alignItems: 'baseline',
-      columnGap: '5',
+      columnGap: '8',
+      marginBlockStart: '5',
     },
     badge: {
       textStyle: 'body.small',
