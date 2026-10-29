@@ -73,14 +73,15 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   (`BADGE_KIND_FIELDS`, `normalizeBadgeInput`, `badgeFieldErrors`). Imported old ones only have
   name, year and place, so details are nullable; render with `badgeTitle` / `badgeDetails`.
 - **Duels** (match play, `packages/shared/src/duels.ts`, `apps/api/src/duels/`): the challenger
-  picks format (`sets`: 3 arrows a set, 2/1/0 set points, first to 6, shoot-off at 5:5; `total`:
-  5 ends, shoot-off when level) and the distance for both; bow and face (`DuelFace`) each archer
-  picks for themselves, the opponent when accepting. Every end is compared as points × `factorPercent` (`weighted`) when the bows differ. Both
-  upload their ends (`duel_ends`, a row per side and end); the other side's next end stays hidden
-  until both shot it, and `duelProgress` decides sets, shoot-off and winner on both sides. The
-  shoot-off arrow is placed on the target, closest to the center wins. The app polls (duel page
-  2.5s, `DuelsStore` 20s for invitations); invitations lapse after 24h, idle duels after 2h,
-  checked on read. Giving up is a loss. Duels are separate from scores and leaderboards.
+  picks format (`sets`: 3 arrows a set, 2/1/0 set points, first to 6, shoot-off at 5:5; `total`: 5
+  ends, shoot-off when level) and the distance for both; bow and face (`DuelFace`) each archer picks
+  for themselves, the opponent when accepting. Every end is compared as points × `factorPercent`
+  (`weighted`) when the bows differ. Both upload their ends (`duel_ends`, a row per side and end);
+  the other side's next end stays hidden until both shot it, and `duelProgress` decides sets,
+  shoot-off and winner on both sides. The shoot-off arrow is placed on the target, closest to the
+  center wins. The app polls (duel page 2.5s, `DuelsStore` 20s for invitations); invitations lapse
+  after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
+  scores and leaderboards.
 
 ## Auth
 
