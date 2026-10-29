@@ -57,6 +57,16 @@ export class SiteHeader {
     return null;
   });
 
+  /** Clicks that open a new tab or window keep the browser's default. */
+  protected back(event: MouseEvent, target: readonly string[]): void {
+    this.search.close();
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    this.page.goBack(target);
+  }
+
   protected readonly appName = APP_NAME;
   protected readonly icons = {
     faArrowsRotate,

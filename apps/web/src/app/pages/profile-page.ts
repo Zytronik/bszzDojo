@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   input,
@@ -12,17 +13,21 @@ import {
   usernameKey,
   type DistanceProgress,
   type PersonalBests,
+  type ProfileHistory,
   type RankedScore,
   type Score,
 } from '@bszz-dojo/shared';
+import { Router } from '@angular/router';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage, isUnreachable } from '../core/error-message';
+import { restoreScrollWhen } from '../core/restore-scroll';
 import { BadgesApiService } from '../core/badges-api.service';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
+import { ProfileHistoryMemory } from '../profile/profile-history-memory';
 import { ProgressChart } from '../profile/progress-chart';
 import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
@@ -86,10 +91,17 @@ export class ProfilePage {
   protected readonly recordsTab = linkedSignal(() => this.firstTab(this.shown()?.personalBests));
   protected readonly chartTab = linkedSignal(() => this.firstTab(this.shown()?.progress));
 
-  /** Pages after the profile's own history, until another profile is opened */
+  private readonly historyMemory = inject(ProfileHistoryMemory);
+  /** Back to this profile (browser back, or the header's back link from one of its rounds) */
+  private readonly returning = inject(Router).currentNavigation()?.trigger === 'popstate';
+  /**
+   * Pages after the profile's own history, until another profile is opened. Coming back, the
+   * ones loaded before, so the row the archer left from is there to scroll to.
+   */
   private readonly older = linkedSignal({
     source: () => this.username(),
-    computation: (): { scores: Score[]; hasMore: boolean } | null => null,
+    computation: (username, previous): ProfileHistory | null =>
+      previous === undefined && this.returning ? this.historyMemory.take(username) : null,
   });
   protected readonly loadingMore = signal(false);
   protected readonly hasMore = computed(() => {
@@ -143,6 +155,8 @@ export class ProfilePage {
   constructor() {
     toastErrors(() => this.profile.error());
     reloadAfterUploads(this.pendingScores, () => this.profile.reload());
+    restoreScrollWhen(() => this.profile.hasValue());
+    inject(DestroyRef).onDestroy(() => this.historyMemory.save(this.username(), this.older()));
   }
 
   protected async loadMore(): Promise<void> {

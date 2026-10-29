@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import {
   DestroyRef,
   Directive,
@@ -9,6 +10,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 
 /** What a detail page shows in the header instead of the logo and the navigation */
 export interface PageHeaderBar {
@@ -26,6 +28,34 @@ export interface PageHeaderBar {
 @Injectable({ providedIn: 'root' })
 export class PageHeaderState {
   readonly bar = signal<PageHeaderBar | null>(null);
+
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private previousUrl: string | null = null;
+  private currentUrl: string | null = null;
+
+  constructor() {
+    this.router.events.subscribe((event) => {
+      if (!(event instanceof NavigationEnd)) return;
+      this.previousUrl = this.currentUrl;
+      this.currentUrl = event.urlAfterRedirects;
+    });
+  }
+
+  urlOf(back: readonly string[]): string {
+    return this.router.serializeUrl(this.router.createUrlTree(back));
+  }
+
+  /**
+   * Back in the browser's history when that's where the page was opened from, so the page comes
+   * back as it was left (scroll position, rows loaded with "Mehr laden"). Otherwise a new visit.
+   */
+  goBack(back: readonly string[]): void {
+    const url = this.urlOf(back);
+    // Usernames in URLs are matched ignoring case.
+    if (this.previousUrl?.toLowerCase() === url.toLowerCase()) this.location.back();
+    else void this.router.navigateByUrl(url);
+  }
 
   /** Only the page's own bar: the next page may already have set its bar by then. */
   clear(actions: TemplateRef<unknown>): void {
