@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.20.0](https://github.com/Zytronik/bszzDojo/compare/v3.19.0...v3.20.0) (2026-10-29)
+
+
+### Features
+
+* offline pill in the header, load more history and share scores ([#107](https://github.com/Zytronik/bszzDojo/issues/107)) ([eb25ac8](https://github.com/Zytronik/bszzDojo/commit/eb25ac86549b9e11073fe8209354cbf28320b2b9))
+
 ## [3.19.0](https://github.com/Zytronik/bszzDojo/compare/v3.18.2...v3.19.0) (2026-10-28)
 
 
