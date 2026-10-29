@@ -38,7 +38,7 @@ import { ScoreSummary } from '../scores/score-summary';
 import { TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faShareNodes } from '../ui/icons';
+import { faShareNodesThin } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -160,7 +160,7 @@ export class ScorePage {
     );
   });
 
-  protected readonly icons = { share: faShareNodes };
+  protected readonly icons = { share: faShareNodesThin };
   protected readonly headerButton = siteHeader().link;
   protected readonly styles = {
     details: css({ layerStyle: 'muted' }),
