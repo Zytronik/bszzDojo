@@ -4,6 +4,8 @@ export {
   faArrowUpFromBracket,
   faArrowsRotate,
   faChevronLeft,
+  faChevronRight,
+  faCircleXmark,
   faCirclePlus,
   faCrown,
   faDeleteLeft,
