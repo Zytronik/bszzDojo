@@ -6,13 +6,9 @@ export const duelRow = defineSlotRecipe({
   slots: ['icon', 'line', 'badge', 'score'],
   base: {
     icon: { color: 'accent.default' },
-    line: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'baseline',
-      columnGap: '5',
-      marginBlockStart: '5',
-    },
+    // Plain inline text, so a long line wraps between words instead of moving the settings
+    // under the outcome as a whole.
+    line: { marginBlockStart: '5', textStyle: 'body.small' },
     // The outcome as text, like the accented figures of the rankings
     badge: {
       textStyle: 'body.small',
