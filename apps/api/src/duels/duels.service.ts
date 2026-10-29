@@ -56,7 +56,7 @@ function arrowsOf(ends: readonly DuelEndEntity[]): SidePair<SideArrows> {
     challenger: { ends: [], shootOffs: [] },
     opponent: { ends: [], shootOffs: [] },
   };
-  for (const end of [...ends].sort((a, b) => a.endIndex - b.endIndex)) {
+  for (const end of ends.toSorted((a, b) => a.endIndex - b.endIndex)) {
     const side = pair[end.side];
     if (end.shootOff) side.shootOffs.push(end.arrows[0] ?? { points: 0, x: false, shot: null });
     else side.ends.push(end.arrows);
@@ -78,10 +78,17 @@ function progressOf(duel: DuelEntity, arrows: SidePair<SideArrows>): DuelProgres
 }
 
 /** Comparable whatever order Postgres keeps the jsonb keys in */
+function arrowsKey(arrows: readonly DuelArrow[]): string {
+  return JSON.stringify(arrows.map(({ points, x, shot }) => [points, x, shot?.x, shot?.y]));
+}
+
 function sameArrows(a: readonly DuelArrow[], b: readonly DuelArrow[]): boolean {
-  const key = (arrows: readonly DuelArrow[]): string =>
-    JSON.stringify(arrows.map(({ points, x, shot }) => [points, x, shot?.x, shot?.y]));
-  return key(a) === key(b);
+  return arrowsKey(a) === arrowsKey(b);
+}
+
+function recordOf(duels: readonly DuelEntity[], ownerId: string): DuelRecord {
+  const wins = duels.filter((duel) => duel.winner === sideOf(duel, ownerId)).length;
+  return { wins, losses: duels.length - wins };
 }
 
 /** Ends or shoot-off arrows of the phase being shot */
@@ -264,14 +271,10 @@ export class DuelsService {
         { opponentId: user.id, status: 'finished' },
       ],
     });
-    const record = (duels: readonly DuelEntity[], ownerId: string): DuelRecord => {
-      const wins = duels.filter((duel) => duel.winner === sideOf(duel, ownerId)).length;
-      return { wins, losses: duels.length - wins };
-    };
     const againstYou =
       viewerId === user.id
         ? null
-        : record(
+        : recordOf(
             finished.filter((duel) => sideOf(duel, viewerId) !== null),
             viewerId,
           );
@@ -286,7 +289,7 @@ export class DuelsService {
       take: PROFILE_RECENT_DUELS,
     });
     return {
-      record: record(finished, user.id),
+      record: recordOf(finished, user.id),
       againstYou,
       recent: await this.summaries(recent, user.id),
     };
