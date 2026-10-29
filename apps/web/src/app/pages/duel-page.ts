@@ -331,7 +331,7 @@ export class DuelPage {
   protected readonly headerButton = siteHeader().link;
   protected readonly tabStyles = tabs();
   protected readonly cardStyles = card({ size: 'md' });
-  protected readonly rows = formRow({ split: 'even' });
+  protected readonly fieldRow = formRow({ split: 'even' });
   protected readonly styles = {
     stack: css({ display: 'flex', flexDir: 'column', gap: '10' }),
     invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),

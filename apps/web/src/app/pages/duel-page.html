@@ -38,7 +38,7 @@
           }
         </select>
       </app-form-field>
-      <div [class]="rows">
+      <div [class]="fieldRow">
         <app-form-field label="Scheibengrösse:">
           <select appFieldControl formControlName="targetSize">
             @for (size of targetSizes; track size) {
