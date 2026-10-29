@@ -9,7 +9,9 @@ export {
   faKey,
   faMagnifyingGlass,
   faMobileScreenButton,
+  faShareNodes,
   faSquarePlus,
   faUser,
+  faWifi,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';

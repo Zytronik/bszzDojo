@@ -28,6 +28,7 @@ import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
+import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { RankBadge } from '../ui/rank-badge';
@@ -39,6 +40,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
   selector: 'app-profile-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormButton,
     Section,
     Tabs,
     RankBadge,
@@ -84,6 +86,39 @@ export class ProfilePage {
   protected readonly recordsTab = linkedSignal(() => this.firstTab(this.shown()?.personalBests));
   protected readonly chartTab = linkedSignal(() => this.firstTab(this.shown()?.progress));
 
+  /** Pages after the profile's own history, until another profile is opened */
+  private readonly older = linkedSignal({
+    source: () => this.username(),
+    computation: (): { scores: Score[]; hasMore: boolean } | null => null,
+  });
+  protected readonly loadingMore = signal(false);
+  protected readonly hasMore = computed(() => {
+    const older = this.older();
+    if (older) return older.hasMore;
+    const profile = this.profile.hasValue() ? this.profile.value() : null;
+    return profile !== null && profile.stats.totalScores > profile.history.length;
+  });
+  /**
+   * The merged history, then the server's rounds the rounds waiting for their upload pushed out of
+   * it, then the older pages. Rounds can appear twice when new ones were uploaded meanwhile.
+   */
+  protected readonly history = computed((): Score[] => {
+    const shown = this.shown();
+    if (!shown || !this.profile.hasValue()) return [];
+    const deleted = new Set(
+      this.isOwnProfile() ? this.pendingScores.changes().deleted.map((score) => score.id) : [],
+    );
+    const rows = new Map<string, Score>();
+    for (const score of [
+      ...shown.history,
+      ...this.profile.value().history,
+      ...(this.older()?.scores ?? []),
+    ]) {
+      if (!deleted.has(score.id) && !rows.has(score.id)) rows.set(score.id, score);
+    }
+    return [...rows.values()];
+  });
+
   protected readonly scoreToDelete = signal<string | null>(null);
   protected readonly badgeToDelete = signal<string | null>(null);
   protected readonly deleting = signal(false);
@@ -110,6 +145,23 @@ export class ProfilePage {
     reloadAfterUploads(this.pendingScores, () => this.profile.reload());
   }
 
+  protected async loadMore(): Promise<void> {
+    if (!this.profile.hasValue()) return;
+    const username = this.username();
+    const older = this.older();
+    const offset = this.profile.value().history.length + (older?.scores.length ?? 0);
+    this.loadingMore.set(true);
+    try {
+      const page = await this.profiles.history(username, offset);
+      if (username !== this.username()) return;
+      this.older.set({ scores: [...(older?.scores ?? []), ...page.scores], hasMore: page.hasMore });
+    } catch (error: unknown) {
+      this.toasts.error(errorMessage(error));
+    } finally {
+      this.loadingMore.set(false);
+    }
+  }
+
   protected distanceTabs(groups: readonly { distance: number }[]): TabItem[] {
     return groups.map(({ distance }) => ({ id: String(distance), label: `${distance}m` }));
   }
@@ -134,6 +186,10 @@ export class ProfilePage {
     this.deleting.set(true);
     try {
       await this.scores.delete(id);
+      const older = this.older();
+      if (older) {
+        this.older.set({ ...older, scores: older.scores.filter((score) => score.id !== id) });
+      }
       // Records, chart and stats all change, so the whole profile is fetched again.
       this.profile.reload();
     } catch (error: unknown) {
@@ -166,7 +222,7 @@ export class ProfilePage {
     const profile = this.shown();
     if (id === null || !profile) return null;
     return (
-      profile.history.find((score) => score.id === id) ??
+      this.history().find((score) => score.id === id) ??
       profile.personalBests.flatMap((group) => group.scores).find((score) => score.id === id) ??
       null
     );

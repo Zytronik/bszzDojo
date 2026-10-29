@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
+  APP_NAME,
   BOW_TYPES,
   endTotals,
   formatGermanDate,
@@ -28,7 +29,7 @@ import { css } from 'styled-system/css';
 import { split } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { ScoresApiService } from '../core/scores-api.service';
-import { toastErrors } from '../layout/toast.store';
+import { ToastStore, toastErrors } from '../layout/toast.store';
 import { BarChart } from '../scores/bar-chart';
 import { PendingScoresStore } from '../scores/pending-scores.store';
 import { GroupAnalysis } from '../scores/group-analysis';
@@ -37,7 +38,7 @@ import { ScoreSummary } from '../scores/score-summary';
 import { TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faChevronLeft } from '../ui/icons';
+import { faChevronLeft, faShareNodes } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -86,6 +87,7 @@ export class ScorePage {
   readonly id = input.required<string>();
 
   private readonly api = inject(ScoresApiService);
+  private readonly toasts = inject(ToastStore);
   private readonly auth = inject(AuthStore);
   private readonly pendingScores = inject(PendingScoresStore);
 
@@ -150,7 +152,7 @@ export class ScorePage {
     );
   });
 
-  protected readonly backIcon = faChevronLeft;
+  protected readonly icons = { back: faChevronLeft, share: faShareNodes };
   protected readonly styles = {
     heading: css({
       display: 'flex',
@@ -159,18 +161,21 @@ export class ScorePage {
       gap: '15',
     }),
     // As tall as the title and the details next to it.
-    back: css({
+    side: css({
       display: 'flex',
       alignItems: 'center',
       flexShrink: '0',
       px: '15',
       layerStyle: 'surface',
+      border: 'none',
       rounded: 'sm',
+      color: 'inherit',
+      cursor: 'pointer',
       transitionProperty: 'opacity',
       transitionDuration: 'normal',
       _hover: { opacity: 'muted' },
     }),
-    titles: css({ textAlign: 'end' }),
+    titles: css({ flex: '1', textAlign: 'end' }),
     split: split(),
     legend: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockStart: '10' }),
     sheet: css({ maxW: 'canvas' }),
@@ -178,6 +183,26 @@ export class ScorePage {
 
   constructor() {
     toastErrors(() => this.score.error());
+  }
+
+  /** The phone's share sheet; where there's none (most desktop browsers), the link is copied. */
+  protected async share(score: ScoreDetail): Promise<void> {
+    const url = new URL(`/scores/${score.id}`, location.origin).href;
+    const text = `${shownName(score)}: ${score.result} Punkte (${this.details()}), ${this.title()}`;
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: APP_NAME, text, url });
+      } catch {
+        // Closed without sharing, or not allowed: nothing to tell.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      this.toasts.success('Link kopiert.');
+    } catch {
+      this.toasts.error('Der Link konnte nicht kopiert werden.');
+    }
   }
 
   private analyse(score: ScoreDetail, shots: Shot[]): ScoreAnalysis {

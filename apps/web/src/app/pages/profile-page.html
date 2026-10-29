@@ -89,7 +89,7 @@
 <app-section>
   <h2>Historie</h2>
   <app-loading-frame [loading]="!p" [lines]="3">
-    @if (p) { @for (score of p.history; track score.id) {
+    @if (p) { @for (score of history(); track score.id) {
     <app-score-row
       [score]="score"
       [deletable]="isOwnProfile()"
@@ -100,6 +100,9 @@
     <app-empty-state>Keine Historie vorhanden.</app-empty-state>
     } }
   </app-loading-frame>
+  @if (hasMore()) {
+  <button type="button" appButton [pending]="loadingMore()" (click)="loadMore()">Mehr laden</button>
+  }
 </app-section>
 
 <app-confirm-dialog

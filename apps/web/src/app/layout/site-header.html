@@ -74,4 +74,10 @@
     </nav>
     }
   </div>
+  @if (auth.isOffline()) {
+  <p [class]="styles.status" role="status">
+    <app-icon [icon]="icons.faWifi" />
+    {{ offlineText() }}
+  </p>
+  }
 </header>

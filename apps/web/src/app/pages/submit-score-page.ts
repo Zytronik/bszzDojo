@@ -98,7 +98,7 @@ export class SubmitScorePage {
   private readonly api = inject(ScoresApiService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthStore);
-  protected readonly pendingScores = inject(PendingScoresStore);
+  private readonly pendingScores = inject(PendingScoresStore);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
 
@@ -160,11 +160,6 @@ export class SubmitScorePage {
 
   protected readonly pending = signal(false);
   protected readonly targetStyles = cx(split(), css({ marginBlockEnd: 'stack' }));
-  protected readonly waitingStyles = css({
-    textStyle: 'body.small',
-    layerStyle: 'muted',
-    marginBlockEnd: '10',
-  });
   protected readonly summaryStyles = css({
     display: 'flex',
     gap: '15',
@@ -270,12 +265,9 @@ export class SubmitScorePage {
     }
   }
 
-  /** Without a connection: kept on the device, and its page opens from there. */
+  /** Without a connection: kept on the device (the header says so), and its page opens. */
   private async keepForUpload(score: ScoreInput): Promise<void> {
     const id = this.pendingScores.add(score);
-    this.toasts.info(
-      'Ohne Verbindung gespeichert. Der Score wird hochgeladen, sobald du wieder online bist.',
-    );
     if (id !== null) await this.router.navigate(['/scores', id]);
   }
 

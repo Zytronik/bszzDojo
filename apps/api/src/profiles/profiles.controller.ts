@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiNotFoundResponse,
@@ -6,6 +6,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ProfileHistoryQueryParams } from './dto/profile-history.query';
+import { ProfileHistoryResponse } from './dto/profile-history.response';
 import { ProfileResponse } from './dto/profile.response';
 import { ProfilesService } from './profiles.service';
 
@@ -22,5 +24,15 @@ export class ProfilesController {
   @ApiNotFoundResponse({ description: 'No user with that name' })
   get(@Param('username') username: string): Promise<ProfileResponse> {
     return this.profiles.profile(username);
+  }
+
+  /** Older rounds than the profile's history, newest first, a page at a time. */
+  @Get(':username/history')
+  @ApiNotFoundResponse({ description: 'No user with that name' })
+  history(
+    @Param('username') username: string,
+    @Query() query: ProfileHistoryQueryParams,
+  ): Promise<ProfileHistoryResponse> {
+    return this.profiles.history(username, query.offset);
   }
 }

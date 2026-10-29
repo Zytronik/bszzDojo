@@ -2,7 +2,7 @@ import { defineSlotRecipe } from '@pandacss/dev';
 
 export const siteHeader = defineSlotRecipe({
   className: 'site-header',
-  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link'],
+  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link', 'status'],
   base: {
     root: {
       layerStyle: 'surface',
@@ -34,6 +34,22 @@ export const siteHeader = defineSlotRecipe({
       transitionDuration: 'normal',
       _hover: { opacity: 'muted' },
       '&[aria-current=page], &[aria-expanded=true]': { color: 'accent.default' },
+    },
+    /** A strip under the bar while there's no connection, instead of a toast on every page */
+    status: {
+      position: 'absolute',
+      insetBlockStart: '100%',
+      insetX: '0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8',
+      py: '5',
+      layerStyle: 'surface',
+      borderBlockStartWidth: 'thick',
+      borderBlockStartStyle: 'solid',
+      borderColor: 'bg.canvas',
+      textStyle: 'body.small',
     },
   },
   variants: {

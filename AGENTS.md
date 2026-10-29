@@ -78,15 +78,17 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   is the current calendar month in `CLUB_TIME_ZONE` (Europe/Zurich), by the day it was shot.
 - **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.
 - **Profiles** (`GET /api/profiles/:username`): stats, the top 3 rounds per distance, the progress
-  chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds. Usernames in
-  URLs are matched ignoring case.
+  chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds
+  (`PROFILE_HISTORY_SIZE`); "Mehr laden" fetches older ones a page at a time
+  (`GET /api/profiles/:username/history?offset=…`). Usernames in URLs are matched ignoring case.
 - **Scores** are entered two ways (tabs on "Score erfassen", the target first and the default): only the totals, or every arrow on
   the target (`TargetCanvas`, `ScoreSheet`). On the target the arrow count must be divisible by
   the arrows per end (`arrowsPerEnd`: 6 at 30m, otherwise 3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
   face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
   (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes. The form starts with the last saved round's bow type, target, spot, distance and arrow count, kept per device in localStorage (`scores/score-setup.ts`).
 - **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
-  to it, and saving a round opens it. It compares the round with the archer's others of the same bow type, distance and arrow
+  to it, and saving a round opens it. Its share button opens the phone's share sheet with the
+  page's link (copied where there's none); not for rounds still waiting for their upload. It compares the round with the archer's others of the same bow type, distance and arrow
   count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
   fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
   totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
@@ -217,7 +219,9 @@ The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example
   or offline). Nothing else under `/api` is cached, never auth or the user's own account.
 - **Offline:** when the server can't be reached at startup or a refresh fails for lack of a
   connection, `AuthStore` goes `offline` with the last user (`auth/offline-session.ts`) instead of
-  logging out, so the cached pages still open; it refreshes again on the `online` event.
+  logging out, so the cached pages still open; it refreshes again on the `online` event. While
+  it's offline the header shows a strip (`siteHeader` recipe's `status`) with how many changes
+  wait, instead of toasts: saving, deleting and uploading offline don't toast, only failures do.
   Rounds saved without a connection wait in `PendingScoresStore` (localStorage, per user) and
   upload one by one once there's a session with a connection again (on `online`, when the app comes
   to the front and every 30s while rounds wait, as iOS doesn't always report the connection). A
