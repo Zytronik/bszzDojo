@@ -209,9 +209,14 @@ export class DuelPage {
   /** The shoot-off is always on the target: the distance to the center decides. */
   protected readonly onTarget = computed(() => this.shootOff() || this.mode() === 'target');
   private readonly slotCount = computed(() => (this.shootOff() ? 1 : DUEL_ARROWS_PER_END));
+  // A computed, so the polled duel (a new object every 2.5s) only resets the draft once the end
+  // changes; a plain source function would track `shot()` and clear it on every poll.
+  private readonly endKey = computed(
+    () => `${this.shootOff()}-${this.shot().mine}-${this.slotCount()}`,
+  );
   /** Empty again for every new end */
   protected readonly draft = linkedSignal({
-    source: () => `${this.shootOff()}-${this.shot().mine}-${this.slotCount()}`,
+    source: this.endKey,
     computation: (): (DuelArrow | null)[] => Array.from({ length: this.slotCount() }, () => null),
   });
   protected readonly selected = linkedSignal({
