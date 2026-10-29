@@ -7,7 +7,6 @@ import { SearchOverlay } from './layout/search-overlay';
 import { SiteFooter } from './layout/site-footer';
 import { SiteHeader } from './layout/site-header';
 import { Toaster } from './layout/toaster';
-import { ToastStore } from './layout/toast.store';
 import { PendingScoresStore } from './scores/pending-scores.store';
 import { SettingsStore } from './settings/settings.store';
 
@@ -50,13 +49,6 @@ export class App {
       const isAuthenticated = this.auth.isAuthenticated();
       if (wasAuthenticated && !isAuthenticated) untracked(() => void router.navigate(['/login']));
       wasAuthenticated = isAuthenticated;
-    });
-
-    const toasts = inject(ToastStore);
-    effect(() => {
-      if (this.auth.isOffline()) {
-        untracked(() => toasts.info('Du bist offline. Du siehst die zuletzt geladenen Daten.'));
-      }
     });
   }
 }

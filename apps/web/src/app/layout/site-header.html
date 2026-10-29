@@ -1,5 +1,19 @@
 <header [class]="styles.root">
   <div [class]="barStyles">
+    @if (page.bar(); as bar) {
+    <a
+      [href]="page.urlOf(bar.back)"
+      [class]="styles.back"
+      [attr.aria-label]="bar.backLabel"
+      (click)="back($event, bar.back)"
+    >
+      <app-icon [icon]="icons.faChevronLeft" />
+      <span>{{ bar.label }}</span>
+    </a>
+    <div [class]="styles.nav">
+      <ng-container [ngTemplateOutlet]="bar.actions" />
+    </div>
+    } @else {
     <a
       routerLink="/"
       [class]="styles.home"
@@ -72,6 +86,13 @@
         }
       </ul>
     </nav>
-    }
+    } }
   </div>
+  @if (status(); as status) {
+  <p [class]="status.styles" role="status">
+    <span>
+      <app-icon [icon]="status.syncing ? icons.faArrowsRotate : icons.faWifi" />{{ status.text }}
+    </span>
+  </p>
+  }
 </header>
