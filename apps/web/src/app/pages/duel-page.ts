@@ -341,6 +341,14 @@ export class DuelPage {
       justifyContent: 'space-between',
       gap: '10',
     }),
+    // The delete button only as wide as its icon, so "Satz abschliessen · 28" keeps to one line
+    // on phones.
+    entryButtons: css({
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
+      gap: '10',
+      '& > *': { marginBlockStart: '0' },
+    }),
     buttons: css({
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
