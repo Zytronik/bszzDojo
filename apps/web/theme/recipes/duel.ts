@@ -4,7 +4,6 @@ import { defineSlotRecipe } from '@pandacss/dev';
 export const duel = defineSlotRecipe({
   className: 'duel',
   slots: [
-    'change',
     'suggestion',
     'board',
     'player',
@@ -101,14 +100,6 @@ export const duel = defineSlotRecipe({
       textStyle: 'body.small',
       layerStyle: 'muted',
       '&[data-done]': { color: 'status.success', opacity: 'full' },
-    },
-    /** "Ändern" next to the picked opponent */
-    change: {
-      bg: 'transparent',
-      border: 'none',
-      color: 'accent.default',
-      cursor: 'pointer',
-      textStyle: 'body.small',
     },
     /** An archer found by the opponent search */
     suggestion: {

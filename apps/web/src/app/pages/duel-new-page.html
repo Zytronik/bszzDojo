@@ -6,8 +6,7 @@
       <span [class]="styles.label">Gegner:</span>
       @if (rival(); as rival) {
       <div [class]="styles.rival">
-        <span>{{ name(rival) }}</span>
-        <button type="button" [class]="duelStyles.change" (click)="clearRival()">Ändern</button>
+        {{ name(rival) }}
       </div>
       } @else {
       <input

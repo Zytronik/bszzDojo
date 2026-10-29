@@ -143,8 +143,6 @@ export class DuelNewPage {
     rival: css({
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '10',
       layerStyle: 'surface',
       rounded: 'sm',
       px: '10',
@@ -165,10 +163,6 @@ export class DuelNewPage {
 
   protected name(user: UserSearchResult): string {
     return shownName(user);
-  }
-
-  protected clearRival(): void {
-    this.rival.set(null);
   }
 
   protected pick(user: UserSearchResult): void {
