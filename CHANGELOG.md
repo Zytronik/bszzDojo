@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.21.0](https://github.com/Zytronik/bszzDojo/compare/v3.20.0...v3.21.0) (2026-10-29)
+
+
+### Features
+
+* **web:** show the user search as a card over the dimmed page ([#110](https://github.com/Zytronik/bszzDojo/issues/110)) ([cec5b05](https://github.com/Zytronik/bszzDojo/commit/cec5b05d3ec9d373c6fc782543ab7ca7fe7d77b3))
+
 ## [3.20.0](https://github.com/Zytronik/bszzDojo/compare/v3.19.0...v3.20.0) (2026-10-29)
 
 
