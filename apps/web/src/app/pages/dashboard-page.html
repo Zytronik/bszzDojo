@@ -3,6 +3,7 @@
   description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
 />
 
+@if (duels.invitations().length > 0 || duels.open().length > 0) {
 <app-section>
   <h2>Duelle</h2>
   @for (duel of duels.invitations(); track duel.id) {
@@ -10,10 +11,8 @@
   } @for (duel of duels.open(); track duel.id) {
   <app-duel-row [duel]="duel" />
   }
-  <a routerLink="/duels/new" [class]="newDuelStyles">
-    <app-icon [icon]="boltIcon" /> Neues Duell
-  </a>
 </app-section>
+}
 
 <app-section>
   <h2>Top 10 - Allzeit</h2>

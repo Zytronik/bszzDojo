@@ -7,9 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@bszz-dojo/shared';
-import { RouterLink } from '@angular/router';
-import { css, cx } from 'styled-system/css';
-import { button } from 'styled-system/recipes';
+import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
@@ -19,8 +17,6 @@ import { withPendingRankings } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { MedalList } from '../dashboard/medal-list';
 import { toastErrors } from '../layout/toast.store';
-import { Icon } from '../ui/icon';
-import { faBolt } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
@@ -30,7 +26,6 @@ import { Tabs, type TabItem } from '../ui/tabs';
   selector: 'app-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     PageTitle,
     Section,
     Tabs,
@@ -38,7 +33,6 @@ import { Tabs, type TabItem } from '../ui/tabs';
     MedalList,
     LoadingFrame,
     DuelRow,
-    Icon,
   ],
   templateUrl: './dashboard-page.html',
 })
@@ -67,8 +61,6 @@ export class DashboardPage {
 
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
   protected readonly duels = inject(DuelsStore);
-  protected readonly boltIcon = faBolt;
-  protected readonly newDuelStyles = cx(button({ tone: 'subtle' }), css({ w: 'full' }));
 
   protected monthName(month: number): string {
     return MONTH_NAMES[month - 1] ?? '';
