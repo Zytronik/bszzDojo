@@ -68,7 +68,7 @@ export class DashboardPage {
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
   protected readonly duels = inject(DuelsStore);
   protected readonly boltIcon = faBolt;
-  protected readonly newDuelStyles = cx(button({ tone: 'subtle' }), css({ width: 'full' }));
+  protected readonly newDuelStyles = cx(button({ tone: 'subtle' }), css({ w: 'full' }));
 
   protected monthName(month: number): string {
     return MONTH_NAMES[month - 1] ?? '';
