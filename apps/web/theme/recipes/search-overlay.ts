@@ -124,7 +124,12 @@ export const searchOverlay = defineSlotRecipe({
   variants: {
     open: {
       true: {
-        root: { visibility: 'visible', opacity: '1' },
+        root: {
+          visibility: 'visible',
+          opacity: '1',
+          // Visible at once when opening, so the field can take the focus; closing still fades.
+          transitionDuration: 'token(durations.normal), 0s',
+        },
         card: { transform: 'none' },
       },
     },
