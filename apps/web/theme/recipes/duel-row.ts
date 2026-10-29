@@ -8,23 +8,19 @@ export const duelRow = defineSlotRecipe({
     line: {
       display: 'flex',
       flexWrap: 'wrap',
-      alignItems: 'center',
-      columnGap: '8',
-      rowGap: '5',
-      marginBlockStart: '5',
+      alignItems: 'baseline',
+      columnGap: '5',
     },
     badge: {
       textStyle: 'body.small',
-      fontWeight: 'bold',
+      lineHeight: 'snug',
       rounded: 'sm',
-      px: '8',
-      py: '5',
+      px: '5',
       layerStyle: 'surface',
       // A win, or the viewer's turn
       '&[data-tone=accent]': { bg: 'accent.default', color: 'fg.onAccent' },
     },
     score: {
-      fontSize: 'lg',
       fontWeight: 'bold',
       flexShrink: '0',
       whiteSpace: 'nowrap',

@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import {
   duelScoreLabel,
   duelSettingsLabel,
-  formatGermanDate,
+  CLUB_TIME_ZONE,
   otherSide,
   shownName,
   type DuelSummary,
@@ -57,7 +57,9 @@ export class DuelRow {
     const duel = this.duel();
     const settings = duelSettingsLabel(duel);
     if (duel.status !== 'finished') return settings;
-    const day = formatGermanDate(duel.updatedAt).split(', ')[1] ?? '';
+    const day = new Date(duel.updatedAt).toLocaleDateString('de-CH', {
+      timeZone: CLUB_TIME_ZONE,
+    });
     return `${settings} · ${day}`;
   });
   /** Wins and turns stand out in the accent color */
