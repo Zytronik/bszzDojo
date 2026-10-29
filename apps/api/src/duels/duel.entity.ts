@@ -45,19 +45,26 @@ export class DuelEntity {
   @Column({ type: 'smallint' })
   distance: number;
 
-  /** cm */
-  @Column({ name: 'target_size', type: 'smallint' })
-  targetSize: TargetSize;
-
-  @Column({ name: 'is_spot', type: 'boolean' })
-  isSpot: boolean;
-
   @Column({ name: 'challenger_bow', type: 'varchar', length: 4 })
   challengerBow: BowTypeId;
 
-  /** Picked by the opponent when accepting */
+  /** cm */
+  @Column({ name: 'challenger_target_size', type: 'smallint' })
+  challengerTargetSize: TargetSize;
+
+  @Column({ name: 'challenger_is_spot', type: 'boolean' })
+  challengerIsSpot: boolean;
+
+  /** Bow and face are picked by the opponent when accepting */
   @Column({ name: 'opponent_bow', type: 'varchar', length: 4, nullable: true })
   opponentBow: BowTypeId | null;
+
+  /** cm */
+  @Column({ name: 'opponent_target_size', type: 'smallint', nullable: true })
+  opponentTargetSize: TargetSize | null;
+
+  @Column({ name: 'opponent_is_spot', type: 'boolean', nullable: true })
+  opponentIsSpot: boolean | null;
 
   @Column({ type: 'varchar', length: 10 })
   status: DuelStatus;

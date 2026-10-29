@@ -63,25 +63,28 @@ export interface DuelArrow {
   shot: Shot | null;
 }
 
-/** What the challenger picks; the opponent shoots the same, with their own bow. */
+/** What the challenger picks for both; bow and face each archer picks for themselves. */
 export interface DuelSettings {
   format: DuelFormat;
   /** Meters */
   distance: number;
+}
+
+/** The face an archer shoots on */
+export interface DuelFace {
   targetSize: TargetSize;
   isSpot: boolean;
 }
 
-/** Body of `POST /api/duels` */
-export interface CreateDuelRequest extends DuelSettings {
+/** Body of `POST /api/duels`: the settings, and the challenger's bow and face */
+export interface CreateDuelRequest extends DuelSettings, DuelFace {
   /** Who is challenged */
   opponent: string;
-  /** The challenger's bow */
   bowType: BowTypeId;
 }
 
-/** Body of `POST /api/duels/:id/accept` */
-export interface AcceptDuelRequest {
+/** Body of `POST /api/duels/:id/accept`: the opponent's bow and face */
+export interface AcceptDuelRequest extends DuelFace {
   bowType: BowTypeId;
 }
 
@@ -96,6 +99,8 @@ export interface DuelEndRequest {
 export interface DuelPlayer extends UserName {
   /** `null` while the opponent hasn't accepted yet */
   bowType: BowTypeId | null;
+  /** `null` while the opponent hasn't accepted yet */
+  face: DuelFace | null;
   /**
    * The ends both have shot, plus the viewer's own next one. The other side's next end stays
    * hidden until the viewer has shot theirs too (`ahead`).
@@ -308,7 +313,7 @@ export function isDuelArrow(value: unknown): value is DuelArrow {
 /** German messages; empty when the arrows are fine for this duel and bow. */
 export function duelEndErrors(
   arrows: readonly DuelArrow[],
-  settings: Pick<DuelSettings, 'isSpot'>,
+  face: Pick<DuelFace, 'isSpot'>,
   bowType: BowTypeId,
   shootOff: boolean,
 ): string[] {
@@ -316,14 +321,14 @@ export function duelEndErrors(
   if (arrows.length !== expected) {
     return [shootOff ? 'Im Stechen zählt ein Pfeil.' : `Eine Passe hat ${expected} Pfeile.`];
   }
-  const allowed = arrowChoices(settings.isSpot, bowType);
+  const allowed = arrowChoices(face.isSpot, bowType);
   for (const arrow of arrows) {
     if (!isDuelArrow(arrow)) return ['Ungültiger Pfeil.'];
     if (shootOff && arrow.shot === null) return ['Setze den Pfeil im Stechen auf der Scheibe.'];
     if (arrow.shot) {
       if (
-        shotPoints(arrow.shot, settings.isSpot, bowType) !== arrow.points ||
-        (arrow.points === 10 && isInnerTen(arrow.shot, settings.isSpot)) !== arrow.x
+        shotPoints(arrow.shot, face.isSpot, bowType) !== arrow.points ||
+        (arrow.points === 10 && isInnerTen(arrow.shot, face.isSpot)) !== arrow.x
       ) {
         return ['Die Punkte passen nicht zum Pfeil auf der Scheibe.'];
       }
@@ -347,9 +352,12 @@ export function duelSettingsErrors(settings: DuelSettings): string[] {
   return errors;
 }
 
-/** "Satzsystem · 18m · 40cm Spot" */
+/** "Satzsystem · 18m" */
 export function duelSettingsLabel(settings: DuelSettings): string {
-  return `${DUEL_FORMAT_NAMES[settings.format]} · ${settings.distance}m · ${settings.targetSize}cm${
-    settings.isSpot ? ' Spot' : ''
-  }`;
+  return `${DUEL_FORMAT_NAMES[settings.format]} · ${settings.distance}m`;
+}
+
+/** "40cm Spot" */
+export function duelFaceLabel(face: DuelFace): string {
+  return `${face.targetSize}cm${face.isSpot ? ' Spot' : ''}`;
 }

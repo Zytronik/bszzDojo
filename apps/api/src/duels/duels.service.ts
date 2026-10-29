@@ -20,6 +20,7 @@ import {
   type Duel,
   type DuelArrow,
   type DuelEndRequest,
+  type DuelFace,
   type DuelList,
   type DuelPlayer,
   type DuelProgress,
@@ -62,6 +63,15 @@ function arrowsOf(ends: readonly DuelEndEntity[]): SidePair<SideArrows> {
     else side.ends.push(end.arrows);
   }
   return pair;
+}
+
+function faceOf(duel: DuelEntity, side: DuelSide): DuelFace | null {
+  if (side === 'challenger') {
+    return { targetSize: duel.challengerTargetSize, isSpot: duel.challengerIsSpot };
+  }
+  return duel.opponentTargetSize === null || duel.opponentIsSpot === null
+    ? null
+    : { targetSize: duel.opponentTargetSize, isSpot: duel.opponentIsSpot };
 }
 
 function bowTypes(duel: DuelEntity): SidePair<BowTypeId> {
@@ -132,10 +142,12 @@ export class DuelsService {
       opponentId: opponent.id,
       format: body.format,
       distance: body.distance,
-      targetSize: body.targetSize,
-      isSpot: body.isSpot,
       challengerBow: body.bowType,
+      challengerTargetSize: body.targetSize,
+      challengerIsSpot: body.isSpot,
       opponentBow: null,
+      opponentTargetSize: null,
+      opponentIsSpot: null,
       status: 'invited',
       winner: null,
       forfeitedBy: null,
@@ -170,7 +182,12 @@ export class DuelsService {
 
   async accept(userId: string, id: string, body: AcceptDuelRequest): Promise<Duel> {
     const duel = await this.invitation(userId, id, 'opponent');
-    await this.duels.update(duel.id, { status: 'active', opponentBow: body.bowType });
+    await this.duels.update(duel.id, {
+      status: 'active',
+      opponentBow: body.bowType,
+      opponentTargetSize: body.targetSize,
+      opponentIsSpot: body.isSpot,
+    });
     return this.get(userId, id);
   }
 
@@ -232,7 +249,9 @@ export class DuelsService {
       throw new ConflictException('Warte, bis dein Gegner seine Passe abgeschlossen hat.');
     }
     const bowType = bowTypes(duel)[side];
-    const errors = duelEndErrors(arrows, duel, bowType, body.shootOff);
+    const face = faceOf(duel, side);
+    if (!face) throw new ConflictException('Das Duell wurde noch nicht angenommen.');
+    const errors = duelEndErrors(arrows, face, bowType, body.shootOff);
     if (errors.length > 0) throw new BadRequestException(errors);
 
     try {
@@ -365,6 +384,7 @@ export class DuelsService {
         username: user.username,
         displayName: user.displayName,
         bowType: side === 'challenger' ? duel.challengerBow : duel.opponentBow,
+        face: faceOf(duel, side),
         ends: own.ends.slice(0, visible(own.ends.length, other.ends.length)),
         shootOffs: own.shootOffs.slice(
           0,
@@ -380,8 +400,6 @@ export class DuelsService {
       you,
       format: duel.format,
       distance: duel.distance,
-      targetSize: duel.targetSize,
-      isSpot: duel.isSpot,
       challenger: player('challenger'),
       opponent: player('opponent'),
       winner: duel.winner,
@@ -408,8 +426,6 @@ export class DuelsService {
         rival: { username: rival.username, displayName: rival.displayName },
         format: duel.format,
         distance: duel.distance,
-        targetSize: duel.targetSize,
-        isSpot: duel.isSpot,
         score: progress.score,
         yourTurn:
           (duel.status === 'invited' && you === 'opponent') ||

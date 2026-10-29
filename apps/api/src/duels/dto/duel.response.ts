@@ -6,6 +6,7 @@ import {
   type BowTypeId,
   type Duel,
   type DuelArrow,
+  type DuelFace,
   type DuelFormat,
   type DuelList,
   type DuelPlayer,
@@ -35,6 +36,14 @@ export class DuelArrowResponse implements DuelArrow {
   shot: ShotResponse | null;
 }
 
+export class DuelFaceResponse implements DuelFace {
+  /** cm */
+  @ApiProperty({ enum: TARGET_SIZES })
+  targetSize: TargetSize;
+
+  isSpot: boolean;
+}
+
 export class DuelPlayerResponse implements DuelPlayer {
   username: string;
 
@@ -44,6 +53,10 @@ export class DuelPlayerResponse implements DuelPlayer {
   /** `null` while the opponent hasn't accepted */
   @ApiProperty({ enum: BOW_TYPE_IDS, nullable: true })
   bowType: BowTypeId | null;
+
+  /** `null` while the opponent hasn't accepted */
+  @ApiProperty({ type: DuelFaceResponse, nullable: true })
+  face: DuelFaceResponse | null;
 
   /** The ends both have shot, plus the viewer's own next one: 3 `DuelArrow`s each */
   @ApiProperty({ type: 'array', items: { type: 'array', items: { type: 'object' } } })
@@ -59,13 +72,8 @@ class DuelSettingsResponse {
   @ApiProperty({ enum: DUEL_FORMATS })
   format: DuelFormat;
 
-  /** Meters */
+  /** Meters, for both */
   distance: number;
-
-  @ApiProperty({ enum: TARGET_SIZES })
-  targetSize: TargetSize;
-
-  isSpot: boolean;
 }
 
 export class DuelResponse extends DuelSettingsResponse implements Duel {

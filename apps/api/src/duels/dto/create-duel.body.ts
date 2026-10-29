@@ -34,6 +34,7 @@ export class CreateDuelBody implements CreateDuelRequest {
   @Max(MAX_DISTANCE, { message: DISTANCE })
   distance: number;
 
+  /** The challenger's face, cm; the opponent picks theirs when accepting */
   @ApiProperty({ enum: TARGET_SIZES })
   @IsIn(TARGET_SIZES, { message: 'Ungültige Scheibengrösse.' })
   targetSize: TargetSize;
