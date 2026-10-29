@@ -2,10 +2,19 @@ import { join } from 'node:path';
 import type { DataSourceOptions } from 'typeorm';
 import { RefreshTokenEntity } from '../auth/refresh-token.entity';
 import { BadgeEntity } from '../badges/badge.entity';
+import { DuelEndEntity } from '../duels/duel-end.entity';
+import { DuelEntity } from '../duels/duel.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
 
-const ENTITIES = [UserEntity, RefreshTokenEntity, ScoreEntity, BadgeEntity];
+const ENTITIES = [
+  UserEntity,
+  RefreshTokenEntity,
+  ScoreEntity,
+  BadgeEntity,
+  DuelEntity,
+  DuelEndEntity,
+];
 
 /**
  * Entities are listed, not globbed, so Vercel's bundler sees them. SSL comes from the connection

@@ -110,7 +110,8 @@ export interface DuelPlayer extends UserName {
 export interface Duel extends DuelSettings {
   id: string;
   status: DuelStatus;
-  you: DuelSide;
+  /** `null` for an archer who only watches */
+  you: DuelSide | null;
   challenger: DuelPlayer;
   opponent: DuelPlayer;
   winner: DuelSide | null;
