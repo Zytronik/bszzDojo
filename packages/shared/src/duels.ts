@@ -273,10 +273,14 @@ export function duelProgress({ format, bowTypes, ends, shootOffs }: DuelArrows):
   return { ends: results, score, phase: 'shootOff', next: arrows, winner: null };
 }
 
-/** "4" set points, or a total in points, with the factor when the bows differ ("285,6") */
+/**
+ * "4" set points, or a total in points with the factor when the bows differ, rounded down like
+ * the leaderboards (`adjustedResult`). Only the label: `duelProgress` compares the exact values,
+ * so "285 : 285" can still have a winner.
+ */
 export function duelScoreLabel(format: DuelFormat, value: number): string {
   if (format === 'sets') return String(value);
-  return (value / 100).toLocaleString('de-CH', { maximumFractionDigits: 2 });
+  return String(Math.floor(value / 100));
 }
 
 /** "X", "10" … "1", "M" */

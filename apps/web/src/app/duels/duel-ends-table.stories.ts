@@ -39,8 +39,8 @@ export const WithFactor: Story = {
     endName: 'Passe',
     hasPoints: false,
     rows: [
-      { ...row('1', 27, 25, null), myWeighted: '27,54', theirWeighted: '28', outcome: -1 },
-      { ...row('2', 29, 26, null), myWeighted: '29,58', theirWeighted: '29,12', outcome: 1 },
+      { ...row('1', 27, 25, null), myWeighted: '27', theirWeighted: '28', outcome: -1 },
+      { ...row('2', 29, 26, null), myWeighted: '29', theirWeighted: '29', outcome: 1 },
     ],
   },
 };

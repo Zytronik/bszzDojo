@@ -31,7 +31,7 @@ export const Sets: Story = {};
 export const TotalWithFactor: Story = {
   args: {
     right: { player: player('Roli Wegmann', 'bb') },
-    score: { left: '183,6', right: '186,48' },
+    score: { left: '183', right: '186' },
     caption: 'Passe 3 von 5 · mit Faktor',
   },
 };
