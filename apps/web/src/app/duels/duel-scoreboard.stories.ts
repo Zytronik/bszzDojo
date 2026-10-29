@@ -6,6 +6,7 @@ const player = (displayName: string, bowType: DuelPlayer['bowType']): DuelPlayer
   username: displayName.toLowerCase(),
   displayName,
   bowType,
+  face: bowType ? { targetSize: 40, isSpot: false } : null,
   ends: [],
   shootOffs: [],
   ahead: false,

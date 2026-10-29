@@ -11,7 +11,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   BOW_TYPES,
@@ -19,9 +19,10 @@ import {
   DUEL_ARROWS_PER_END,
   DUEL_FORMAT_NAMES,
   DUEL_IDLE_HOURS,
+  TARGET_SIZES,
   arrowLabel,
+  duelFaceLabel,
   duelScoreLabel,
-  duelSettingsLabel,
   endTotal,
   isInnerTen,
   shotPoints,
@@ -29,14 +30,17 @@ import {
   type BowTypeId,
   type Duel,
   type DuelArrow,
+  type DuelFace,
   type DuelSide,
   type Shot,
+  type TargetSize,
 } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
 import {
   button,
   card,
   duel as duelRecipe,
+  formRow,
   siteHeader,
   tabs,
 } from 'styled-system/recipes';
@@ -61,10 +65,11 @@ import { PageHeader } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { TargetCanvas } from '../scores/target-canvas';
+import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft, faFlag, faRotateRight, faTrophy } from '../ui/icons';
+import { faDeleteLeft, faFlag, faHourglassHalf, faRotateRight, faTrophy } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
@@ -86,6 +91,7 @@ type EntryMode = 'keys' | 'target';
     ReactiveFormsModule,
     FormField,
     FieldControl,
+    CheckboxField,
     PageHeader,
     Section,
     LoadingFrame,
@@ -226,12 +232,19 @@ export class DuelPage {
   protected readonly complete = computed(() => this.draft().every((arrow) => arrow !== null));
   protected readonly draftShots = computed(() => this.draft().map((arrow) => arrow?.shot ?? null));
   protected readonly myBow = computed((): BowTypeId => this.me()?.bowType ?? 'r');
+  protected readonly myFace = computed(
+    (): DuelFace => this.me()?.face ?? { targetSize: 40, isSpot: false },
+  );
   protected readonly sending = signal(false);
 
   // ---- Invitation ----
   protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
-  protected readonly acceptBow = new FormControl<BowTypeId>(loadDuelSetup().bowType ?? 'r', {
-    nonNullable: true,
+  protected readonly targetSizes = TARGET_SIZES;
+  private readonly setup = loadDuelSetup();
+  protected readonly acceptForm = new FormGroup({
+    bowType: new FormControl<BowTypeId>(this.setup.bowType ?? 'r', { nonNullable: true }),
+    targetSize: new FormControl<TargetSize>(this.setup.targetSize ?? 40, { nonNullable: true }),
+    isSpot: new FormControl(this.setup.isSpot ?? false, { nonNullable: true }),
   });
   protected readonly answering = signal(false);
   protected readonly confirmForfeit = signal(false);
@@ -279,26 +292,24 @@ export class DuelPage {
       opponent: them.username,
       format: duel.format,
       distance: duel.distance,
-      targetSize: duel.targetSize,
-      isSpot: duel.isSpot,
+      targetSize: this.myFace().targetSize,
+      isSpot: this.myFace().isSpot,
     };
   });
 
-  protected readonly settings = computed(() => {
-    const duel = this.loaded();
-    return duel ? duelSettingsLabel(duel) : '';
-  });
+  /** The invitation's settings, with the challenger's bow and face */
   protected readonly invitationFacts = computed(() => {
     const duel = this.loaded();
     if (!duel) return [];
+    const { challenger } = duel;
+    const whose = duel.you === 'challenger' ? 'Deine' : null;
+    const of = (what: string): string =>
+      whose ? `${whose} ${what}` : `${what} von ${shownName(challenger)}`;
     return [
       { label: 'Format', value: DUEL_FORMAT_NAMES[duel.format] },
-      {
-        label: `Bogenart von ${shownName(duel.challenger)}`,
-        value: BOW_TYPES[duel.challenger.bowType ?? 'r'].name,
-      },
-      { label: 'Scheibengrösse', value: `${duel.targetSize}cm${duel.isSpot ? ' Spot' : ''}` },
       { label: 'Distanz', value: `${duel.distance}m` },
+      { label: of('Bogenart'), value: BOW_TYPES[challenger.bowType ?? 'r'].name },
+      { label: of('Scheibe'), value: challenger.face ? duelFaceLabel(challenger.face) : '–' },
     ];
   });
   protected readonly bowHint = computed(() => {
@@ -311,6 +322,7 @@ export class DuelPage {
     delete: faDeleteLeft,
     forfeit: faFlag,
     trophy: faTrophy,
+    waiting: faHourglassHalf,
     rematch: faRotateRight,
   };
   protected readonly label = arrowLabel;
@@ -319,10 +331,21 @@ export class DuelPage {
   protected readonly headerButton = siteHeader().link;
   protected readonly tabStyles = tabs();
   protected readonly cardStyles = card({ size: 'md' });
+  protected readonly rows = formRow({ split: 'even' });
   protected readonly styles = {
     stack: css({ display: 'flex', flexDir: 'column', gap: '10' }),
     invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     inviteTitle: css({ m: '0' }),
+    waiting: css({
+      display: 'flex',
+      flexDir: 'column',
+      alignItems: 'center',
+      gap: '8',
+      textAlign: 'center',
+      paddingBlock: '15',
+      '& > h2, & > p': { m: '0' },
+    }),
+    waitingIcon: css({ fontSize: '3xl', layerStyle: 'muted' }),
     facts: css({
       layerStyle: 'surface',
       rounded: 'sm',
@@ -391,8 +414,9 @@ export class DuelPage {
   protected place(shot: Shot): void {
     const duel = this.loaded();
     if (!duel) return;
-    const points = shotPoints(shot, duel.isSpot, this.myBow());
-    this.put({ points, x: points === 10 && isInnerTen(shot, duel.isSpot), shot });
+    const { isSpot } = this.myFace();
+    const points = shotPoints(shot, isSpot, this.myBow());
+    this.put({ points, x: points === 10 && isInnerTen(shot, isSpot), shot });
   }
 
   protected removeArrow(): void {
@@ -427,12 +451,9 @@ export class DuelPage {
 
   protected accept(): Promise<void> {
     const duel = this.loaded();
-    const bowType = this.acceptBow.value;
-    if (duel) {
-      const { format, distance, targetSize, isSpot } = duel;
-      saveDuelSetup({ format, bowType, distance, targetSize, isSpot });
-    }
-    return this.answer((id) => this.api.accept(id, { bowType }));
+    const answer = this.acceptForm.getRawValue();
+    if (duel) saveDuelSetup({ format: duel.format, distance: duel.distance, ...answer });
+    return this.answer((id) => this.api.accept(id, answer));
   }
 
   protected decline(): Promise<void> {

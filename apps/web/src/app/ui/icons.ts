@@ -13,6 +13,7 @@ export {
   faFlag,
   faEllipsisVertical,
   faGear,
+  faHourglassHalf,
   faKey,
   faMagnifyingGlass,
   faMobileScreenButton,

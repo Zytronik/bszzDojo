@@ -51,27 +51,13 @@
     </div>
 
     <div [class]="rows">
-      <app-form-field label="Bogenart:" hint="Dein Gegner wählt seine beim Annehmen.">
+      <app-form-field label="Bogenart:">
         <select appFieldControl formControlName="bowType">
           @for (bowType of bowTypes; track bowType.id) {
           <option [ngValue]="bowType.id">{{ bowType.name }}</option>
           }
         </select>
       </app-form-field>
-      <app-form-field label="Scheibengrösse:">
-        <select appFieldControl formControlName="targetSize">
-          @for (size of targetSizes; track size) {
-          <option [ngValue]="size">{{ size }}cm</option>
-          }
-        </select>
-      </app-form-field>
-    </div>
-    <div [class]="rows">
-      <app-checkbox-field
-        label="Spot:"
-        [checked]="form.controls.isSpot.value"
-        (checkedChange)="form.controls.isSpot.setValue($event)"
-      />
       <app-form-field label="Distanz:">
         <input
           appFieldControl
@@ -83,8 +69,23 @@
         />
       </app-form-field>
     </div>
+    <div [class]="rows">
+      <app-form-field label="Scheibengrösse:">
+        <select appFieldControl formControlName="targetSize">
+          @for (size of targetSizes; track size) {
+          <option [ngValue]="size">{{ size }}cm</option>
+          }
+        </select>
+      </app-form-field>
+      <app-checkbox-field
+        label="Spot:"
+        [checked]="form.controls.isSpot.value"
+        (checkedChange)="form.controls.isSpot.setValue($event)"
+      />
+    </div>
     <p [class]="styles.hint">
-      Bei verschiedenen Bogenarten werden die Punkte jeder Passe mit dem Faktor der Bogenart verglichen.
+      Die Distanz gilt für beide. Bogenart und Scheibe wählt dein Gegner beim Annehmen selbst; bei
+      verschiedenen Bogenarten werden die Punkte jeder Passe mit dem Faktor verglichen.
     </p>
 
     <button type="submit" appButton [pending]="saving()">Einladung senden</button>

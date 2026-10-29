@@ -5,6 +5,7 @@ import {
   inject,
   input,
   linkedSignal,
+  resource,
   signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -20,12 +21,21 @@ import {
   isDuelFormat,
   isTargetSize,
   shownName,
+  usernameKey,
   type BowTypeId,
   type DuelFormat,
   type TargetSize,
   type UserSearchResult,
 } from '@bszz-dojo/shared';
-import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  firstValueFrom,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { css } from 'styled-system/css';
 import { duel as duelRecipe, formRow, input as inputRecipe, record, tabs } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
@@ -87,10 +97,21 @@ export class DuelNewPage {
   private readonly forms = inject(NonNullableFormBuilder);
   private readonly setup = loadDuelSetup();
 
+  /** The link only carries the username; the search finds the display name to show. */
+  private readonly linkedOpponent = resource({
+    params: () => this.opponent() || undefined,
+    loader: ({ params }) => firstValueFrom(this.users.search(params)),
+  });
   /** From the link (a profile's "Herausfordern", a rematch), else picked here */
   protected readonly rival = linkedSignal((): UserSearchResult | null => {
     const username = this.opponent();
-    return username ? { username, displayName: null } : null;
+    if (!username) return null;
+    const found = this.linkedOpponent.hasValue()
+      ? this.linkedOpponent
+          .value()
+          .find((user) => usernameKey(user.username) === usernameKey(username))
+      : undefined;
+    return found ?? { username, displayName: null };
   });
   protected readonly query = signal('');
   protected readonly suggestions = toSignal(

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { BOW_TYPES, type DuelPlayer } from '@bszz-dojo/shared';
+import { BOW_TYPES, duelFaceLabel, type DuelPlayer } from '@bszz-dojo/shared';
 import { duel } from 'styled-system/recipes';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
@@ -36,7 +36,10 @@ export class DuelScoreboard {
 
   protected readonly styles = duel();
 
+  /** "Recurve · 40cm Spot" */
   protected bowName(player: DuelPlayer): string {
-    return player.bowType ? BOW_TYPES[player.bowType].name : 'Bogenart noch offen';
+    if (!player.bowType) return 'Bogenart noch offen';
+    const bow = BOW_TYPES[player.bowType].name;
+    return player.face ? `${bow} · ${duelFaceLabel(player.face)}` : bow;
   }
 }

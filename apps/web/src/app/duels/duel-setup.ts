@@ -6,12 +6,13 @@ import {
   isRecord,
   isTargetSize,
   type BowTypeId,
+  type DuelFace,
   type DuelSettings,
 } from '@bszz-dojo/shared';
 import { loadScoreSetup } from '../scores/score-setup';
 
 /** The last duel set up or accepted on this device, which the next one starts with. */
-export interface DuelSetup extends DuelSettings {
+export interface DuelSetup extends DuelSettings, DuelFace {
   bowType: BowTypeId;
 }
 

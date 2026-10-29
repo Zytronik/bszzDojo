@@ -10,8 +10,6 @@ const duel: DuelSummary = {
   rival: { username: 'roli', displayName: 'Roli Wegmann' },
   format: 'sets',
   distance: 18,
-  targetSize: 40,
-  isSpot: true,
   score: { challenger: 4, opponent: 2 },
   yourTurn: true,
   winner: null,

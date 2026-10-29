@@ -23,7 +23,7 @@
   <app-loading-frame [loading]="!d" shape="summary">
     @if (d && p && me() && them()) {
     @if (d.status === 'invited') { @if (d.you === 'opponent') {
-    <div [class]="styles.invite">
+    <form [class]="styles.invite" [formGroup]="acceptForm" (ngSubmit)="accept()" novalidate>
       <h2 [class]="styles.inviteTitle">{{ them()! | shownName }} fordert dich heraus</h2>
       <dl [class]="styles.facts">
         @for (fact of invitationFacts(); track fact.label) {
@@ -32,34 +32,55 @@
         }
       </dl>
       <app-form-field label="Bogenart:" [hint]="bowHint()">
-        <select appFieldControl [formControl]="acceptBow">
+        <select appFieldControl formControlName="bowType">
           @for (bowType of bowTypes; track bowType.id) {
           <option [ngValue]="bowType.id">{{ bowType.name }}</option>
           }
         </select>
       </app-form-field>
+      <div [class]="rows">
+        <app-form-field label="Scheibengrösse:">
+          <select appFieldControl formControlName="targetSize">
+            @for (size of targetSizes; track size) {
+            <option [ngValue]="size">{{ size }}cm</option>
+            }
+          </select>
+        </app-form-field>
+        <app-checkbox-field
+          label="Spot:"
+          [checked]="acceptForm.controls.isSpot.value"
+          (checkedChange)="acceptForm.controls.isSpot.setValue($event)"
+        />
+      </div>
       <div [class]="styles.buttons">
-        <button type="button" appButton [pending]="answering()" (click)="accept()">
-          Annehmen
-        </button>
-        <button type="button" appButton tone="neutral" [disabled]="answering()" (click)="decline()">
+        <button type="submit" appButton [pending]="answering()">Annehmen</button>
+        <button
+          type="button"
+          appButton
+          tone="subtle"
+          [disabled]="answering()"
+          (click)="decline()"
+        >
           Ablehnen
         </button>
       </div>
-    </div>
+    </form>
     } @else {
-    <div [class]="styles.stack">
-      <app-duel-scoreboard
-        [left]="{ player: me()!, name: isPlayer() ? 'Du' : undefined }"
-        [right]="{ player: them()! }"
-        [score]="score()"
-      />
-      <h2 [class]="styles.center">Warte auf {{ them()! | shownName }}…</h2>
-      <p [class]="styles.center">
-        Sobald die Einladung angenommen ist, geht es los. Du kannst die Seite verlassen; das Duell
-        bleibt auf deiner Startseite.
-      </p>
-      <p [class]="styles.mutedCenter">{{ settings() }}</p>
+    <div [class]="styles.invite">
+      <div [class]="styles.waiting">
+        <span [class]="styles.waitingIcon"><app-icon [icon]="icons.waiting" /></span>
+        <h2>Warte auf {{ them()! | shownName }}</h2>
+        <p [class]="styles.muted">
+          Sobald die Einladung angenommen ist, geht es los. Bis dahin findest du das Duell auf deiner
+          Startseite.
+        </p>
+      </div>
+      <dl [class]="styles.facts">
+        @for (fact of invitationFacts(); track fact.label) {
+        <dt>{{ fact.label }}</dt>
+        <dd>{{ fact.value }}</dd>
+        }
+      </dl>
       @if (d.you === 'challenger') {
       <button type="button" appButton tone="subtle" [pending]="answering()" (click)="cancel()">
         Einladung zurückziehen
@@ -154,12 +175,12 @@
         <app-target-canvas
           [shots]="draftShots()"
           [selected]="selected()"
-          [isSpot]="d.isSpot"
+          [isSpot]="myFace().isSpot"
           (placed)="place($event)"
         />
       </div>
       } @else {
-      <app-arrow-keypad [isSpot]="d.isSpot" [bowType]="myBow()" (picked)="pick($event)" />
+      <app-arrow-keypad [isSpot]="myFace().isSpot" [bowType]="myBow()" (picked)="pick($event)" />
       }
       <div [class]="styles.entryButtons">
         <button
