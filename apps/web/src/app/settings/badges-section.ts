@@ -7,13 +7,12 @@ import {
   BADGE_KINDS,
   BADGE_KIND_FIELDS,
   BADGE_KIND_LABELS,
+  BADGE_KIND_TOURNAMENT_TYPES,
   BADGE_PLACES,
   BADGE_PLACE_LABELS,
   BADGE_TEXT_MAX_LENGTH,
-  BOW_TYPES,
-  BOW_TYPE_IDS,
+  BOW_TYPE_OPTIONS,
   MAX_DISTANCE,
-  BADGE_KIND_TOURNAMENT_TYPES,
   TOURNAMENT_TYPE_LABELS,
   badgeFieldErrors,
   currentClubMonth,
@@ -79,7 +78,7 @@ export class BadgesSection {
     label: `${value} (${BADGE_PLACE_LABELS[value]})`,
   }));
   protected readonly ageCategories = AGE_CATEGORIES;
-  protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
+  protected readonly bowTypes = BOW_TYPE_OPTIONS;
 
   protected readonly form = this.forms.group({
     kind: this.forms.control<BadgeKind>('sm', formRule(badgeErrors, 'kind')),

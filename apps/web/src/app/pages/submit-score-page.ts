@@ -10,16 +10,15 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
-  arrowsPerEnd,
-  BOW_TYPES,
-  BOW_TYPE_IDS,
+  BOW_TYPE_OPTIONS,
   EARLIEST_SCORE_DATE,
   MAX_ARROWS,
   MAX_DISTANCE,
   POINTS_PER_ARROW,
   TARGET_SIZES,
-  scoreFieldErrors,
+  arrowsPerEnd,
   isInnerTen,
+  scoreFieldErrors,
   shotPoints,
   shotTotals,
   todayInClub,
@@ -108,7 +107,7 @@ export class SubmitScorePage {
   ];
   protected readonly mode = signal<string>('target');
 
-  protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
+  protected readonly bowTypes = BOW_TYPE_OPTIONS;
   protected readonly targetSizes = TARGET_SIZES;
   protected readonly today = todayInClub();
   protected readonly earliestDate = EARLIEST_SCORE_DATE;

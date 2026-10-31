@@ -25,12 +25,7 @@
     @if (d.status === 'invited') { @if (d.you === 'opponent') {
     <form [class]="styles.invite" [formGroup]="acceptForm" (ngSubmit)="accept()" novalidate>
       <h2 [class]="styles.inviteTitle">{{ them()! | shownName }} fordert dich heraus</h2>
-      <dl [class]="styles.facts">
-        @for (fact of invitationFacts(); track fact.label) {
-        <dt>{{ fact.label }}</dt>
-        <dd>{{ fact.value }}</dd>
-        }
-      </dl>
+      <ng-container [ngTemplateOutlet]="facts" />
       <app-form-field label="Bogenart:" [hint]="bowHint()">
         <select appFieldControl formControlName="bowType">
           @for (bowType of bowTypes; track bowType.id) {
@@ -75,12 +70,7 @@
           Startseite.
         </p>
       </div>
-      <dl [class]="styles.facts">
-        @for (fact of invitationFacts(); track fact.label) {
-        <dt>{{ fact.label }}</dt>
-        <dd>{{ fact.value }}</dd>
-        }
-      </dl>
+      <ng-container [ngTemplateOutlet]="facts" />
       @if (d.you === 'challenger') {
       <button type="button" appButton tone="subtle" [pending]="answering()" (click)="cancel()">
         Einladung zurückziehen
@@ -248,3 +238,12 @@
   (confirmed)="forfeit()"
   (cancelled)="confirmForfeit.set(false)"
 />
+
+<ng-template #facts>
+  <dl [class]="styles.facts">
+    @for (fact of invitationFacts(); track fact.label) {
+    <dt>{{ fact.label }}</dt>
+    <dd>{{ fact.value }}</dd>
+    }
+  </dl>
+</ng-template>

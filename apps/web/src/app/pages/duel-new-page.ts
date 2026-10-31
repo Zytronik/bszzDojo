@@ -12,8 +12,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  BOW_TYPES,
-  BOW_TYPE_IDS,
+  BOW_TYPE_OPTIONS,
   DUEL_FORMATS,
   DUEL_FORMAT_NAMES,
   MAX_DISTANCE,
@@ -137,7 +136,7 @@ export class DuelNewPage {
   });
   protected readonly formatRules = computed(() => FORMAT_RULES[this.chosenFormat()]);
 
-  protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
+  protected readonly bowTypes = BOW_TYPE_OPTIONS;
   protected readonly targetSizes = TARGET_SIZES;
   protected readonly maxDistance = MAX_DISTANCE;
   protected readonly form = this.forms.group({

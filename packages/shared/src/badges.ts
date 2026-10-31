@@ -1,6 +1,6 @@
 import { BOW_TYPES, isBowTypeId, type BowTypeId } from './bow-types';
 import { currentClubMonth } from './dates';
-import { isInteger } from './guards';
+import { isInteger, isOneOf } from './guards';
 import { MAX_DISTANCE } from './scores';
 
 /*
@@ -116,19 +116,19 @@ export type BadgeDraft = { [K in keyof BadgeInput]: BadgeInput[K] | null };
 export type BadgeFieldErrors = Partial<Record<keyof BadgeInput, string>>;
 
 export function isBadgePlace(value: unknown): value is BadgePlace {
-  return typeof value === 'number' && (BADGE_PLACES as readonly number[]).includes(value);
+  return isOneOf(BADGE_PLACES, value);
 }
 
 export function isBadgeKind(value: unknown): value is BadgeKind {
-  return typeof value === 'string' && (BADGE_KINDS as readonly string[]).includes(value);
+  return isOneOf(BADGE_KINDS, value);
 }
 
 export function isTournamentType(value: unknown): value is TournamentType {
-  return typeof value === 'string' && (TOURNAMENT_TYPES as readonly string[]).includes(value);
+  return isOneOf(TOURNAMENT_TYPES, value);
 }
 
 export function isAgeCategory(value: unknown): value is AgeCategory {
-  return typeof value === 'string' && (AGE_CATEGORIES as readonly string[]).includes(value);
+  return isOneOf(AGE_CATEGORIES, value);
 }
 
 function trimmed(value: string | null): string | null {

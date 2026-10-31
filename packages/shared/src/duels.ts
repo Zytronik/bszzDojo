@@ -1,6 +1,6 @@
 import type { UserName } from './auth';
 import { BOW_TYPES, type BowTypeId } from './bow-types';
-import { isInteger, isRecord } from './guards';
+import { isInteger, isOneOf, isRecord } from './guards';
 import { MAX_DISTANCE, type TargetSize } from './scores';
 import { isInnerTen, isShot, ringCount, shotPoints, type Shot } from './target';
 
@@ -27,7 +27,7 @@ export const DUEL_INVITATION_HOURS = 24;
 export const DUEL_IDLE_HOURS = 2;
 
 export function isDuelFormat(value: unknown): value is DuelFormat {
-  return typeof value === 'string' && (DUEL_FORMATS as readonly string[]).includes(value);
+  return isOneOf(DUEL_FORMATS, value);
 }
 
 export type DuelSide = 'challenger' | 'opponent';
@@ -354,11 +354,6 @@ export function duelSettingsErrors(settings: DuelSettings): string[] {
     errors.push(`Die Distanz muss zwischen 1 und ${MAX_DISTANCE}m liegen.`);
   }
   return errors;
-}
-
-/** "Satzsystem · 18m" */
-export function duelSettingsLabel(settings: DuelSettings): string {
-  return `${DUEL_FORMAT_NAMES[settings.format]} · ${settings.distance}m`;
 }
 
 /** "40cm Spot" */
