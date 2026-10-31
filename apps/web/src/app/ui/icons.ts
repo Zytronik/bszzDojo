@@ -12,6 +12,7 @@ export {
   faDeleteLeft,
   faFlag,
   faEllipsisVertical,
+  faFaceFrown,
   faGear,
   faHeart,
   faHourglassHalf,
