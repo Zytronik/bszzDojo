@@ -1,3 +1,5 @@
+import { isOneOf } from './guards';
+
 export const BOW_TYPE_IDS = ['r', 'cp', 'tr', 'lb', 'bb'] as const;
 export type BowTypeId = (typeof BOW_TYPE_IDS)[number];
 
@@ -19,8 +21,11 @@ export const BOW_TYPES: Record<BowTypeId, BowType> = {
   bb: { name: 'Barebow', factorPercent: 112, chartColor: 'rgb(160, 0, 24)' },
 };
 
+/** For selects, in the order of `BOW_TYPE_IDS` */
+export const BOW_TYPE_OPTIONS = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
+
 export function isBowTypeId(value: unknown): value is BowTypeId {
-  return typeof value === 'string' && (BOW_TYPE_IDS as readonly string[]).includes(value);
+  return isOneOf(BOW_TYPE_IDS, value);
 }
 
 export function adjustedResult(result: number, bowType: BowTypeId): number {

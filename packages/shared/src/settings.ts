@@ -1,4 +1,4 @@
-import { isRecord } from './guards';
+import { isOneOf, isRecord } from './guards';
 
 export const THEMES = ['dark', 'light'] as const;
 export type Theme = (typeof THEMES)[number];
@@ -13,7 +13,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 };
 
 export function isTheme(value: unknown): value is Theme {
-  return typeof value === 'string' && (THEMES as readonly string[]).includes(value);
+  return isOneOf(THEMES, value);
 }
 
 /** Unknown or missing fields fall back to the defaults. */

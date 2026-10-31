@@ -45,7 +45,6 @@ export class FriendRow {
   readonly removed = output();
 
   protected readonly styles = record();
-  /** The full red heart, like on their profile */
   protected readonly buttonStyles = iconButton();
   protected readonly heartIcon = faHeart;
 }

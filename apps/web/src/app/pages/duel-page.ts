@@ -11,11 +11,12 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   BOW_TYPES,
-  BOW_TYPE_IDS,
+  BOW_TYPE_OPTIONS,
   DUEL_ARROWS_PER_END,
   DUEL_FORMAT_NAMES,
   DUEL_IDLE_HOURS,
@@ -87,6 +88,7 @@ type EntryMode = 'keys' | 'target';
   selector: 'app-duel-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgTemplateOutlet,
     RouterLink,
     ReactiveFormsModule,
     FormField,
@@ -127,7 +129,6 @@ export class DuelPage {
     return duel ? progressOf(duel) : null;
   });
 
-  // ---- From the viewer's side ----
   protected readonly sides = computed(() => {
     const duel = this.loaded();
     return duel ? sidesOf(duel) : null;
@@ -211,7 +212,6 @@ export class DuelPage {
     return `${this.endLabel()} ${progress.ends.length}: ${score}${outcome}`;
   });
 
-  // ---- Entering an end ----
   protected readonly mode = signal<EntryMode>('keys');
   /** The shoot-off is always on the target: the distance to the center decides. */
   protected readonly onTarget = computed(() => this.shootOff() || this.mode() === 'target');
@@ -238,8 +238,7 @@ export class DuelPage {
   );
   protected readonly sending = signal(false);
 
-  // ---- Invitation ----
-  protected readonly bowTypes = BOW_TYPE_IDS.map((id) => ({ id, name: BOW_TYPES[id].name }));
+  protected readonly bowTypes = BOW_TYPE_OPTIONS;
   protected readonly targetSizes = TARGET_SIZES;
   private readonly setup = loadDuelSetup();
   protected readonly acceptForm = new FormGroup({

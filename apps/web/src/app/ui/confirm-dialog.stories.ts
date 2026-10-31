@@ -17,3 +17,10 @@ type Story = StoryObj<ConfirmDialog>;
 
 export const Default: Story = {};
 export const Pending: Story = { args: { pending: true } };
+/** Another action than deleting, like giving up a duel */
+export const OtherAction: Story = {
+  args: {
+    message: 'Willst du aufgeben? Das Duell zählt dann als Niederlage.',
+    confirmLabel: 'Ja, aufgeben',
+  },
+};

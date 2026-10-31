@@ -1,7 +1,7 @@
 import type { UserName } from './auth';
 import { isBowTypeId, type BowTypeId } from './bow-types';
 import { isValidIsoDate, todayInClub, type IsoDate } from './dates';
-import { isInteger } from './guards';
+import { isInteger, isOneOf } from './guards';
 import { arrowsPerEnd, isShot, shotTotals, type Shot } from './target';
 
 /** Target face diameters in cm. */
@@ -14,7 +14,7 @@ export const POINTS_PER_ARROW = 10;
 export const EARLIEST_SCORE_DATE: IsoDate = '2000-01-01';
 
 export function isTargetSize(value: unknown): value is TargetSize {
-  return typeof value === 'number' && (TARGET_SIZES as readonly number[]).includes(value);
+  return isOneOf(TARGET_SIZES, value);
 }
 
 /** A round as it's entered, without its id */

@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
-/** Where a detail page's back link goes */
 export interface PageOrigin {
   back: string[];
   backLabel: string;

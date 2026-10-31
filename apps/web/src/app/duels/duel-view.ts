@@ -51,7 +51,7 @@ export interface EndRow {
   /** The arrows, e.g. "X 9 9" */
   myArrows: string;
   theirArrows: string;
-  /** With the factor when the bows differ, e.g. "28,56" */
+  /** With the factor when the bows differ, e.g. "28" */
   myWeighted: string | null;
   theirWeighted: string | null;
   /** Set points it gave ("2 : 0"), `null` in the total format */
