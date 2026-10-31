@@ -11,6 +11,8 @@ export const tokens = defineTokens({
     gray: {
       50: { value: 'rgb(230, 230, 230)' },
       200: { value: 'rgb(200, 200, 200)' },
+      400: { value: 'rgb(160, 160, 160)' },
+      600: { value: 'rgb(100, 100, 100)' },
       800: { value: 'rgb(40, 40, 40)' },
       900: { value: 'rgb(20, 20, 20)' },
     },
@@ -57,6 +59,8 @@ export const tokens = defineTokens({
     /** Scorecard columns with a word in their head (Passe, Summe, Total) */
     scoreLabel: { value: '50px' },
     stepNumber: { value: '28px' },
+    /** A search result: a name and the @username under it */
+    searchRow: { value: '52px' },
     header: { value: '60px' },
     footer: { value: '30px' },
     // Bootstrap 3's container widths, which the old layout used.

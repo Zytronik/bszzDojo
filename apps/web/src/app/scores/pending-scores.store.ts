@@ -186,13 +186,6 @@ export const PendingScoresStore = signalStore(
           patchState(store, { syncing: false });
         }
         if (uploaded > 0 || deleted > 0) patchState(store, { uploads: store.uploads() + 1 });
-        if (uploaded > 0) {
-          toasts.success(
-            uploaded === 1
-              ? 'Ein offline erfasster Score wurde hochgeladen.'
-              : `${uploaded} offline erfasste Scores wurden hochgeladen.`,
-          );
-        }
       };
 
       return {

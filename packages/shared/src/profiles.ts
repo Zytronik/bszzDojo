@@ -48,3 +48,16 @@ export interface Profile extends UserName {
   /** Newest first */
   history: Score[];
 }
+
+/** `GET /api/profiles/:username/history`: older rounds after the profile's first page */
+export interface ProfileHistoryQuery {
+  /** Rounds to skip, newest first */
+  offset: number;
+}
+
+export interface ProfileHistory {
+  /** Newest first, `PROFILE_HISTORY_SIZE` at most */
+  scores: Score[];
+  /** Whether there are older rounds still */
+  hasMore: boolean;
+}

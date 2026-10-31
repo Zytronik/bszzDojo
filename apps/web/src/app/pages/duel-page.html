@@ -1,0 +1,250 @@
+@let d = loaded();
+@let p = progress();
+
+<ng-template appPageHeader [back]="['/']" label="Duell" backLabel="Zurück zur Startseite">
+  @if (d?.status === 'active' && isPlayer()) {
+  <button
+    type="button"
+    [class]="headerButton"
+    aria-label="Aufgeben"
+    (click)="confirmForfeit.set(true)"
+  >
+    <app-icon [icon]="icons.forfeit" />
+  </button>
+  }
+</ng-template>
+
+@if (duel.error() && !d) {
+<app-section>
+  <app-empty-state>Das Duell konnte nicht geladen werden.</app-empty-state>
+</app-section>
+} @else {
+<app-section>
+  <app-loading-frame [loading]="!d" shape="summary">
+    @if (d && p && me() && them()) {
+    @if (d.status === 'invited') { @if (d.you === 'opponent') {
+    <form [class]="styles.invite" [formGroup]="acceptForm" (ngSubmit)="accept()" novalidate>
+      <h2 [class]="styles.inviteTitle">{{ them()! | shownName }} fordert dich heraus</h2>
+      <dl [class]="styles.facts">
+        @for (fact of invitationFacts(); track fact.label) {
+        <dt>{{ fact.label }}</dt>
+        <dd>{{ fact.value }}</dd>
+        }
+      </dl>
+      <app-form-field label="Bogenart:" [hint]="bowHint()">
+        <select appFieldControl formControlName="bowType">
+          @for (bowType of bowTypes; track bowType.id) {
+          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+          }
+        </select>
+      </app-form-field>
+      <div [class]="fieldRow">
+        <app-form-field label="Scheibengrösse:">
+          <select appFieldControl formControlName="targetSize">
+            @for (size of targetSizes; track size) {
+            <option [ngValue]="size">{{ size }}cm</option>
+            }
+          </select>
+        </app-form-field>
+        <app-checkbox-field
+          label="Spot:"
+          [checked]="acceptForm.controls.isSpot.value"
+          (checkedChange)="acceptForm.controls.isSpot.setValue($event)"
+        />
+      </div>
+      <div [class]="styles.buttons">
+        <button type="submit" appButton [pending]="answering()">Annehmen</button>
+        <button
+          type="button"
+          appButton
+          tone="subtle"
+          [disabled]="answering()"
+          (click)="decline()"
+        >
+          Ablehnen
+        </button>
+      </div>
+    </form>
+    } @else {
+    <div [class]="styles.invite">
+      <div [class]="styles.waiting">
+        <span [class]="styles.waitingIcon"><app-icon [icon]="icons.waiting" /></span>
+        <h2>Warte auf {{ them()! | shownName }}</h2>
+        <p [class]="styles.muted">
+          Sobald die Einladung angenommen ist, geht es los. Bis dahin findest du das Duell auf deiner
+          Startseite.
+        </p>
+      </div>
+      <dl [class]="styles.facts">
+        @for (fact of invitationFacts(); track fact.label) {
+        <dt>{{ fact.label }}</dt>
+        <dd>{{ fact.value }}</dd>
+        }
+      </dl>
+      @if (d.you === 'challenger') {
+      <button type="button" appButton tone="subtle" [pending]="answering()" (click)="cancel()">
+        Einladung zurückziehen
+      </button>
+      }
+    </div>
+    } } @else if (d.status === 'active' || d.status === 'finished') {
+    <div [class]="styles.stack">
+      @if (result(); as result) {
+      <div [class]="styles.center">
+        @if (result.won) {
+        <div [class]="styles.trophy"><app-icon [icon]="icons.trophy" /></div>
+        }
+        <h1>{{ result.title }}</h1>
+        @if (result.forfeit) {
+        <p [class]="styles.muted">{{ result.forfeit }}</p>
+        }
+      </div>
+      }
+      <app-duel-scoreboard
+        [left]="{ player: me()!, name: isPlayer() ? 'Du' : undefined }"
+        [right]="{ player: them()! }"
+        [score]="score()"
+        [caption]="caption()"
+      />
+      @if (rows().length > 0) {
+      <app-duel-ends-table
+        [rows]="rows()"
+        [endName]="endLabel()"
+        [leftName]="isPlayer() ? 'Du' : (me()! | shownName)"
+        [rightName]="them()! | shownName"
+        [hasPoints]="d.format === 'sets'"
+        [detailed]="d.status === 'finished'"
+      />
+      } @if (lastEnd(); as last) {
+      <p [class]="styles.mutedCenter" aria-live="polite">{{ last }}</p>
+      }
+
+      <!-- Entering the next end -->
+      @if (d.status === 'active' && isPlayer()) { @if (canShoot()) {
+      <div [class]="styles.row">
+        <h2>{{ shootOff() ? 'Stechen' : endLabel() + ' ' + (p.next + 1) }}</h2>
+        <span [class]="duelStyles.status" [attr.data-done]="them()!.ahead || null">
+          {{ them()!.ahead ? (them()! | shownName) + ': fertig ✓' : (them()! | shownName) + ' schiesst…' }}
+        </span>
+      </div>
+      @if (shootOff()) {
+      <p [class]="styles.muted">
+        Je ein Pfeil, wer näher an der Mitte ist, gewinnt. Setz deinen Pfeil möglichst genau auf der
+        Scheibe.
+      </p>
+      } @else {
+      <div [class]="tabStyles.list" role="radiogroup" aria-label="Eingabe">
+        <button
+          type="button"
+          role="radio"
+          [class]="tabStyles.trigger"
+          [attr.aria-checked]="mode() === 'keys'"
+          [attr.data-selected]="mode() === 'keys' || null"
+          (click)="mode.set('keys')"
+        >
+          Tasten
+        </button>
+        <button
+          type="button"
+          role="radio"
+          [class]="tabStyles.trigger"
+          [attr.aria-checked]="mode() === 'target'"
+          [attr.data-selected]="mode() === 'target' || null"
+          (click)="mode.set('target')"
+        >
+          Scheibe
+        </button>
+      </div>
+      }
+      <div [class]="duelStyles.slots">
+        @for (arrow of draft(); track $index; let i = $index) {
+        <button
+          type="button"
+          [class]="duelStyles.slot"
+          [attr.data-empty]="arrow === null || null"
+          [attr.aria-pressed]="i === selected()"
+          [attr.aria-label]="'Pfeil ' + (i + 1) + (arrow ? ': ' + label(arrow) : ', leer')"
+          (click)="selected.set(i)"
+        >
+          {{ arrow ? label(arrow) : '' }}
+        </button>
+        }
+      </div>
+      @if (onTarget()) {
+      <div [class]="styles.target">
+        <app-target-canvas
+          [shots]="draftShots()"
+          [selected]="selected()"
+          [isSpot]="myFace().isSpot"
+          (placed)="place($event)"
+        />
+      </div>
+      } @else {
+      <app-arrow-keypad [isSpot]="myFace().isSpot" [bowType]="myBow()" (picked)="pick($event)" />
+      }
+      <div [class]="styles.entryButtons">
+        <button
+          type="button"
+          appButton
+          tone="subtle"
+          aria-label="Pfeil löschen"
+          (click)="removeArrow()"
+        >
+          <app-icon [icon]="icons.delete" />
+        </button>
+        <button
+          type="button"
+          appButton
+          [disabled]="!complete()"
+          [pending]="sending()"
+          (click)="submitEnd()"
+        >
+          {{ shootOff() ? 'Pfeil bestätigen' : endLabel() + ' abschliessen · ' + slotTotal() }}
+        </button>
+      </div>
+      } @else if (waiting()) {
+      <p [class]="styles.center" aria-live="polite">
+        Warte auf {{ them()! | shownName }}… Du siehst die Pfeile, sobald ihr beide fertig seid.
+      </p>
+      } }
+
+      <!-- Finished -->
+      @if (d.status === 'finished' && totals(); as t) {
+      <div [class]="styles.figures">
+        <div [class]="cardStyles">
+          <p [class]="styles.muted">{{ isPlayer() ? 'Deine' : (me()! | shownName) }} Pfeile</p>
+          <p [class]="styles.figure">{{ t.mine }}</p>
+          <p [class]="styles.muted">{{ t.myAverage }} pro Pfeil</p>
+        </div>
+        <div [class]="cardStyles">
+          <p [class]="styles.muted">{{ them()! | shownName }}</p>
+          <p [class]="styles.figure">{{ t.theirs }}</p>
+          <p [class]="styles.muted">{{ t.theirAverage }} pro Pfeil</p>
+        </div>
+      </div>
+      @if (isPlayer() && rematch(); as again) {
+      <a [class]="rematchStyles" routerLink="/duels/new" [queryParams]="again">
+        <app-icon [icon]="icons.rematch" /> Revanche
+      </a>
+      } }
+    </div>
+    } @else {
+    <app-empty-state>
+      @switch (d.status) { @case ('declined') { {{ them()! | shownName }} hat die Einladung
+      abgelehnt. } @case ('cancelled') { Die Einladung wurde zurückgezogen. } @case ('expired') {
+      Die Einladung ist abgelaufen. } @default { Das Duell wurde abgebrochen: {{ idleHours }}
+      Stunden lang hat niemand geschossen. } }
+    </app-empty-state>
+    } }
+  </app-loading-frame>
+</app-section>
+}
+
+<app-confirm-dialog
+  [open]="confirmForfeit()"
+  message="Willst du aufgeben? Das Duell zählt dann als Niederlage."
+  confirmLabel="Ja, aufgeben"
+  [pending]="answering()"
+  (confirmed)="forfeit()"
+  (cancelled)="confirmForfeit.set(false)"
+/>

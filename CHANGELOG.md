@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.21.0](https://github.com/Zytronik/bszzDojo/compare/v3.20.0...v3.21.0) (2026-10-29)
+
+
+### Features
+
+* **web:** show the user search as a card over the dimmed page ([#110](https://github.com/Zytronik/bszzDojo/issues/110)) ([cec5b05](https://github.com/Zytronik/bszzDojo/commit/cec5b05d3ec9d373c6fc782543ab7ca7fe7d77b3))
+
+## [3.20.0](https://github.com/Zytronik/bszzDojo/compare/v3.19.0...v3.20.0) (2026-10-29)
+
+
+### Features
+
+* offline pill in the header, load more history and share scores ([#107](https://github.com/Zytronik/bszzDojo/issues/107)) ([eb25ac8](https://github.com/Zytronik/bszzDojo/commit/eb25ac86549b9e11073fe8209354cbf28320b2b9))
+
+## [3.19.0](https://github.com/Zytronik/bszzDojo/compare/v3.18.2...v3.19.0) (2026-10-28)
+
+
+### Features
+
+* **web:** delete scores offline and open offline rounds after saving ([#105](https://github.com/Zytronik/bszzDojo/issues/105)) ([6ddd06d](https://github.com/Zytronik/bszzDojo/commit/6ddd06db2d644f555f37b6f2f989473d1d274df0))
+
 ## [3.18.2](https://github.com/Zytronik/bszzDojo/compare/v3.18.1...v3.18.2) (2026-10-28)
 
 

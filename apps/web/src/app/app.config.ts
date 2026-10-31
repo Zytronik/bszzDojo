@@ -23,7 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withComponentInputBinding(),
-      withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      // New pages start at the top; going back returns to where the page was left.
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

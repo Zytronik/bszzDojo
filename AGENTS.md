@@ -1,355 +1,205 @@
 # AGENTS.md
 
-Guidance for AI coding agents working in this repo. Read this before making changes.
+Rules for AI agents in this repo. Details not listed here: read the code.
 
 ## Project
 
-Turborepo monorepo using npm workspaces, Node 22.
+BSZZ Dojo: the archery club's results app, an installable PWA. German UI, Swiss spelling ("ss",
+never "ß"). Archers record rounds ("Scores"), compare on leaderboards, and view profiles with
+their club badge ("Abzeichen") and tournament placings ("Auszeichnungen"), both self-recorded.
+Admins manage users. Turborepo, npm workspaces, Node 22.
 
-BSZZ Dojo is the archery club's results app (German UI, Swiss spelling: "ss", never "ß"). Archers
-log in with username and password, record their rounds ("Scores"), compare themselves on the
-leaderboards and look at each other's profiles with their club badge ("Abzeichen") and
-tournament placings ("Auszeichnungen"), both recorded by the archers themselves. Admins manage
-users. It's an installable PWA.
-
-- `apps/api`: NestJS 11. REST under the global prefix `/api` (Swagger UI at `/api`, OpenAPI JSON
-  at `/api-json`), Postgres through TypeORM. The database is Neon (Vercel Postgres).
-- `apps/web`: Angular 21, zoneless, standalone components, NgRx SignalStore for app-wide state,
-  Panda CSS for styling, `@angular/service-worker` for the PWA. Dev server on :4200 proxies `/api`
-  to :3000.
-- `packages/shared`: `@bszz-dojo/shared`, the types, DTOs, constants and pure domain rules used by
-  both apps (bow types and their handicap, score validation, dates in the club's time zone).
-  Built with tsup to CJS + ESM.
+- `apps/api`: NestJS 11, REST under `/api` (Swagger UI `/api`, JSON `/api-json`), TypeORM +
+  Postgres (Neon).
+- `apps/web`: Angular 21 zoneless, NgRx SignalStore, Panda CSS, `@angular/service-worker`. Dev
+  server :4200 proxies `/api` to :3000.
+- `packages/shared` (`@bszz-dojo/shared`): types, DTOs, constants and pure domain rules for both
+  apps; tsup to CJS + ESM. Plain TypeScript only: no decorators, no `@nestjs/*`, `@angular/*`,
+  `class-validator`, `class-transformer` imports.
 
 ## Commands
 
-Run from the repo root:
+From the root: `npm run dev` (runs pending migrations first), `build`, `typecheck`, `lint`,
+`lint:fix`, `format`; one workspace: `npx turbo run <task> --filter=api|web|@bszz-dojo/shared`.
+npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
+(`@esbuild/linux-x64`, `@rollup/rollup-linux-*`), regenerate the lockfile:
+`rm -rf node_modules package-lock.json && npm install`. API config is `apps/api/.env`
+(`.env.example`); never commit `.env` files or secrets.
 
-- `npm run dev`: shared package plus both apps in watch mode (the API runs pending migrations first)
-- `npm run build` / `npm run typecheck` / `npm run lint` / `npm run lint:fix`
-- A single workspace: `npx turbo run <task> --filter=api` (or `web`, `@bszz-dojo/shared`)
+## Code rules (Oxlint in CI, `--deny-warnings`)
 
-Use **npm only** (no pnpm or yarn). Don't hand-edit `package-lock.json`. If CI fails because a
-platform-specific package (e.g. `@esbuild/linux-x64`, `@rollup/rollup-linux-*`) is missing, the
-lockfile lost other platforms' entries (an npm bug when installing over an existing
-`node_modules`): regenerate it with `rm -rf node_modules package-lock.json && npm install`.
-
-The API reads its configuration from `apps/api/.env` (see `apps/api/.env.example`). Never commit
-`.env` files or put secrets anywhere else in the repo.
-
-## TypeScript rules (enforced by Oxlint in CI)
-
-- **Every function and method declares its return type**, including `void` and `Promise<void>`.
-  Callbacks passed to an already-typed parameter (e.g. `subscribe((user) => ...)`) are exempt.
-- **Never use `any`.** Use `unknown` and narrow it, a generic, or a proper type. This also applies
-  to values that are `any` without being written (`JSON.parse`, caught errors): annotate them as
-  `unknown`.
-- Don't silence the linter with `oxlint-disable` comments unless the reason is written next to it.
-
-## Comments
-
-- Only comment what the code can't say itself: why something is done, a non-obvious constraint,
-  units or a time base, or how the old PHP app behaved when that explains a decision.
-- Don't restate names or signatures ("Returns the profile"). If a comment is needed to explain
-  _what_ code does, prefer a clearer name.
-- JSDoc on `*.body.ts` / `*.query.ts` / `*.response.ts` fields and controller methods stays:
-  Swagger shows it.
+- Every function and method declares its return type (callbacks to typed parameters exempt).
+- No `any`, also implicit (`JSON.parse`, caught errors): use `unknown` and narrow.
+- No `oxlint-disable` without a written reason.
+- Comments only for what code can't say (why, constraints, units, old PHP app behaviour); no
+  restating names. JSDoc on `*.body.ts` / `*.query.ts` / `*.response.ts` fields and controller
+  methods stays (Swagger).
+- Prettier: single quotes, 100 columns.
 
 ## API ↔ client contract
 
-- **Every object that crosses the network has a shared type** in `packages/shared/src`, exported
-  from `index.ts`: request bodies, query params, route responses and error payloads alike.
-  No inline object types in controllers or HTTP calls, and no `Record<string, any>` payloads.
-- `packages/shared` contains plain TypeScript only: no decorators and no imports from
-  `@nestjs/*`, `@angular/*`, `class-validator` or `class-transformer`.
-- Never redefine a shared type inside an app; import it.
-- To change a payload, change the shared type first, then update both apps.
-- Validation rules that the forms and the API both need live in shared (`scoreErrors`,
-  `isValidUsername`, `ACCOUNT_FIELD_ERRORS`, …), so the form shows the same German message the
-  API would answer with. User-facing messages from the API are German and shown as they are.
+- Every object crossing the network (bodies, query params, responses, errors) has a shared type
+  exported from `packages/shared/src/index.ts`. No inline types in controllers or HTTP calls;
+  never redefine a shared type in an app. Change the shared type first, then both apps.
+- Rules the forms and the API share live in shared (`scoreErrors`, `isValidUsername`,
+  `ACCOUNT_FIELD_ERRORS`, …), so both give the same German message.
 
-## Domain rules
+## Domain
 
-- **Bow types** (`BOW_TYPES`): Recurve, Compound, Traditionell, Langbogen, Barebow, each with a
-  handicap in integer percent (`factorPercent`), applied by `adjustedResult` and rounded down.
-- **Leaderboards** (`GET /api/rankings`, built in `rankings/leaderboard.ts`): only rounds at the
-  `LEADERBOARD_DISTANCES` (18m, 8m, 30m; the first tab is the default) with exactly `LEADERBOARD_ARROWS` (30) arrows count. Each
-  archer's best round by _adjusted_ result, top 10; ties go to whoever shot it first. "Monthly"
-  is the current calendar month in `CLUB_TIME_ZONE` (Europe/Zurich), by the day it was shot.
-- **Medals**: gold 3, silver 2, bronze 1 point per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.
-- **Profiles** (`GET /api/profiles/:username`): stats, the top 3 rounds per distance, the progress
-  chart (one line per bow type per distance), Auszeichnungen and the last 15 rounds. Usernames in
-  URLs are matched ignoring case.
-- **Scores** are entered two ways (tabs on "Score erfassen", the target first and the default): only the totals, or every arrow on
-  the target (`TargetCanvas`, `ScoreSheet`). On the target the arrow count must be divisible by
-  the arrows per end (`arrowsPerEnd`: 6 at 30m, otherwise 3), `shots` holds every arrow's position (`Shot`, face units: center 0, the
-  face's edge 1; `packages/shared/src/target.ts`) and tens, nines and the result follow from them
-  (`shotPoints`: a spot has only rings 6–10, outside is a miss; for compound only the inner 10, X, counts 10 and the rest of the 10 counts 9). The API checks they match. Once an arrow is placed, the fields above the target are disabled (`SETUP_FIELDS`) until the round is saved or the tab changes. The form starts with the last saved round's bow type, target, spot, distance and arrow count, kept per device in localStorage (`scores/score-setup.ts`).
-- **Score page** (`/scores/:id`, `GET /api/scores/:id`, any archer's round): every score row links
-  to it, and saving a round opens it. It compares the round with the archer's others of the same bow type, distance and arrow
-  count (`ScoreComparison`) and, for rounds entered on the target, shows the arrows (zoomed to
-  fit, one end picked out with the tabs), the group in cm (`shotGroup`, `faceUnitsToCm`; its area leaves out the farthest tenth of the arrows, `OUTLIER_SHARE`), the end
-  totals and the ring distribution (`packages/shared/src/target-stats.ts`) and the scorecard.
+- **Bow types** (`BOW_TYPES`): handicap in integer percent (`factorPercent`), `adjustedResult`
+  rounds down.
+- **Leaderboards** (`rankings/leaderboard.ts`): only `LEADERBOARD_DISTANCES` (18, 8, 30m; first is
+  default) with `LEADERBOARD_ARROWS` (30); each archer's best adjusted round, top 10, ties to who
+  shot it first. "Monthly" = calendar month in `CLUB_TIME_ZONE` (Europe/Zurich) by day shot.
+- **Medals**: gold 3, silver 2, bronze 1 per Auszeichnung (`BADGE_PLACE_POINTS`), top 10.
+- **Profiles** (`GET /api/profiles/:username`, usernames matched ignoring case): stats, top 3 per
+  distance, progress chart, Auszeichnungen, last `PROFILE_HISTORY_SIZE` (15) rounds; "Mehr laden"
+  pages via `/history?offset=…`. Going back from a round restores the scroll position and loaded
+  pages (`restoreScrollWhen`, `ProfileHistoryMemory`).
+- **Scores**: entered as totals or arrow by arrow on the target (tab, default). On the target the
+  arrow count divides by `arrowsPerEnd` (6 at 30m, else 3); `shots` (`Shot`, face units, centre 0,
+  edge 1) determine tens, nines and result (`shotPoints`: spot only rings 6–10; compound: only X
+  counts 10). The API checks they match. Placed arrows lock `SETUP_FIELDS`. The form starts from
+  the last round's setup (localStorage, `scores/score-setup.ts`).
+- **Score page** (`/scores/:id`): compares with the archer's rounds of same bow, distance and
+  arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
+  `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
+  in the header (share sheet, else copy link), not for rounds waiting for upload.
+- Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
+  `formatGermanDate`; today is `todayInClub()`.
+- **Abzeichen** (`RANKS`, `users.rank`): one per user, set in settings, no approval.
+- **Auszeichnungen** (`badges.ts`): placings 1–3, self-recorded and deleted, no approval. Year,
+  bow type, age category (`AGE_CATEGORIES`); other fields depend on the kind
+  (`BADGE_KIND_FIELDS`, `normalizeBadgeInput`, `badgeFieldErrors`). Imported old ones only have
+  name, year and place, so details are nullable; render with `badgeTitle` / `badgeDetails`.
+- **Duels** (match play, `packages/shared/src/duels.ts`, `apps/api/src/duels/`): the challenger
+  picks format (`sets`: 3 arrows a set, 2/1/0 set points, first to 6, shoot-off at 5:5; `total`: 5
+  ends, shoot-off when level) and the distance for both; bow and face (`DuelFace`) each archer picks
+  for themselves, the opponent when accepting. Every end is compared as points × `factorPercent`
+  (`weighted`) when the bows differ. Both upload their ends (`duel_ends`, a row per side and end);
+  the other side's next end stays hidden until both shot it, and `duelProgress` decides sets,
+  shoot-off and winner on both sides. The shoot-off arrow is placed on the target, closest to the
+  center wins. The app polls (duel page 2.5s, `DuelsStore` 20s for invitations); invitations lapse
+  after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
+  scores and leaderboards.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
   anyone can add anyone with the icon button on their profile, without a confirmation and without
   appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds
   the logged-in user's list.
-- A round's day (`shotOn`) is a calendar date (`IsoDate`, `YYYY-MM-DD`), never a timestamp; format
-  dates with `formatGermanDate`. "Today" is `todayInClub()`.
-- **Abzeichen** (`RANKS`, `users.rank`): at most one per user, picked by the user in the settings
-  (`PATCH /api/users/me`), no admin approval.
-- **Auszeichnungen** (`badges`, `packages/shared/src/badges.ts`): placings 1–3 users record in the
-  settings and delete on their own profile (`/api/users/me/badges`), no admin approval and no
-  requests. Every placing has a year, bow type and age category (`AGE_CATEGORIES`: U11 … 50+).
-  The kind decides the rest (`BADGE_KIND_FIELDS`):
-  - **SM**: tournament type (`TOURNAMENT_TYPES`: FITA, Indoor, 3D, Field, Team), location and a
-    team flag, which isn't asked for when the type is "Team".
-  - **Nationales Turnier** (`tournament`): like SM plus the event name, without the team flag
-    and without the "Team" type (`BADGE_KIND_TOURNAMENT_TYPES`).
-  - **Clubturnier**: event name and distance.
-
-  `normalizeBadgeInput` clears what the kind doesn't use and `badgeFieldErrors` validates in the
-  form and the API. Placings imported from the old app are a "Nationales Turnier" with only the old
-  name (as `eventName`), year and place, so the details are nullable. Show them with `badgeTitle` /
-  `badgeDetails` (`BadgeRow`).
 
 ## Auth
 
-- Access token: JWT, 15 minutes, signed with `JWT_ACCESS_SECRET`, subject = user id. The web app
-  keeps it **in memory only** (`AuthStore`) and sends it as `Authorization: Bearer`
-  (`auth.interceptor.ts`).
-- Refresh token: random `<id>.<secret>` (`common/secret-token.ts`), stored as a sha256 hash in
-  `refresh_tokens` (one row per device, 30 days), sent only as the httpOnly cookie
-  `bszz_refresh` scoped to `/api/auth`. It's rotated on every `POST /api/auth/refresh`; logout
-  deletes that device's row; a password change deletes all of them. Never expose it to
-  JavaScript.
-- Protect REST routes with `@UseGuards(JwtAuthGuard)` and read the user with `@CurrentUser()`.
-  Admin routes add `AdminGuard`, which reads the role from the database, not the token.
-- No email addresses: an account is a **username** and a password. The username is for logging in
-  and profile URLs: 3–30 characters of letters, digits, `.`, `_` and `-` (`USERNAME_PATTERN`),
-  unique ignoring case (`username_key` = `usernameKey()`), so `Zytronik` and `zYtRoNik` are the
-  same account. The optional **display name** (`displayName`, up to 40 characters, spaces allowed)
-  is shown instead wherever it's set: always render names with `shownName()` (the `shownName`
-  pipe in templates) and link with `username`. Every shared type with a user name extends
+- Access JWT (15 min, `JWT_ACCESS_SECRET`, sub = user id) in memory only (`AuthStore`), sent as
+  Bearer. Refresh token `<id>.<secret>`, sha256-hashed in `refresh_tokens` (per device, 30 days),
+  only as httpOnly cookie `bszz_refresh` on `/api/auth`, rotated on each refresh; logout deletes
+  the device's row, a password change all. Never expose it to JS.
+- Routes: `@UseGuards(JwtAuthGuard)` + `@CurrentUser()`; admin routes add `AdminGuard` (role from
+  DB). Web: `authGuard` (→ `/login?returnUrl=…`), `adminGuard` only hides pages; the session is
+  restored in `provideAppInitializer` before guards.
+- No emails. Username (3–30 of letters, digits, `.`, `_`, `-`; unique ignoring case via
+  `usernameKey()`) for login and URLs; optional `displayName` (≤ 40). Render names with
+  `shownName()` / the `shownName` pipe, link with `username`; shared types with names extend
   `UserName`.
-- Passwords are bcrypt hashes; `$2y$` hashes from the old PHP app are accepted (`compatibleHash`).
-  There's no self-service reset (no mail); changing the password needs the current one. Admins
-  can reset a user's password to `RESET_PASSWORD` (`Test1234!`), which logs them out everywhere.
-- The session is restored at startup (`provideAppInitializer`) before guards run. Routes that need
-  a user use `authGuard`, which redirects to `/login?returnUrl=…`; `adminGuard` only hides pages.
+- bcrypt, old `$2y$` hashes accepted (`compatibleHash`). No self-service reset; admins reset to
+  `RESET_PASSWORD`, which logs the user out everywhere.
 
 ## Database
 
-- TypeORM with Postgres (`DATABASE_URL`; migrations prefer `DATABASE_URL_UNPOOLED`); options in
-  `src/database/typeorm-options.ts`, shared by the app and the CLI (`src/database/data-source.ts`).
-  Entities are listed explicitly (`ENTITIES`), not globbed, so Vercel's bundler finds them.
-- **Schema changes only through migrations** in `src/database/migrations/`; `synchronize` stays off.
-  After changing an entity, run `npm run migration:generate -w api -- src/database/migrations/<Name>`,
-  review the SQL, and commit it with the entity change.
-- Migrations never run on app startup (a serverless cold start must not migrate): `npm run dev`
-  runs them locally, and the Vercel build runs `migration:deploy` against the environment's
-  database before the deployment goes live.
-- Give columns, indexes and constraints explicit snake_case names in the entity decorators.
-- Everything that belongs to a user references it with `ON DELETE CASCADE`.
-- There are two databases: **dev** (local development and Vercel preview deployments) and
-  **prod** (the production deployment). Never point local development at prod.
+- Schema changes only via migrations (`synchronize` off): change the entity, run
+  `npm run migration:generate -w api -- src/database/migrations/<Name>`, review, commit together.
+  Migrations never run on app start: `npm run dev` locally, `migration:deploy` in the Vercel build.
+- Entities listed explicitly in `ENTITIES`. Explicit snake_case names for columns, indexes and
+  constraints. User-owned rows reference the user `ON DELETE CASCADE`.
+- Two databases: dev (local + previews) and prod. Never point local development at prod.
 
-## API conventions (`apps/api`)
+## API (`apps/api`)
 
-- Request DTOs are `*.body.ts` (or `*.query.ts`) classes with `class-validator` decorators
-  that `implements` the shared DTO.
-- Responses are `*.response.ts` classes that `implements` the shared type. Controller methods
-  return these classes so Swagger can document them.
-- Those file suffixes are required: the `@nestjs/swagger` CLI plugin only reads those files
-  (see `nest-cli.json`; add new suffixes there). Document fields with JSDoc comments instead of
-  `@ApiProperty()`.
-- Vercel bundles `src/main.ts` without the Nest CLI, so the plugin's output is generated into
-  `src/metadata.ts` (`npm run swagger:metadata -w api`, run by `dev`, `build` and `typecheck`;
-  git-ignored) and loaded in `src/swagger.ts`. Never edit it by hand.
-- One module per feature folder (`auth/`, `users/`, `scores/`, `rankings/`, `profiles/`,
-  `badges/`, `friends/`, `admin/`); cross-cutting helpers in `common/`.
-- Errors are Nest HTTP exceptions with a German message the web app can show as is.
-- `src/main.ts` is the Vercel entrypoint (NestJS zero-config): it must call `app.listen`.
+- One module per feature folder; helpers in `common/`. Errors are Nest HTTP exceptions with a
+  German message.
+- Request DTOs `*.body.ts` / `*.query.ts` (class-validator, `implements` the shared type);
+  responses `*.response.ts` classes returned by controllers. These suffixes are required by the
+  Swagger plugin (`nest-cli.json`); document fields with JSDoc, not `@ApiProperty()`.
+  `src/metadata.ts` is generated (`swagger:metadata`), never edit it.
+- `src/main.ts` is the Vercel entrypoint and must call `app.listen`. Serverless: stateless, small
+  pool, pure-JS packages.
 
-## Web conventions (`apps/web`)
+## Web (`apps/web`)
 
-- Standalone components, `ChangeDetectionStrategy.OnPush`, signals everywhere (`input()`,
-  `model()`, `computed`, `linkedSignal`, `resource`, `effect`), `inject()` (no constructor
-  injection), and `@if` / `@for` control flow. No `zone.js`.
-- **State:** app-wide state lives in NgRx SignalStores (`*.store.ts`, `providedIn: 'root'`):
-  `AuthStore`, `SettingsStore`. Components read store signals and call store methods; only stores
-  call `patchState`. Page data is loaded with `resource()` in the page; lists sit in
-  `<app-loading-frame>`, which shows an `<app-skeleton>` shaped like their rows while loading (other
-  `shape`s for charts and the score page) and keeps it invisible afterwards, so the area never shrinks below it and
-  the page doesn't jump. Never a plain "Wird geladen…". An empty list shows
-  `<app-empty-state>Keine … vorhanden.</app-empty-state>`, a centered panel that fills that area.
-- **Layout:** `pages/` holds one component per route; route params and query params arrive as
-  `input()`s (`withComponentInputBinding`). Feature code lives in `auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `friends/`, `admin/`; the frame (header, search, footer, toasts) in `layout/`; reusable pieces in `ui/`; API services and helpers in `core/`.
-- **Networking:** HTTP goes through a `*-api.service.ts` using `HttpClient` with `apiUrl()`
-  (relative `/api/...`), typed with the shared types, returning Promises (`firstValueFrom`).
-- **Forms** (`app/forms/`): reactive forms (`NonNullableFormBuilder`) with `novalidate`.
-  - Every input or select sits in `<app-form-field label="…">` and carries `appFieldControl`:
-    that links the label, styles it and shows the control's error below it (otherwise the
-    `hint`) once the field was touched.
-  - Validators come from `forms/validators.ts` (`required`, `rule`, `messageFrom`) and answer
-    with the German message to show; wrap the shared rules (`isValidUsername`,
-    `scoreFieldErrors`, …) instead of writing new ones. A shared rule over the whole form is
-    `formRule(scoreFieldErrors, 'arrows')`, with `revalidateOnChange(form)` in the constructor so
-    fields that compare each other stay in sync.
-  - On submit, `checkForm(form)` marks everything touched; if it's invalid, show `INVALID_FORM`
-    as a toast.
-- **Messages** are toasts, never banners in the page: `ToastStore.success(…)` / `.error(…)`
-  (`layout/toast.store.ts`, shown by `<app-toaster>` under the header, above dialogs). Errors
-  from the API go through `errorMessage()`; a page's `resource` errors through
-  `toastErrors(() => this.x.error())`. `AuthStore` and `SettingsStore` toast their own failures.
-  - Buttons are `<button appButton [pending]="…">`: disabled with a spinner while their request
-    runs (also the confirm button of `<app-confirm-dialog>`).
-  - Long forms open in `<app-dialog title="…">` (the `modal` recipe's `form` tone, so inputs
-    stand out) from a button in the page, like "Auszeichnung erfassen" in the settings.
-- **Icons:** Font Awesome solid icons as inline SVG through `<app-icon>`; re-export new ones from
-  `ui/icons.ts`. Interactive icons need an accessible name (`label` or the button's `aria-label`).
-- **Assets** in `public/` (logo, rank icons, favicons, iOS splash screens, the Avenir font) are
-  the old app's; keep their paths, `index.html` and the manifest reference them.
-- **Theme:** dark by default, light as an account setting (`UserSettings.theme`, saved by
-  `SettingsStore`). It's applied as `data-theme` on `<html>`. The last theme is cached in
-  localStorage only so `index.html` can apply it before the first paint. Otherwise localStorage only
-  holds per-device conveniences (the install hint, the last score setup), the last user's
-  profile for offline starts (cleared on logout) and rounds saved or deleted offline; never tokens.
-- **PWA:** `ngsw-config.json` caches the app shell and assets, and the read-only API routes every
-  user may see (`dataGroups`: rankings, profiles, scores; network first, the cached copy after 5s
-  or offline). Nothing else under `/api` is cached, never auth or the user's own account.
-- **Offline:** when the server can't be reached at startup or a refresh fails for lack of a
-  connection, `AuthStore` goes `offline` with the last user (`auth/offline-session.ts`) instead of
-  logging out, so the cached pages still open; it refreshes again on the `online` event.
-  Rounds saved without a connection wait in `PendingScoresStore` (localStorage, per user) and
-  upload one by one once there's a session with a connection again (on `online`, when the app comes
-  to the front and every 30s while rounds wait, as iOS doesn't always report the connection). A
-  request that finds no connection mid-session sets `AuthStore` offline. Rounds deleted without a
-  connection wait the same way (`deleteLater`) and are deleted on the server after the uploads.
-  Until they're synced, the dashboard and the own profile show both merged into the server's data (`withPendingRankings`
-  / `withPendingProfile` in `scores/pending-merge.ts`, same rules as the API), dimmed (the `record`
-  recipe's `data-pending`); their score page is built from the queue (without the comparison),
-  opens right after saving offline too, and loads from the API once the round is uploaded. Each carries a client UUID
-  (`CreateScoreRequest.id`), so `POST /api/scores` returns the recorded round instead of a copy
-  when an upload is repeated.
-  `navigationUrls` must exclude every server page (`/api`, `/api/**`, `/api-json`), or the service
-  worker answers them with the app, which redirects to `/`.
-  `AppUpdateService` shows a toast with "Aktualisieren" when a new version is ready. The footer shows `APP_VERSION`.
-  On a phone that doesn't run it installed, `InstallService` opens `<app-install-dialog>` once
-  after login: steps for iPhone and Android (`InstallSteps`), or Android's own prompt when the
-  browser offers one. Closing it is remembered per device in localStorage
-  (`bszz-install-hint-dismissed`); the settings can open it again.
+- Standalone, `OnPush`, signals (`input`, `model`, `computed`, `linkedSignal`, `resource`,
+  `effect`), `inject()`, `@if` / `@for`, no zone.js.
+- Folders: `pages/` (one per route; params as `input()`s), features (`auth/`, `settings/`,
+  `dashboard/`, `profile/`, `scores/`, `duels/`, `friends/`, `admin/`), `layout/` (header, search, footer, toasts),
+  `ui/`, `core/` (API services, helpers).
+- App-wide state in SignalStores (`*.store.ts`, root); only stores call `patchState`. Page data via
+  `resource()`; lists in `<app-loading-frame>` (skeleton shaped like the rows, never "Wird
+  geladen…"); empty lists `<app-empty-state>Keine … vorhanden.</app-empty-state>`.
+- HTTP via `*-api.service.ts`, `HttpClient` + `apiUrl()`, shared types, Promises.
+- Forms (`forms/`): reactive, `novalidate`; each control in `<app-form-field label>` with
+  `appFieldControl`; validators from `forms/validators.ts` wrapping shared rules; whole-form rules
+  `formRule(…)` + `revalidateOnChange(form)`; on submit `checkForm(form)`, else toast
+  `INVALID_FORM`. Long forms in `<app-dialog>`.
+- Messages are toasts (`ToastStore`), never banners; API errors via `errorMessage()`, resource
+  errors via `toastErrors()`. Buttons `<button appButton [pending]>`.
+- Icons: Font Awesome solid via `<app-icon>`, re-exported from `ui/icons.ts` (custom ones there
+  too); interactive icons need an accessible name.
+- Detail pages put a back link and their buttons in the header:
+  `<ng-template appPageHeader [back] label backLabel>` (`layout/page-header.ts`), buttons styled
+  `siteHeader().link`.
+- Theme: dark default, light per account (`UserSettings.theme`) as `data-theme` on `<html>`.
+  localStorage only for per-device conveniences (theme cache for first paint, install hint, score
+  and duel setup, recent searches), the last user for offline starts, and offline queues; never tokens.
+- `public/` assets are the old app's; keep their paths.
+- **PWA / offline**: the service worker caches the shell and read-only API routes everyone may see
+  (rankings, profiles, scores; network first, cache after 5s). `navigationUrls` must exclude
+  `/api`, `/api/**`, `/api-json`. Without a connection `AuthStore` goes `offline` with the last
+  user; the header shows a status pill (offline / syncing) instead of toasts. Rounds saved or
+  deleted offline wait in `PendingScoresStore` and sync on reconnect, app focus and every 30s;
+  pages merge them in (`scores/pending-merge.ts`, dimmed via `data-pending`). Each carries a client
+  UUID so a repeated upload isn't duplicated. `AppUpdateService` toasts new versions;
+  `InstallService` shows the install dialog once on phones.
 
 ## Styling (Panda CSS)
 
-- Panda generates `styled-system/` (`panda codegen`, run by the `dev`, `build` and `typecheck`
-  scripts; git-ignored) and its PostCSS plugin fills the layers declared in `src/styles.css`.
-- Templates can't call `css()`, so styles are created in the component class and bound with
-  `[class]`. Panda extracts them statically: style objects must be literal, never built from
-  runtime values. For variants picked at runtime, call the recipe once per variant up front
-  (see `ToastMessage`, `RankBadge`).
-- The theme lives in `apps/web/theme/`:
-  - `tokens.ts`: raw values only (the old app's colors, its 5px spacing grid, Bootstrap 3
-    container widths). Components never use raw color tokens.
-  - `semantic-tokens.ts`: what components use (`bg.canvas`, `bg.surface`, `fg.default`,
-    `accent.default`, `status.*`, `medal.*`, `rank.*`, spacing like `gutter`, `section`, `stack`).
-    The light theme is a `_light` value here, nowhere else.
-  - `text-styles.ts` (headings, body), `layer-styles.ts` (surface, canvas, divider, muted,
-    backdrop, skeleton) and `global-css.ts`.
-  - `recipes/`: `button`, `card` (a raised block: figures, facts), `container`, `emptyState`,
-    `formRow`, `iconButton`, `input`, `medal`, `rankBadge`, `spinner`, `split` (two columns from `md`) and the
-    slot recipes `checkbox`, `field`, `modal`, `record` (every list row), `scoreSheet`,
-    `searchOverlay`, `siteHeader`, `skeleton`, `steps`, `tabs`, `toast`. Prefer extending a recipe
-    over one-off `css()` when a style repeats.
-- No hard-coded colors, `!important` or escape hatches (`[...]` values): the Panda lint rules
-  reject them. The canvas target face is the exception. Other canvas drawings read tokens back
-  from CSS: charts through `chartColors()` (`core/chart-colors.ts`), the target's group marks from
-  the `group.*` variables.
-- Breakpoints are Bootstrap 3's (`sm` 768px, `md` 992px, `lg` 1200px) so the layout matches
-  the old app.
+- `styled-system/` is generated (git-ignored). Templates can't call `css()`: create styles in the
+  class and bind `[class]`. Style objects must be static literals; for runtime variants call the
+  recipe per variant up front.
+- Theme in `apps/web/theme/`: `tokens.ts` (raw, never used directly in components),
+  `semantic-tokens.ts` (what components use; light theme only as `_light` values here),
+  text/layer styles, `global-css.ts`, `recipes/`. Extend a recipe rather than repeating `css()`.
+- No hard-coded colors, `!important` or `[...]` escape hatches (canvas target face excepted;
+  charts read colors via `chartColors()`). Logical properties only. Breakpoints are Bootstrap 3's
+  (`sm` 768, `md` 992, `lg` 1200).
+- Lint: Oxlint loads the Panda plugin via `oxlint-panda-plugin.mjs` (one rule context per file),
+  single-threaded. All Panda rules on except `no-margin-properties`, `prefer-longhand-properties`,
+  `prefer-atomic-properties`, `prefer-composite-properties`.
 
-## Storybook (design system)
+## Storybook
 
-- Storybook 10 with `@storybook/angular-vite` (`apps/web/.storybook/`): `npm run storybook`
-  (http://localhost:6006; it builds the shared package first, also with `-w web`), `npm run build-storybook` (`storybook-static/`, git-ignored),
-  which CI builds too, so stories must compile.
-- Every reusable component in `ui/`, `forms/`, `profile/`, `dashboard/`, `scores/` and `friends/` has a story next to
-  it (`*.stories.ts`) with one story per meaningful state (empty, invalid, pending, …); add or
-  update it with the component. Pages and the layout frame have none.
-- Foundations (colors, typography, spacing) are MDX pages in `src/stories/`; they read the
-  semantic tokens through `token.var()`, so a new semantic token belongs in `colors.mdx`.
-- Stories follow the app's rules (return types, Panda lint, `css()` for layout, never inline
-  styles). Components using `routerLink` need
-  `applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`.
-- The toolbar's **Theme** switches `data-theme` like the account setting.
-- Storybook needs `@angular/animations` and `@angular/platform-browser-dynamic` as peers; keep
-  them on the same major version as the other Angular packages.
+Storybook 10 (`apps/web/.storybook/`), built in CI. Every reusable component in `ui/`, `forms/`,
+`profile/`, `dashboard/`, `scores/`, `duels/`, `friends/` has a `*.stories.ts` with one story per meaningful state;
+pages and layout have none. Stories follow the app rules (no inline styles). `routerLink` needs
+`applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`. New
+semantic tokens go in `src/stories/colors.mdx`. Keep its peers `@angular/animations` and
+`@angular/platform-browser-dynamic` on the Angular major.
 
-## Linting
+## Git
 
-- Oxlint everywhere (root `.oxlintrc.json`, extended per workspace). The web app also loads
-  `@pandacss/eslint-plugin` as an Oxlint JS plugin through `apps/web/oxlint-panda-plugin.mjs`,
-  which gives every file its own rule context: the plugin caches imports per context and Oxlint
-  reuses one, so without the wrapper the Panda rules silently skip most files.
-- Every Panda rule of the installed plugin is on except `no-margin-properties` (the layout
-  follows the old app's margins) and the style pairs we don't use: `prefer-longhand-properties`
-  (we prefer shorthands), `prefer-atomic-properties` and `prefer-composite-properties`. Use
-  logical properties (`paddingBlockStart`, `insetEnd`, …, `no-physical-properties`).
-- The web lint runs single-threaded: every Oxlint thread would load its own Panda context.
-- CI runs `npx turbo run lint -- --deny-warnings`: warnings fail the build too.
-- Prettier formats (`npm run format`): single quotes, 100 columns.
+- Conventional Commits: `<type>(<scope>): <summary>`; types `feat fix refactor perf test docs
+  style build ci chore`; scopes `api web shared ci deps` (none for cross-repo); imperative,
+  lowercase, no period, < 72 chars; breaking: `!` + `BREAKING CHANGE:` in the body. Body: what,
+  why, how.
+- Branches `<type>/<kebab-description>`. Never push to `main`; PRs are squash-merged, one logical
+  change each, title in commit format, description with What / Why / How, testing, follow-ups.
 
-## Git: branches, commits and PRs
+## Releases & deployment
 
-Follow [Conventional Commits](https://www.conventionalcommits.org).
-
-- **Format:** `<type>(<scope>): <summary>`, e.g. `feat(api): add score export`
-  - **Types:** `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `style`, `build`, `ci`, `chore`
-  - **Scopes** (optional): `api`, `web`, `shared`, `ci`, `deps`. Leave the scope out for changes
-    across the repo.
-  - **Summary:** imperative mood ("add", not "added"), lowercase, no trailing period, under ~72
-    characters.
-  - **Breaking changes:** add `!` after the type/scope and explain in the body under
-    `BREAKING CHANGE:`.
-- **Commit body** (optional for trivial changes): **what** changed, **why** it was needed and
-  **how** it was done if it isn't obvious from the diff, wrapped at ~72 characters.
-- **Branches:** `<type>/<short-kebab-description>`, e.g. `feat/score-export`.
-- **PRs:**
-  - Always **squash-merged**: every PR becomes exactly one commit. Never use merge commits or
-    rebase-merging, and never push to `main` directly.
-  - The title uses the commit message format; the description has **What**, **Why** and **How**
-    sections plus how it was tested and any follow-up steps.
-  - Keep one logical change per PR.
-
-## Releases
-
-- Versioning is automated with release-please (`release-please-config.json`,
-  `.github/workflows/release-please.yml`): one version for the whole repo, the root
-  `package.json` and `APP_VERSION` in `packages/shared/src/version.ts` (an `extra-files` entry
-  with the `x-release-please-version` marker).
-  After every merge to `main` it updates a release PR with the version bump and `CHANGELOG.md`;
-  merging that creates the `vX.Y.Z` tag and GitHub Release.
-- `fix` → patch, `feat` → minor, breaking (`!`) → major. That's why PR titles must follow
-  Conventional Commits.
-- Never edit versions, `CHANGELOG.md` or `.release-please-manifest.json` by hand.
-
-## Deployment
-
-- Everything runs on Vercel in **one project** with two services (`vercel.json`): `web` (the
-  Angular build, static) and `api` (NestJS as a Vercel Function). Requests to `/api/*` go to the
-  API, everything else to the web app, so both share one domain and the refresh cookie is
-  first-party. Details in `docs/deployment.md`.
-- Production deploys only for releases: Vercel doesn't deploy `main` on push
-  (`git.deploymentEnabled`); the release workflow calls a Vercel Deploy Hook once release-please
-  created a release (`.github/workflows/deploy.yml`). Every other branch and PR gets a preview
-  deployment (dev database). Never deploy production any other way.
-- The API runs as a serverless function: keep it stateless (no in-memory sessions or caches that
-  must survive a request), keep the connection pool small, and prefer pure-JS packages.
-- Production secrets live only in the Vercel project's environment variables.
+- release-please: one repo version (root `package.json`, `APP_VERSION`); `fix` → patch, `feat` →
+  minor, `!` → major. Never edit versions, `CHANGELOG.md` or the manifest by hand.
+- One Vercel project, services `web` (static) and `api` (function); `/api/*` → API on the same
+  domain. Production deploys only via the release workflow's deploy hook; branches and PRs get
+  previews (dev DB). Secrets only in Vercel env vars. Details: `docs/deployment.md`.
 
 ## Before you finish
 
-1. `npm run lint` passes with **zero warnings**.
-2. `npm run typecheck` and `npm run build` pass.
-3. Work on a branch and open a pull request.
+`npm run lint` (zero warnings), `npm run typecheck` and `npm run build` pass; work on a branch
+and open a PR.

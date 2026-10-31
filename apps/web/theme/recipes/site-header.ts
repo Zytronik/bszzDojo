@@ -2,7 +2,7 @@ import { defineSlotRecipe } from '@pandacss/dev';
 
 export const siteHeader = defineSlotRecipe({
   className: 'site-header',
-  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link'],
+  slots: ['root', 'bar', 'home', 'logo', 'nav', 'link', 'back', 'status'],
   base: {
     root: {
       layerStyle: 'surface',
@@ -35,8 +35,56 @@ export const siteHeader = defineSlotRecipe({
       _hover: { opacity: 'muted' },
       '&[aria-current=page], &[aria-expanded=true]': { color: 'accent.default' },
     },
+    /** Back from a detail page, whose bar shows its own buttons instead of the navigation */
+    back: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10',
+      minW: '0',
+      transitionProperty: 'opacity',
+      transitionDuration: 'normal',
+      // Back to the body size: the root's is the icons' and sizes are relative.
+      '& > span': {
+        fontSize: 'root',
+        // Avenir's tall ascent puts its capitals about 0.1em above the box's centre, so the name
+        // would sit higher than the icons next to it.
+        transform: 'translateY(0.1em)',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      },
+    },
+    /** A pill on the bar's lower edge while offline or uploading, instead of toasts */
+    status: {
+      position: 'absolute',
+      insetBlockStart: '100%',
+      insetInlineStart: '50%',
+      transform: 'translate(-50%, -50%)',
+      display: 'flex',
+      px: '10',
+      layerStyle: 'canvas',
+      borderWidth: 'thick',
+      borderStyle: 'solid',
+      rounded: 'full',
+      whiteSpace: 'nowrap',
+      fontSize: 'root',
+      '& > span': { display: 'flex', alignItems: 'center', gap: '5', textStyle: 'body.small' },
+    },
   },
   variants: {
+    status: {
+      offline: { status: { color: 'fg.muted', borderColor: 'fg.muted' } },
+      syncing: {
+        status: {
+          color: 'accent.default',
+          borderColor: 'accent.default',
+          '& svg': {
+            animation: 'spin',
+            '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+          },
+        },
+      },
+    },
     /** The white logo on dark, the dark logo on light */
     logo: {
       dark: { logo: { _light: { display: 'none' } } },
