@@ -50,7 +50,7 @@ import { ArrowKeypad } from '../duels/arrow-keypad';
 import { DuelEndsTable } from '../duels/duel-ends-table';
 import { DuelFacts } from '../duels/duel-facts';
 import { DuelScoreboard } from '../duels/duel-scoreboard';
-import { DuelWaiting } from '../duels/duel-waiting';
+import { DuelHeadline, type DuelHeadlineTone } from '../duels/duel-headline';
 import {
   endName,
   endRows,
@@ -71,7 +71,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft, faFlag, faRotateRight, faTrophy } from '../ui/icons';
+import { faDeleteLeft, faFlag, faRotateRight } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
@@ -90,7 +90,7 @@ type EntryMode = 'keys' | 'target';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DuelFacts,
-    DuelWaiting,
+    DuelHeadline,
     RouterLink,
     ReactiveFormsModule,
     FormField,
@@ -268,7 +268,9 @@ export class DuelPage {
           ? 'Du hast aufgegeben.'
           : `${shownName(duel[duel.forfeitedBy])} hat aufgegeben.`;
     }
-    return { title, won: this.isPlayer() && duel.winner === sides.me, forfeit };
+    const tone: DuelHeadlineTone =
+      this.isPlayer() && duel.winner !== sides.me ? 'lost' : 'won';
+    return { title, tone, forfeit };
   });
   protected readonly totals = computed(() => {
     const me = this.me();
@@ -320,10 +322,11 @@ export class DuelPage {
     return `Mit einer anderen Bogenart als ${BOW_TYPES[bow].name} zählen die Punkte jeder Passe mit dem Faktor.`;
   });
   protected readonly idleHours = DUEL_IDLE_HOURS;
+  protected readonly waitingText =
+    'Sobald die Einladung angenommen ist, geht es los. Bis dahin findest du das Duell auf deiner Startseite.';
   protected readonly icons = {
     delete: faDeleteLeft,
     forfeit: faFlag,
-    trophy: faTrophy,
     rematch: faRotateRight,
   };
   protected readonly label = arrowLabel;
@@ -335,7 +338,6 @@ export class DuelPage {
   protected readonly fieldRow = formRow({ split: 'even' });
   protected readonly styles = {
     stack: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
-    invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     inviteTitle: css({ m: '0' }),
     row: css({
       display: 'flex',
@@ -360,12 +362,6 @@ export class DuelPage {
     muted: css({ textStyle: 'body.small', layerStyle: 'muted' }),
     center: css({ textAlign: 'center' }),
     mutedCenter: css({ textStyle: 'body.small', layerStyle: 'muted', textAlign: 'center' }),
-    trophy: css({
-      fontSize: '5xl',
-      color: 'medal.gold',
-      display: 'flex',
-      justifyContent: 'center',
-    }),
     figures: css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10' }),
     figure: css({ fontSize: 'xl', fontWeight: 'bold' }),
     target: css({ maxW: 'canvas', mx: 'auto', w: 'full' }),
