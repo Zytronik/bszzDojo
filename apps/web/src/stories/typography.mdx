@@ -1,15 +1,43 @@
 import { Meta, Unstyled } from '@storybook/addon-docs/blocks';
+import { token } from 'styled-system/tokens';
 
 <Meta title="Foundations/Typography" />
 
 # Typography
 
 Avenir at an 18px root size. Headings get their text styles (`theme/text-styles.ts`) from the
-global CSS, so plain `h1`–`h3` are styled; `body.small` is for dates, hints and errors.
+global CSS, so plain `h1`–`h3` are styled; `body.small` is for dates, hints and errors, usually
+with the `muted` layer style.
+
+## Text styles
 
 <Unstyled>
   <h1>Score erfassen (heading.page)</h1>
   <h2>Top 10 - Allzeit (heading.section)</h2>
   <h3>Rekorde (heading.sub)</h3>
   <p>Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor (body)</p>
+  <p style={{ fontSize: token.var('fontSizes.sm'), opacity: token.var('opacity.muted') }}>
+    Dienstag, 20. Januar 2026 (body.small, muted)
+  </p>
 </Unstyled>
+
+## Font sizes
+
+Relative to the 18px root (`theme/tokens.ts`), so they scale with the text around them. `xl`
+and `5xl` are the duel scores, `headerIcon` the header's icons.
+
+<Unstyled>
+  {['sm', 'md', 'lg', 'xl', '2xl', 'headerIcon', '4xl', '5xl'].map((size) => (
+    <div key={size} style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 8 }}>
+      <code style={{ width: 96, fontSize: 14 }}>
+        {size} · {token(`fontSizes.${size}`)}
+      </code>
+      <span style={{ fontSize: token.var(`fontSizes.${size}`) }}>BSZZ Dojo 6 : 2</span>
+    </div>
+  ))}
+</Unstyled>
+
+## Weights and line heights
+
+`normal` (400) and `bold` (700); line heights `none` (1, big figures like the duel score),
+`snug` (1.2, headings) and `normal` (1.43, body text).
