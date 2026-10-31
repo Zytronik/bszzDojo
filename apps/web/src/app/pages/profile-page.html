@@ -11,27 +11,29 @@
       <h1>{{ p | shownName }}</h1>
       @if (isOwnProfile()) {
       <a [class]="iconButton" routerLink="/friends" aria-label="Meine Freunde">
-        <app-icon [icon]="icons.friends" />
+        <app-icon [icon]="heartIcon" />
       </a>
       } @else if (friends.isFriend(p.username)) {
       <button
         type="button"
         [class]="iconButton"
+        aria-pressed="true"
         [attr.aria-label]="(p | shownName) + ' als Freund entfernen'"
         [disabled]="friends.changing() === p.username"
         (click)="friends.remove(p)"
       >
-        <app-icon [icon]="icons.remove" />
+        <app-icon [icon]="heartIcon" />
       </button>
       } @else {
       <button
         type="button"
         [class]="iconButton"
+        aria-pressed="false"
         [attr.aria-label]="(p | shownName) + ' als Freund hinzufügen'"
         [disabled]="friends.changing() === p.username"
         (click)="friends.add(p)"
       >
-        <app-icon [icon]="icons.add" />
+        <app-icon [icon]="heartIcon" />
       </button>
       }
     </div>

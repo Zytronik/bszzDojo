@@ -35,7 +35,7 @@ import { FriendsStore } from '../friends/friends.store';
 import { ProfileHistoryMemory } from '../profile/profile-history-memory';
 import { ProgressChart } from '../profile/progress-chart';
 import { Icon } from '../ui/icon';
-import { faBolt, faUserGroup, faUserMinus, faUserPlus } from '../ui/icons';
+import { faBolt, faHeart } from '../ui/icons';
 import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
@@ -154,7 +154,7 @@ export class ProfilePage {
   protected readonly deleting = signal(false);
 
   protected readonly friends = inject(FriendsStore);
-  protected readonly icons = { add: faUserPlus, remove: faUserMinus, friends: faUserGroup };
+  protected readonly heartIcon = faHeart;
   protected readonly iconButton = iconButton();
   protected readonly pageStyles = {
     nameRow: css({

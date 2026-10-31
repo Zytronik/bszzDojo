@@ -13,6 +13,8 @@ export {
   faFlag,
   faEllipsisVertical,
   faGear,
+  faHeart,
+  faHeartCrack,
   faHourglassHalf,
   faKey,
   faMagnifyingGlass,
@@ -21,9 +23,6 @@ export {
   faSquarePlus,
   faTrophy,
   faUser,
-  faUserGroup,
-  faUserMinus,
-  faUserPlus,
   faWifi,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';

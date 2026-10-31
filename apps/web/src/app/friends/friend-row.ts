@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import type { Friend } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
-import { faUserMinus } from '../ui/icons';
+import { faHeartCrack } from '../ui/icons';
 import { RankBadge } from '../ui/rank-badge';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
@@ -44,5 +44,5 @@ export class FriendRow {
   readonly removed = output();
 
   protected readonly styles = record();
-  protected readonly removeIcon = faUserMinus;
+  protected readonly removeIcon = faHeartCrack;
 }
