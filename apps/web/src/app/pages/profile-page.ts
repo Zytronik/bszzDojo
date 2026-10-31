@@ -43,7 +43,6 @@ import { ScoreRow } from '../profile/score-row';
 import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
-import { Icon } from '../ui/icon';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 import { LoadingFrame } from '../ui/loading-frame';
