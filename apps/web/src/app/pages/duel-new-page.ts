@@ -47,7 +47,7 @@ import { DuelsStore } from '../duels/duels.store';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
-import { PageHeader } from '../layout/page-header';
+import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore } from '../layout/toast.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { Section } from '../ui/section';
@@ -89,6 +89,7 @@ export class DuelNewPage {
   readonly isSpot = input<string>();
 
   private readonly api = inject(DuelsApiService);
+  protected readonly from = inject(PageHeaderState).duelOrigin();
   private readonly users = inject(UsersApiService);
   private readonly auth = inject(AuthStore);
   private readonly duels = inject(DuelsStore);
