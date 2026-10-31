@@ -14,7 +14,6 @@ export {
   faEllipsisVertical,
   faGear,
   faHeart,
-  faHeartCrack,
   faHourglassHalf,
   faKey,
   faMagnifyingGlass,

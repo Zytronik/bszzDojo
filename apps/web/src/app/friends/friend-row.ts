@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Friend } from '@bszz-dojo/shared';
-import { record } from 'styled-system/recipes';
+import { iconButton, record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
-import { faHeartCrack } from '../ui/icons';
+import { faHeart } from '../ui/icons';
 import { RankBadge } from '../ui/rank-badge';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 
@@ -27,12 +27,13 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
     <div [class]="styles.actions">
       <button
         type="button"
-        [class]="styles.action"
+        [class]="buttonStyles"
+        aria-pressed="true"
         [attr.aria-label]="(friend() | shownName) + ' als Freund entfernen'"
         [disabled]="pending()"
         (click)="removed.emit()"
       >
-        <app-icon [icon]="removeIcon" />
+        <app-icon [icon]="heartIcon" />
       </button>
     </div>
   `,
@@ -44,5 +45,7 @@ export class FriendRow {
   readonly removed = output();
 
   protected readonly styles = record();
-  protected readonly removeIcon = faHeartCrack;
+  /** The full red heart, like on their profile */
+  protected readonly buttonStyles = iconButton();
+  protected readonly heartIcon = faHeart;
 }
