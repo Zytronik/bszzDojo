@@ -51,6 +51,13 @@ export const routes: Routes = [
     title: title('Duell'),
   },
   {
+    path: 'friends',
+    loadComponent: (): Promise<Type<unknown>> =>
+      import('./pages/friends-page').then((m) => m.FriendsPage),
+    canActivate: [authGuard],
+    title: title('Freunde'),
+  },
+  {
     path: 'settings',
     component: SettingsPage,
     canActivate: [authGuard],

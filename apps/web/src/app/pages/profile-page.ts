@@ -21,7 +21,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
 import { css, cx } from 'styled-system/css';
-import { button } from 'styled-system/recipes';
+import { button, iconButton } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage, isUnreachable } from '../core/error-message';
 import { restoreScrollWhen } from '../core/restore-scroll';
@@ -31,8 +31,11 @@ import { DuelRow } from '../duels/duel-row';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
+import { FriendsStore } from '../friends/friends.store';
 import { ProfileHistoryMemory } from '../profile/profile-history-memory';
 import { ProgressChart } from '../profile/progress-chart';
+import { Icon } from '../ui/icon';
+import { faBolt, faHeart, faHeartOutline } from '../ui/icons';
 import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
@@ -40,8 +43,6 @@ import { ScoreRow } from '../profile/score-row';
 import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
-import { Icon } from '../ui/icon';
-import { faBolt } from '../ui/icons';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 import { LoadingFrame } from '../ui/loading-frame';
@@ -152,7 +153,18 @@ export class ProfilePage {
   protected readonly badgeToDelete = signal<string | null>(null);
   protected readonly deleting = signal(false);
 
+  protected readonly friends = inject(FriendsStore);
+  protected readonly icons = { heart: faHeart, outline: faHeartOutline };
+  protected readonly iconButton = iconButton();
   protected readonly pageStyles = {
+    nameRow: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '15',
+      marginBlockEnd: '5',
+      '& h1': { marginBlockEnd: '0' },
+    }),
     rankRow: css({
       display: 'flex',
       alignItems: 'center',

@@ -7,6 +7,7 @@ import { pageContainer } from './container';
 import { emptyState } from './empty-state';
 import { field } from './field';
 import { formRow } from './form-row';
+import { iconButton } from './icon-button';
 import { input } from './input';
 import { medal } from './medal';
 import { modal } from './modal';
@@ -28,6 +29,7 @@ export const recipes = {
   pageContainer,
   emptyState,
   formRow,
+  iconButton,
   input,
   medal,
   rankBadge,

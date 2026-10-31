@@ -1,0 +1,18 @@
+<app-page-title title="Freunde" description="Die Schützen, die du als Freunde hinzugefügt hast." />
+
+<app-section>
+  <app-loading-frame [loading]="friends.friends() === null" [lines]="2">
+    @if (friends.friends(); as list) { @for (friend of list; track friend.username) {
+    <app-friend-row
+      [friend]="friend"
+      [pending]="friends.changing() === friend.username"
+      (removed)="friends.remove(friend)"
+    />
+    } @empty {
+    <app-empty-state>Keine Freunde vorhanden.</app-empty-state>
+    } }
+  </app-loading-frame>
+  <p [class]="hintStyles">
+    Suche jemanden über die Lupe oben und füge ihn auf seinem Profil als Freund hinzu.
+  </p>
+</app-section>

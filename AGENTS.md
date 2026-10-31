@@ -82,6 +82,10 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   center wins. The app polls (duel page 2.5s, `DuelsStore` 20s for invitations); invitations lapse
   after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
   scores and leaderboards.
+- **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
+  anyone can add anyone with the icon button on their profile, without a confirmation and without
+  appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds
+  the logged-in user's list.
 
 ## Auth
 
@@ -124,7 +128,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 - Standalone, `OnPush`, signals (`input`, `model`, `computed`, `linkedSignal`, `resource`,
   `effect`), `inject()`, `@if` / `@for`, no zone.js.
 - Folders: `pages/` (one per route; params as `input()`s), features (`auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `duels/`, `admin/`), `layout/` (header, search, footer, toasts),
+  `dashboard/`, `profile/`, `scores/`, `duels/`, `friends/`, `admin/`), `layout/` (header, search, footer, toasts),
   `ui/`, `core/` (API services, helpers).
 - App-wide state in SignalStores (`*.store.ts`, root); only stores call `patchState`. Page data via
   `resource()`; lists in `<app-loading-frame>` (skeleton shaped like the rows, never "Wird
@@ -172,7 +176,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 ## Storybook
 
 Storybook 10 (`apps/web/.storybook/`), built in CI. Every reusable component in `ui/`, `forms/`,
-`profile/`, `dashboard/`, `scores/`, `duels/` has a `*.stories.ts` with one story per meaningful state;
+`profile/`, `dashboard/`, `scores/`, `duels/`, `friends/` has a `*.stories.ts` with one story per meaningful state;
 pages and layout have none. Stories follow the app rules (no inline styles). `routerLink` needs
 `applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`. New
 semantic tokens go in `src/stories/colors.mdx`. Keep its peers `@angular/animations` and
