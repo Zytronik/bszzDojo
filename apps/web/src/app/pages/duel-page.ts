@@ -306,9 +306,8 @@ export class DuelPage {
     const duel = this.loaded();
     if (!duel) return [];
     const { challenger } = duel;
-    const whose = duel.you === 'challenger' ? 'Deine' : null;
-    const of = (what: string): string =>
-      whose ? `${whose} ${what}` : `${what} von ${shownName(challenger)}`;
+    // The title already names the challenger; on the own invitation it's "Deine …".
+    const of = (what: string): string => (duel.you === 'challenger' ? `Deine ${what}` : what);
     return [
       { label: 'Format', value: DUEL_FORMAT_NAMES[duel.format] },
       { label: 'Distanz', value: `${duel.distance}m` },

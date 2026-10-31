@@ -19,14 +19,14 @@ type Story = StoryObj<DuelFacts>;
 
 /** The challenger's own invitation */
 export const Own: Story = {};
-/** An invitation from someone else, with their bow type and face */
+/** An invitation from someone else: the title above names them */
 export const Received: Story = {
   args: {
     facts: [
       { label: 'Format', value: 'Gesamtpunkte' },
       { label: 'Distanz', value: '30m' },
-      { label: 'Bogenart von Roli Wegmann', value: 'Traditionell' },
-      { label: 'Scheibe von Roli Wegmann', value: '80cm' },
+      { label: 'Bogenart', value: 'Traditionell' },
+      { label: 'Scheibe', value: '80cm' },
     ],
   },
 };
