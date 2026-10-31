@@ -12,6 +12,12 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
+/** Where a detail page's back link goes */
+export interface PageOrigin {
+  back: string[];
+  backLabel: string;
+}
+
 /** What a detail page shows in the header instead of the logo and the navigation */
 export interface PageHeaderBar {
   back: readonly string[];
@@ -33,6 +39,7 @@ export class PageHeaderState {
   private readonly location = inject(Location);
   private previousUrl: string | null = null;
   private currentUrl: string | null = null;
+  private lastDuelOrigin: PageOrigin | null = null;
 
   constructor() {
     this.router.events.subscribe((event) => {
@@ -40,6 +47,21 @@ export class PageHeaderState {
       this.previousUrl = this.currentUrl;
       this.currentUrl = event.urlAfterRedirects;
     });
+  }
+
+  /**
+   * Where a duel page leads back to: the profile it was opened from, else the dashboard. Call it
+   * when the page is created, which is before its `NavigationEnd`: `currentUrl` is still the page
+   * it came from. Moving between duel pages (new duel → duel → rematch) keeps the first origin.
+   */
+  duelOrigin(): PageOrigin {
+    const path = this.currentUrl?.split(/[?#]/)[0] ?? '';
+    if (path.startsWith('/duels/') && this.lastDuelOrigin) return this.lastDuelOrigin;
+    const profile = /^\/profile\/([^/]+)$/.exec(path)?.[1];
+    this.lastDuelOrigin = profile
+      ? { back: ['/profile', decodeURIComponent(profile)], backLabel: 'Zurück zum Profil' }
+      : { back: ['/'], backLabel: 'Zurück zur Startseite' };
+    return this.lastDuelOrigin;
   }
 
   urlOf(back: readonly string[]): string {

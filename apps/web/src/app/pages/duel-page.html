@@ -1,7 +1,7 @@
 @let d = loaded();
 @let p = progress();
 
-<ng-template appPageHeader [back]="['/']" label="Duell" backLabel="Zurück zur Startseite">
+<ng-template appPageHeader [back]="from.back" label="Duell" [backLabel]="from.backLabel">
   @if (d?.status === 'active' && isPlayer()) {
   <button
     type="button"

@@ -61,7 +61,7 @@ import {
 import { DuelsStore } from '../duels/duels.store';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
-import { PageHeader } from '../layout/page-header';
+import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { TargetCanvas } from '../scores/target-canvas';
@@ -111,6 +111,7 @@ export class DuelPage {
   readonly id = input.required<string>();
 
   private readonly api = inject(DuelsApiService);
+  protected readonly from = inject(PageHeaderState).duelOrigin();
   private readonly duels = inject(DuelsStore);
   private readonly toasts = inject(ToastStore);
 

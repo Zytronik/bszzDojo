@@ -1,4 +1,4 @@
-<ng-template appPageHeader [back]="['/']" label="Neues Duell" backLabel="Zurück zur Startseite" />
+<ng-template appPageHeader [back]="from.back" label="Neues Duell" [backLabel]="from.backLabel" />
 
 <app-section>
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
