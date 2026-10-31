@@ -36,6 +36,21 @@ export const routes: Routes = [
     title: title('Score'),
   },
   {
+    path: 'duels/new',
+    canActivate: [authGuard],
+    loadComponent: (): Promise<Type<unknown>> =>
+      import('./pages/duel-new-page').then((m) => m.DuelNewPage),
+    title: title('Neues Duell'),
+  },
+  {
+    // After `duels/new`, which would match too.
+    path: 'duels/:id',
+    canActivate: [authGuard],
+    loadComponent: (): Promise<Type<unknown>> =>
+      import('./pages/duel-page').then((m) => m.DuelPage),
+    title: title('Duell'),
+  },
+  {
     path: 'settings',
     component: SettingsPage,
     canActivate: [authGuard],

@@ -1,0 +1,93 @@
+<ng-template appPageHeader [back]="['/']" label="Neues Duell" backLabel="Zurück zur Startseite" />
+
+<app-section>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div [class]="styles.block">
+      <span [class]="styles.label">Gegner:</span>
+      @if (rival(); as rival) {
+      <div [class]="styles.rival">
+        {{ name(rival) }}
+      </div>
+      } @else {
+      <input
+        #search
+        type="search"
+        [class]="searchStyles"
+        placeholder="Name eingeben"
+        aria-label="Gegner suchen"
+        autocomplete="off"
+        [value]="query()"
+        (input)="query.set(search.value)"
+      />
+      @for (user of suggestions(); track user.username) {
+      <div [class]="suggestionStyles.root">
+        <button type="button" [class]="duelStyles.suggestion" (click)="pick(user)">
+          {{ name(user) }} @if (user.displayName) {<span [class]="suggestionStyles.meta"
+            >&#64;{{ user.username }}</span
+          >}
+        </button>
+      </div>
+      }
+      }
+    </div>
+
+    <div [class]="styles.block">
+      <span [class]="styles.label">Format:</span>
+      <div [class]="tabStyles.list" role="radiogroup" aria-label="Format">
+        @for (format of formats; track format.id) {
+        <button
+          type="button"
+          role="radio"
+          [class]="tabStyles.trigger"
+          [attr.aria-checked]="chosenFormat() === format.id"
+          [attr.data-selected]="chosenFormat() === format.id || null"
+          (click)="chosenFormat.set(format.id)"
+        >
+          {{ format.name }}
+        </button>
+        }
+      </div>
+      <p [class]="styles.hint">{{ formatRules() }}</p>
+    </div>
+
+    <div [class]="rows">
+      <app-form-field label="Bogenart:">
+        <select appFieldControl formControlName="bowType">
+          @for (bowType of bowTypes; track bowType.id) {
+          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+          }
+        </select>
+      </app-form-field>
+      <app-form-field label="Distanz:">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          min="1"
+          [max]="maxDistance"
+          formControlName="distance"
+        />
+      </app-form-field>
+    </div>
+    <div [class]="rows">
+      <app-form-field label="Scheibengrösse:">
+        <select appFieldControl formControlName="targetSize">
+          @for (size of targetSizes; track size) {
+          <option [ngValue]="size">{{ size }}cm</option>
+          }
+        </select>
+      </app-form-field>
+      <app-checkbox-field
+        label="Spot:"
+        [checked]="form.controls.isSpot.value"
+        (checkedChange)="form.controls.isSpot.setValue($event)"
+      />
+    </div>
+    <p [class]="styles.hint">
+      Die Distanz gilt für beide. Bogenart und Scheibe wählt dein Gegner beim Annehmen selbst; bei
+      verschiedenen Bogenarten werden die Punkte jeder Passe mit dem Faktor verglichen.
+    </p>
+
+    <button type="submit" appButton [pending]="saving()">Einladung senden</button>
+  </form>
+</app-section>

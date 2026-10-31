@@ -72,6 +72,16 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   bow type, age category (`AGE_CATEGORIES`); other fields depend on the kind
   (`BADGE_KIND_FIELDS`, `normalizeBadgeInput`, `badgeFieldErrors`). Imported old ones only have
   name, year and place, so details are nullable; render with `badgeTitle` / `badgeDetails`.
+- **Duels** (match play, `packages/shared/src/duels.ts`, `apps/api/src/duels/`): the challenger
+  picks format (`sets`: 3 arrows a set, 2/1/0 set points, first to 6, shoot-off at 5:5; `total`: 5
+  ends, shoot-off when level) and the distance for both; bow and face (`DuelFace`) each archer picks
+  for themselves, the opponent when accepting. Every end is compared as points × `factorPercent`
+  (`weighted`) when the bows differ. Both upload their ends (`duel_ends`, a row per side and end);
+  the other side's next end stays hidden until both shot it, and `duelProgress` decides sets,
+  shoot-off and winner on both sides. The shoot-off arrow is placed on the target, closest to the
+  center wins. The app polls (duel page 2.5s, `DuelsStore` 20s for invitations); invitations lapse
+  after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
+  scores and leaderboards.
 
 ## Auth
 
@@ -114,7 +124,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 - Standalone, `OnPush`, signals (`input`, `model`, `computed`, `linkedSignal`, `resource`,
   `effect`), `inject()`, `@if` / `@for`, no zone.js.
 - Folders: `pages/` (one per route; params as `input()`s), features (`auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `admin/`), `layout/` (header, search, footer, toasts),
+  `dashboard/`, `profile/`, `scores/`, `duels/`, `admin/`), `layout/` (header, search, footer, toasts),
   `ui/`, `core/` (API services, helpers).
 - App-wide state in SignalStores (`*.store.ts`, root); only stores call `patchState`. Page data via
   `resource()`; lists in `<app-loading-frame>` (skeleton shaped like the rows, never "Wird
@@ -133,7 +143,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   `siteHeader().link`.
 - Theme: dark default, light per account (`UserSettings.theme`) as `data-theme` on `<html>`.
   localStorage only for per-device conveniences (theme cache for first paint, install hint, score
-  setup, recent searches), the last user for offline starts, and offline queues; never tokens.
+  and duel setup, recent searches), the last user for offline starts, and offline queues; never tokens.
 - `public/` assets are the old app's; keep their paths.
 - **PWA / offline**: the service worker caches the shell and read-only API routes everyone may see
   (rankings, profiles, scores; network first, cache after 5s). `navigationUrls` must exclude
@@ -162,7 +172,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 ## Storybook
 
 Storybook 10 (`apps/web/.storybook/`), built in CI. Every reusable component in `ui/`, `forms/`,
-`profile/`, `dashboard/`, `scores/` has a `*.stories.ts` with one story per meaningful state;
+`profile/`, `dashboard/`, `scores/`, `duels/` has a `*.stories.ts` with one story per meaningful state;
 pages and layout have none. Stories follow the app rules (no inline styles). `routerLink` needs
 `applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`. New
 semantic tokens go in `src/stories/colors.mdx`. Keep its peers `@angular/animations` and

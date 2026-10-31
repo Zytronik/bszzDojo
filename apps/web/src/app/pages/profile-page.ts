@@ -13,17 +13,21 @@ import {
   usernameKey,
   type DistanceProgress,
   type PersonalBests,
+  type DuelRecord,
   type ProfileHistory,
   type RankedScore,
   type Score,
 } from '@bszz-dojo/shared';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
-import { css } from 'styled-system/css';
+import { css, cx } from 'styled-system/css';
+import { button } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage, isUnreachable } from '../core/error-message';
 import { restoreScrollWhen } from '../core/restore-scroll';
 import { BadgesApiService } from '../core/badges-api.service';
+import { DuelsApiService } from '../core/duels-api.service';
+import { DuelRow } from '../duels/duel-row';
 import { ProfilesApiService } from '../core/profiles-api.service';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoresApiService } from '../core/scores-api.service';
@@ -36,6 +40,8 @@ import { ScoreRow } from '../profile/score-row';
 import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
+import { Icon } from '../ui/icon';
+import { faBolt } from '../ui/icons';
 import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 import { LoadingFrame } from '../ui/loading-frame';
@@ -56,6 +62,9 @@ import { Tabs, type TabItem } from '../ui/tabs';
     ShownNamePipe,
     LoadingFrame,
     EmptyState,
+    RouterLink,
+    Icon,
+    DuelRow,
   ],
   templateUrl: './profile-page.html',
 })
@@ -72,6 +81,14 @@ export class ProfilePage {
     params: () => ({ username: this.username() }),
     loader: ({ params }) => this.profiles.get(params.username),
   });
+
+  private readonly duelsApi = inject(DuelsApiService);
+  protected readonly duels = resource({
+    params: () => ({ username: this.username() }),
+    loader: ({ params }) => this.duelsApi.ofProfile(params.username),
+  });
+  protected readonly boltIcon = faBolt;
+  protected readonly challengeStyles = cx(button(), css({ marginBlockStart: '15' }));
 
   protected readonly isOwnProfile = computed(
     () => usernameKey(this.username()) === usernameKey(this.auth.username()),
@@ -150,6 +167,17 @@ export class ProfilePage {
       paddingBlockStart: '10',
     }),
     stat: css({ display: 'flex', gap: '15' }),
+    duelFigures: css({
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: '10',
+      marginBlockEnd: '10',
+    }),
+    duelFigure: css({ layerStyle: 'surface', rounded: 'sm', p: '15', textAlign: 'center' }),
+    duelNumber: css({ fontSize: '2xl', fontWeight: 'bold' }),
+    duelWins: css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' }),
+    duelCaption: css({ textStyle: 'body.small', layerStyle: 'muted' }),
+    duelAgainst: css({ my: '10' }),
   };
 
   constructor() {
@@ -157,6 +185,11 @@ export class ProfilePage {
     reloadAfterUploads(this.pendingScores, () => this.profile.reload());
     restoreScrollWhen(() => this.profile.hasValue());
     inject(DestroyRef).onDestroy(() => this.historyMemory.save(this.username(), this.older()));
+  }
+
+  protected winRate(record: DuelRecord): string {
+    const played = record.wins + record.losses;
+    return played === 0 ? '–' : `${Math.round((record.wins / played) * 100)}%`;
   }
 
   protected async loadMore(): Promise<void> {

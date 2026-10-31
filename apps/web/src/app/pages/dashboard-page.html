@@ -3,6 +3,17 @@
   description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
 />
 
+@if (duels.invitations().length > 0 || duels.open().length > 0) {
+<app-section>
+  <h2>Duelle</h2>
+  @for (duel of duels.invitations(); track duel.id) {
+  <app-duel-row [duel]="duel" />
+  } @for (duel of duels.open(); track duel.id) {
+  <app-duel-row [duel]="duel" />
+  }
+</app-section>
+}
+
 <app-section>
   <h2>Top 10 - Allzeit</h2>
   <p [class]="leadStyles">Die besten Resultate aller Zeiten, mit 30 Pfeilen und Faktor</p>

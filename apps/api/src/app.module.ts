@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { BadgesModule } from './badges/badges.module';
+import { DuelsModule } from './duels/duels.module';
 import { typeOrmOptions } from './database/typeorm-options';
 import { ProfilesModule } from './profiles/profiles.module';
 import { RankingsModule } from './rankings/rankings.module';
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     RankingsModule,
     ProfilesModule,
     BadgesModule,
+    DuelsModule,
     AdminModule,
   ],
 })
