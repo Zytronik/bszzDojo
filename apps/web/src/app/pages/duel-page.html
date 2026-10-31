@@ -206,12 +206,7 @@
       } }
     </div>
     } @else {
-    <app-empty-state>
-      @switch (d.status) { @case ('declined') { {{ them()! | shownName }} hat die Einladung
-      abgelehnt. } @case ('cancelled') { Die Einladung wurde zurückgezogen. } @case ('expired') {
-      Die Einladung ist abgelaufen. } @default { Das Duell wurde abgebrochen: {{ idleHours }}
-      Stunden lang hat niemand geschossen. } }
-    </app-empty-state>
+    <app-empty-state>{{ endedText() }}</app-empty-state>
     } }
   </app-loading-frame>
 </app-section>
