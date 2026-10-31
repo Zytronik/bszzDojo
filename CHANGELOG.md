@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.22.0](https://github.com/Zytronik/bszzDojo/compare/v3.21.0...v3.22.0) (2026-10-31)
+
+
+### Features
+
+* add duels (match play) ([#112](https://github.com/Zytronik/bszzDojo/issues/112)) ([a92fcd3](https://github.com/Zytronik/bszzDojo/commit/a92fcd355554dacf309baf6a1342350e842d5c8c))
+* add friends ([#100](https://github.com/Zytronik/bszzDojo/issues/100)) ([4cffa20](https://github.com/Zytronik/bszzDojo/commit/4cffa205497c0f4793d05547f156437c429029c3))
+
+
+### Bug Fixes
+
+* **web:** match the duel row details to the rankings' details ([#115](https://github.com/Zytronik/bszzDojo/issues/115)) ([366a4c1](https://github.com/Zytronik/bszzDojo/commit/366a4c1260fb31c6c840fbcc7cd65a52da33f86a))
+* **web:** say who declined or withdrew a duel from the viewer's side ([#119](https://github.com/Zytronik/bszzDojo/issues/119)) ([8ce9289](https://github.com/Zytronik/bszzDojo/commit/8ce92895494ac11f15b8061dd37a863333c047e5))
+* **web:** show the duel row's details at body size ([#114](https://github.com/Zytronik/bszzDojo/issues/114)) ([af33f55](https://github.com/Zytronik/bszzDojo/commit/af33f555bfa9b9de68c10a8a9259e09a844d40a7))
+
+
+### Refactoring
+
+* remove unused code and merge duplicates ([#116](https://github.com/Zytronik/bszzDojo/issues/116)) ([075cbfa](https://github.com/Zytronik/bszzDojo/commit/075cbfaba471147f43f7e17ec4a47f8556704608))
+
 ## [3.21.0](https://github.com/Zytronik/bszzDojo/compare/v3.20.0...v3.21.0) (2026-10-29)
 
 
