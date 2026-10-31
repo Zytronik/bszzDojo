@@ -317,7 +317,25 @@ export class DuelPage {
     if (!bow) return undefined;
     return `Mit einer anderen Bogenart als ${BOW_TYPES[bow].name} zählen die Punkte jeder Passe mit dem Faktor.`;
   });
-  protected readonly idleHours = DUEL_IDLE_HOURS;
+  /** Why it ended unshot: only the opponent declines, only the challenger withdraws. */
+  protected readonly endedText = computed((): string => {
+    const duel = this.loaded();
+    if (!duel) return '';
+    switch (duel.status) {
+      case 'declined':
+        return duel.you === 'opponent'
+          ? 'Du hast die Einladung abgelehnt.'
+          : `${shownName(duel.opponent)} hat die Einladung abgelehnt.`;
+      case 'cancelled':
+        return duel.you === 'challenger'
+          ? 'Du hast die Einladung zurückgezogen.'
+          : `${shownName(duel.challenger)} hat die Einladung zurückgezogen.`;
+      case 'expired':
+        return 'Die Einladung ist abgelaufen.';
+      default:
+        return `Das Duell wurde abgebrochen: ${DUEL_IDLE_HOURS} Stunden lang hat niemand geschossen.`;
+    }
+  });
   protected readonly icons = {
     delete: faDeleteLeft,
     forfeit: faFlag,
