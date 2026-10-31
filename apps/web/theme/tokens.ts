@@ -54,6 +54,10 @@ export const tokens = defineTokens({
     skeletonRank: { value: '28px' },
     /** Inputs, selects and what sits next to them (the Abzeichen) */
     control: { value: '36px' },
+    /** The circle around the hourglass while a duel invitation waits for an answer */
+    waitingIcon: { value: '88px' },
+    /** Keeps the waiting text to a few even lines on wide screens */
+    waitingText: { value: '340px' },
     /** The Abzeichen next to a line of body text */
     textLine: { value: '26px' },
     /** Scorecard columns with a word in their head (Passe, Summe, Total) */

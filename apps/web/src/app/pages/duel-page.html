@@ -25,7 +25,7 @@
     @if (d.status === 'invited') { @if (d.you === 'opponent') {
     <form [class]="styles.invite" [formGroup]="acceptForm" (ngSubmit)="accept()" novalidate>
       <h2 [class]="styles.inviteTitle">{{ them()! | shownName }} fordert dich heraus</h2>
-      <ng-container [ngTemplateOutlet]="facts" />
+      <app-duel-facts [facts]="invitationFacts()" />
       <app-form-field label="Bogenart:" [hint]="bowHint()">
         <select appFieldControl formControlName="bowType">
           @for (bowType of bowTypes; track bowType.id) {
@@ -62,15 +62,8 @@
     </form>
     } @else {
     <div [class]="styles.invite">
-      <div [class]="styles.waiting">
-        <span [class]="styles.waitingIcon"><app-icon [icon]="icons.waiting" /></span>
-        <h2>Warte auf {{ them()! | shownName }}</h2>
-        <p [class]="styles.muted">
-          Sobald die Einladung angenommen ist, geht es los. Bis dahin findest du das Duell auf deiner
-          Startseite.
-        </p>
-      </div>
-      <ng-container [ngTemplateOutlet]="facts" />
+      <app-duel-waiting [rival]="them()! | shownName" />
+      <app-duel-facts [facts]="invitationFacts()" />
       @if (d.you === 'challenger') {
       <button type="button" appButton tone="subtle" [pending]="answering()" (click)="cancel()">
         Einladung zurückziehen
@@ -236,12 +229,3 @@
   (confirmed)="forfeit()"
   (cancelled)="confirmForfeit.set(false)"
 />
-
-<ng-template #facts>
-  <dl [class]="styles.facts">
-    @for (fact of invitationFacts(); track fact.label) {
-    <dt>{{ fact.label }}</dt>
-    <dd>{{ fact.value }}</dd>
-    }
-  </dl>
-</ng-template>

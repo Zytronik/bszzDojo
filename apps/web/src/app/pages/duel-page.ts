@@ -11,7 +11,6 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -49,7 +48,9 @@ import { DuelsApiService } from '../core/duels-api.service';
 import { errorMessage } from '../core/error-message';
 import { ArrowKeypad } from '../duels/arrow-keypad';
 import { DuelEndsTable } from '../duels/duel-ends-table';
+import { DuelFacts } from '../duels/duel-facts';
 import { DuelScoreboard } from '../duels/duel-scoreboard';
+import { DuelWaiting } from '../duels/duel-waiting';
 import {
   endName,
   endRows,
@@ -70,7 +71,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft, faFlag, faHourglassHalf, faRotateRight, faTrophy } from '../ui/icons';
+import { faDeleteLeft, faFlag, faRotateRight, faTrophy } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
@@ -88,7 +89,8 @@ type EntryMode = 'keys' | 'target';
   selector: 'app-duel-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgTemplateOutlet,
+    DuelFacts,
+    DuelWaiting,
     RouterLink,
     ReactiveFormsModule,
     FormField,
@@ -322,7 +324,6 @@ export class DuelPage {
     delete: faDeleteLeft,
     forfeit: faFlag,
     trophy: faTrophy,
-    waiting: faHourglassHalf,
     rematch: faRotateRight,
   };
   protected readonly label = arrowLabel;
@@ -336,28 +337,6 @@ export class DuelPage {
     stack: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     inviteTitle: css({ m: '0' }),
-    waiting: css({
-      display: 'flex',
-      flexDir: 'column',
-      alignItems: 'center',
-      gap: '8',
-      textAlign: 'center',
-      py: '15',
-      '& > h2, & > p': { m: '0' },
-    }),
-    waitingIcon: css({ fontSize: '3xl', layerStyle: 'muted' }),
-    facts: css({
-      layerStyle: 'surface',
-      rounded: 'sm',
-      p: '15',
-      m: '0',
-      display: 'grid',
-      gridTemplateColumns: 'auto 1fr',
-      columnGap: '15',
-      rowGap: '8',
-      '& dt': { layerStyle: 'muted' },
-      '& dd': { m: '0', textAlign: 'end' },
-    }),
     row: css({
       display: 'flex',
       alignItems: 'center',
