@@ -1,6 +1,6 @@
 import { defineSlotRecipe } from '@pandacss/dev';
 
-/** The parts of a duel row the `record` recipe doesn't have: outcome badge and score */
+/** The parts of a duel row the `record` recipe doesn't have: state and score */
 export const duelRow = defineSlotRecipe({
   className: 'duel-row',
   slots: ['icon', 'line', 'badge', 'score'],
@@ -8,13 +8,10 @@ export const duelRow = defineSlotRecipe({
     icon: { color: 'accent.default' },
     // Plain inline text, so a long line wraps between words instead of moving the settings
     // under the outcome as a whole.
-    line: { marginBlockStart: '5', textStyle: 'body.small' },
-    // The outcome as text, like the accented figures of the rankings
-    badge: {
-      textStyle: 'body.small',
-      layerStyle: 'muted',
-      '&[data-tone=accent]': { color: 'accent.default', opacity: 'full' },
-    },
+    // Body size like the info line of the other records
+    line: { marginBlockStart: '5' },
+    // An open duel's state, accented when it's the viewer's turn
+    badge: { '&[data-tone=accent]': { color: 'accent.default' } },
     score: {
       fontWeight: 'bold',
       flexShrink: '0',

@@ -32,8 +32,10 @@ import { faBolt, faChevronRight } from '../ui/icons';
         }
       </p>
       <p [class]="rowStyles.line">
-        <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state() }}</span>
-        <span [class]="styles.meta">· {{ details() }}</span>
+        @if (state(); as state) {
+          <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state }}</span> ·
+        }
+        {{ details() }}
       </p>
     </a>
     @if (score(); as score) {
@@ -69,10 +71,9 @@ export class DuelRow {
     });
     return `${settings} · ${day}`;
   });
-  /** Wins and turns stand out in the accent color */
+  /** The viewer's turn stands out in the accent color */
   protected readonly tone = computed((): 'accent' | 'quiet' => {
     const duel = this.duel();
-    if (duel.status === 'finished') return duel.winner === duel.you ? 'accent' : 'quiet';
     return duel.yourTurn && this.owner() === 'you' ? 'accent' : 'quiet';
   });
 
@@ -92,8 +93,9 @@ export class DuelRow {
         return duel.you === 'opponent' ? 'Einladung' : 'Wartet auf Zusage';
       case 'active':
         return duel.yourTurn && this.owner() === 'you' ? 'Du bist dran' : 'Läuft';
+      // The score's color says who won; the line has no room for it on phones.
       case 'finished':
-        return duel.winner === duel.you ? 'Sieg' : 'Niederlage';
+        return '';
       default:
         return 'Beendet';
     }
