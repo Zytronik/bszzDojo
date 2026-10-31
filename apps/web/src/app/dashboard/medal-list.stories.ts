@@ -1,6 +1,6 @@
-import { provideRouter, withDisabledInitialNavigation } from '@angular/router';
 import type { MedalStanding } from '@bszz-dojo/shared';
-import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { withRouter } from '../../../.storybook/decorators';
 import { MedalList } from './medal-list';
 
 const standings: MedalStanding[] = [
@@ -19,9 +19,7 @@ const standings: MedalStanding[] = [
 const meta: Meta<MedalList> = {
   title: 'Lists/Medals',
   component: MedalList,
-  decorators: [
-    applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] }),
-  ],
+  decorators: [withRouter],
   args: { standings },
 };
 export default meta;

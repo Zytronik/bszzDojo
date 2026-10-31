@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
-import { TargetCanvas } from './target-canvas';
+import { OTHER_END_COLOR, PICKED_END_COLOR, TargetCanvas } from './target-canvas';
 
 const meta: Meta<TargetCanvas> = {
   title: 'Scores/Target',
@@ -39,6 +39,6 @@ export const OneEnd: Story = {
   args: {
     interactive: false,
     selected: null,
-    shotColors: ['#00e5ff', 'rgba(255, 174, 0, 0.3)', 'rgba(255, 174, 0, 0.3)'],
+    shotColors: [PICKED_END_COLOR, OTHER_END_COLOR, OTHER_END_COLOR],
   },
 };

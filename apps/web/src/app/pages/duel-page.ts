@@ -11,7 +11,6 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -49,7 +48,9 @@ import { DuelsApiService } from '../core/duels-api.service';
 import { errorMessage } from '../core/error-message';
 import { ArrowKeypad } from '../duels/arrow-keypad';
 import { DuelEndsTable } from '../duels/duel-ends-table';
+import { DuelFacts } from '../duels/duel-facts';
 import { DuelScoreboard } from '../duels/duel-scoreboard';
+import { DuelHeadline, type DuelHeadlineTone } from '../duels/duel-headline';
 import {
   endName,
   endRows,
@@ -70,7 +71,7 @@ import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft, faFlag, faHourglassHalf, faRotateRight, faTrophy } from '../ui/icons';
+import { faDeleteLeft, faFlag, faRotateRight } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { ShownNamePipe } from '../ui/shown-name.pipe';
@@ -88,7 +89,8 @@ type EntryMode = 'keys' | 'target';
   selector: 'app-duel-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgTemplateOutlet,
+    DuelFacts,
+    DuelHeadline,
     RouterLink,
     ReactiveFormsModule,
     FormField,
@@ -266,7 +268,9 @@ export class DuelPage {
           ? 'Du hast aufgegeben.'
           : `${shownName(duel[duel.forfeitedBy])} hat aufgegeben.`;
     }
-    return { title, won: this.isPlayer() && duel.winner === sides.me, forfeit };
+    const tone: DuelHeadlineTone =
+      this.isPlayer() && duel.winner !== sides.me ? 'lost' : 'won';
+    return { title, tone, forfeit };
   });
   protected readonly totals = computed(() => {
     const me = this.me();
@@ -302,9 +306,8 @@ export class DuelPage {
     const duel = this.loaded();
     if (!duel) return [];
     const { challenger } = duel;
-    const whose = duel.you === 'challenger' ? 'Deine' : null;
-    const of = (what: string): string =>
-      whose ? `${whose} ${what}` : `${what} von ${shownName(challenger)}`;
+    // The title already names the challenger; on the own invitation it's "Deine …".
+    const of = (what: string): string => (duel.you === 'challenger' ? `Deine ${what}` : what);
     return [
       { label: 'Format', value: DUEL_FORMAT_NAMES[duel.format] },
       { label: 'Distanz', value: `${duel.distance}m` },
@@ -336,11 +339,11 @@ export class DuelPage {
         return `Das Duell wurde abgebrochen: ${DUEL_IDLE_HOURS} Stunden lang hat niemand geschossen.`;
     }
   });
+  protected readonly waitingText =
+    'Sobald die Einladung angenommen ist, geht es los. Bis dahin findest du das Duell auf deiner Startseite.';
   protected readonly icons = {
     delete: faDeleteLeft,
     forfeit: faFlag,
-    trophy: faTrophy,
-    waiting: faHourglassHalf,
     rematch: faRotateRight,
   };
   protected readonly label = arrowLabel;
@@ -352,30 +355,7 @@ export class DuelPage {
   protected readonly fieldRow = formRow({ split: 'even' });
   protected readonly styles = {
     stack: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
-    invite: css({ display: 'flex', flexDir: 'column', gap: 'stack' }),
     inviteTitle: css({ m: '0' }),
-    waiting: css({
-      display: 'flex',
-      flexDir: 'column',
-      alignItems: 'center',
-      gap: '8',
-      textAlign: 'center',
-      py: '15',
-      '& > h2, & > p': { m: '0' },
-    }),
-    waitingIcon: css({ fontSize: '3xl', layerStyle: 'muted' }),
-    facts: css({
-      layerStyle: 'surface',
-      rounded: 'sm',
-      p: '15',
-      m: '0',
-      display: 'grid',
-      gridTemplateColumns: 'auto 1fr',
-      columnGap: '15',
-      rowGap: '8',
-      '& dt': { layerStyle: 'muted' },
-      '& dd': { m: '0', textAlign: 'end' },
-    }),
     row: css({
       display: 'flex',
       alignItems: 'center',
@@ -399,12 +379,6 @@ export class DuelPage {
     muted: css({ textStyle: 'body.small', layerStyle: 'muted' }),
     center: css({ textAlign: 'center' }),
     mutedCenter: css({ textStyle: 'body.small', layerStyle: 'muted', textAlign: 'center' }),
-    trophy: css({
-      fontSize: '5xl',
-      color: 'medal.gold',
-      display: 'flex',
-      justifyContent: 'center',
-    }),
     figures: css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10' }),
     figure: css({ fontSize: 'xl', fontWeight: 'bold' }),
     target: css({ maxW: 'canvas', mx: 'auto', w: 'full' }),

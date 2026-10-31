@@ -1,6 +1,6 @@
-import { provideRouter, withDisabledInitialNavigation } from '@angular/router';
 import type { LeaderboardEntry } from '@bszz-dojo/shared';
-import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { withRouter } from '../../../.storybook/decorators';
 import { LeaderboardList } from './leaderboard-list';
 
 const entries: LeaderboardEntry[] = [
@@ -35,9 +35,7 @@ const entries: LeaderboardEntry[] = [
 const meta: Meta<LeaderboardList> = {
   title: 'Lists/Leaderboard',
   component: LeaderboardList,
-  decorators: [
-    applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] }),
-  ],
+  decorators: [withRouter],
   args: { entries },
 };
 export default meta;

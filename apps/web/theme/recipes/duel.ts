@@ -4,6 +4,11 @@ import { defineSlotRecipe } from '@pandacss/dev';
 export const duel = defineSlotRecipe({
   className: 'duel',
   slots: [
+    'facts',
+    'headline',
+    'headlineIcon',
+    'headlineTitle',
+    'headlineText',
     'suggestion',
     'board',
     'player',
@@ -21,6 +26,34 @@ export const duel = defineSlotRecipe({
     'status',
   ],
   base: {
+    /** The settings of an invitation, label left and value right */
+    facts: {
+      layerStyle: 'surface',
+      rounded: 'sm',
+      p: '15',
+      m: '0',
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
+      columnGap: '15',
+      rowGap: '8',
+      '& dt': { layerStyle: 'muted' },
+      '& dd': { m: '0', textAlign: 'end' },
+    },
+    // The top of a duel's page: won, lost or waiting for an answer
+    headline: {
+      display: 'flex',
+      flexDir: 'column',
+      alignItems: 'center',
+      gap: '5',
+      textAlign: 'center',
+    },
+    headlineIcon: {
+      fontSize: '5xl',
+      layerStyle: 'muted',
+      '&[data-tone=won]': { color: 'medal.gold', opacity: 'full' },
+    },
+    headlineTitle: { m: '0' },
+    headlineText: { m: '0', layerStyle: 'muted' },
     board: {
       layerStyle: 'surface',
       rounded: 'sm',

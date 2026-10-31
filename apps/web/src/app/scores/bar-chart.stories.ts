@@ -1,12 +1,11 @@
-import { provideHttpClient } from '@angular/common/http';
-import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { withHttp } from '../../../.storybook/decorators';
 import { BarChart } from './bar-chart';
 
 const meta: Meta<BarChart> = {
   title: 'Scores/Bar Chart',
   component: BarChart,
-  // The chart follows the theme from `SettingsStore`, which needs HTTP.
-  decorators: [applicationConfig({ providers: [provideHttpClient()] })],
+  decorators: [withHttp],
   args: {
     label: 'Passensummen',
     labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],

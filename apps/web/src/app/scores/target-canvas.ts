@@ -62,6 +62,13 @@ interface Point {
  * with the `group` (mean point of impact, the circle holding half the arrows, the area without
  * outliers).
  */
+/**
+ * Shot colors (`shotColors`) for one end picked out: that end as usual, the others faded; an arrow
+ * tapped on the scorecard stays highlighted on top.
+ */
+export const PICKED_END_COLOR = '#ffae00';
+export const OTHER_END_COLOR = 'rgba(0, 0, 0, 0.2)';
+
 @Component({
   selector: 'app-target-canvas',
   changeDetection: ChangeDetectionStrategy.OnPush,
