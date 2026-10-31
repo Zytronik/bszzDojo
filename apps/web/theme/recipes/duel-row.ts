@@ -8,10 +8,10 @@ export const duelRow = defineSlotRecipe({
     icon: { color: 'accent.default' },
     // Plain inline text, so a long line wraps between words instead of moving the settings
     // under the outcome as a whole.
-    // Body size like the info line of the other records
-    line: { marginBlockStart: '5' },
+    // Like the rankings' details (`record.meta`): small and muted
+    line: { marginBlockStart: '5', textStyle: 'body.small', layerStyle: 'muted' },
     // An open duel's state, accented when it's the viewer's turn
-    badge: { '&[data-tone=accent]': { color: 'accent.default' } },
+    badge: { '&[data-tone=accent]': { color: 'accent.default', opacity: 'full' } },
     score: {
       fontWeight: 'bold',
       flexShrink: '0',
