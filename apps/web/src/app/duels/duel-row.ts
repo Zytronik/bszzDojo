@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import {
   duelScoreLabel,
-  duelSettingsLabel,
+  DUEL_FORMAT_NAMES,
   CLUB_TIME_ZONE,
   otherSide,
   shownName,
@@ -35,7 +35,7 @@ import { faBolt, faChevronRight } from '../ui/icons';
         @if (state(); as state) {
           <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state }}</span> ·
         }
-        {{ details() }}
+        <span [class]="rowStyles.format">{{ formatName() }}</span> · {{ details() }}
       </p>
     </a>
     @if (score(); as score) {
@@ -62,9 +62,10 @@ export class DuelRow {
   protected readonly invitation = computed(
     () => this.duel().status === 'invited' && this.duel().you === 'opponent',
   );
+  protected readonly formatName = computed(() => DUEL_FORMAT_NAMES[this.duel().format]);
   protected readonly details = computed(() => {
     const duel = this.duel();
-    const settings = duelSettingsLabel(duel);
+    const settings = `${duel.distance}m`;
     if (duel.status !== 'finished') return settings;
     const day = new Date(duel.updatedAt).toLocaleDateString('de-CH', {
       timeZone: CLUB_TIME_ZONE,
