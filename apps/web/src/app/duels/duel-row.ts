@@ -33,7 +33,7 @@ import { faBolt, faChevronRight } from '../ui/icons';
       </p>
       <p [class]="rowStyles.line">
         @if (state(); as state) {
-          <span [class]="rowStyles.badge" [attr.data-tone]="tone()">{{ state }}</span> ·
+          <span [class]="rowStyles.state" [attr.data-tone]="tone()">{{ state }}</span> ·
         }
         <span [class]="rowStyles.format">{{ formatName() }}</span> · {{ details() }}
       </p>

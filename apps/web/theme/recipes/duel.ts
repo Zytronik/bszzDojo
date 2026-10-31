@@ -43,7 +43,7 @@ export const duel = defineSlotRecipe({
       fontWeight: 'bold',
       lineHeight: 'none',
       whiteSpace: 'nowrap',
-      // Totals with the factor ("183.6 : 186.48") don't fit a phone at the set-point size.
+      // Wide totals ("129 : 104") don't fit a phone at the set-point size.
       '&[data-long]': { fontSize: '2xl' },
     },
     separator: { layerStyle: 'muted', fontWeight: 'normal', mx: '5' },
