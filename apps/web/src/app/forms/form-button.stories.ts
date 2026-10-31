@@ -8,7 +8,11 @@ const meta: Meta<FormButton & { label: string }> = {
   argTypes: { tone: { control: 'inline-radio', options: ['accent', 'neutral', 'subtle'] } },
   render: (args) => ({
     props: args,
-    template: `<button type="button" appButton [pending]="pending" [disabled]="disabled" [tone]="tone">{{ label }}</button>`,
+    template: `
+      <button type="button" appButton [pending]="pending" [disabled]="disabled" [tone]="tone">
+        {{ label }}
+      </button>
+    `,
   }),
 };
 export default meta;

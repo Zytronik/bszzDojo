@@ -35,7 +35,7 @@ import { PendingScoresStore } from '../scores/pending-scores.store';
 import { GroupAnalysis } from '../scores/group-analysis';
 import { ScoreSheet } from '../scores/score-sheet';
 import { ScoreSummary } from '../scores/score-summary';
-import { TargetCanvas } from '../scores/target-canvas';
+import { OTHER_END_COLOR, PICKED_END_COLOR, TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
 import { faShareNodesThin } from '../ui/icons';
@@ -58,13 +58,6 @@ interface ScoreAnalysis {
   ringLabels: string[];
   ringCounts: number[];
 }
-/**
- * Canvas colors (see `TargetCanvas`): the picked end as usual, the others faded; an arrow tapped on
- * the scorecard stays highlighted on top.
- */
-const PICKED_END_COLOR = '#ffae00';
-const OTHER_END_COLOR = 'rgba(0, 0, 0, 0.2)';
-
 @Component({
   selector: 'app-score-page',
   changeDetection: ChangeDetectionStrategy.OnPush,

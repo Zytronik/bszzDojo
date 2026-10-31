@@ -1,3 +1,4 @@
+import { BOW_TYPE_IDS } from '@bszz-dojo/shared';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ArrowKeypad } from './arrow-keypad';
 
@@ -5,9 +6,7 @@ const meta: Meta<ArrowKeypad> = {
   title: 'Duels/Arrow Keypad',
   component: ArrowKeypad,
   args: { isSpot: false, bowType: 'r', disabled: false },
-  argTypes: {
-    bowType: { control: 'inline-radio', options: ['r', 'cp', 'tr', 'lb', 'bb'] },
-  },
+  argTypes: { bowType: { control: 'inline-radio', options: BOW_TYPE_IDS } },
 };
 export default meta;
 
