@@ -178,7 +178,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 Storybook 10 (`apps/web/.storybook/`), built in CI. Every reusable component in `ui/`, `forms/`,
 `profile/`, `dashboard/`, `scores/`, `duels/`, `friends/` has a `*.stories.ts` with one story per meaningful state;
 pages and layout have none. Stories follow the app rules (no inline styles). `routerLink` needs
-`applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] })`. New
+the `withRouter` decorator, charts `withHttp` (`.storybook/decorators.ts`). New
 semantic tokens go in `src/stories/colors.mdx`. Keep its peers `@angular/animations` and
 `@angular/platform-browser-dynamic` on the Angular major.
 

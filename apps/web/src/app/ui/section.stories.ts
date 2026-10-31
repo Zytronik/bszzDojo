@@ -8,7 +8,7 @@ const meta: Meta<Section> = {
     template: `
       <app-section>
         <h2>Rekorde</h2>
-        <p>The centered column every page section sits in, with its vertical padding.</p>
+        <p>Die zentrierte Spalte jedes Seitenabschnitts, mit Abstand oben und unten.</p>
       </app-section>
     `,
   }),

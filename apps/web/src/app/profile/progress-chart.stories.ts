@@ -1,6 +1,6 @@
-import { provideHttpClient } from '@angular/common/http';
 import type { DistanceProgress } from '@bszz-dojo/shared';
-import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { withHttp } from '../../../.storybook/decorators';
 import { ProgressChart } from './progress-chart';
 
 const progress: DistanceProgress = {
@@ -28,8 +28,7 @@ const progress: DistanceProgress = {
 const meta: Meta<ProgressChart> = {
   title: 'Display/Progress Chart',
   component: ProgressChart,
-  // The chart follows the theme from `SettingsStore`, which needs HTTP.
-  decorators: [applicationConfig({ providers: [provideHttpClient()] })],
+  decorators: [withHttp],
   args: { progress },
 };
 export default meta;

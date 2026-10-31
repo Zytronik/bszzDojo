@@ -1,6 +1,6 @@
-import { provideRouter, withDisabledInitialNavigation } from '@angular/router';
 import type { Friend } from '@bszz-dojo/shared';
-import { applicationConfig, type Meta, type StoryObj } from '@storybook/angular-vite';
+import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { withRouter } from '../../../.storybook/decorators';
 import { FriendRow } from './friend-row';
 
 const friend: Friend = { username: 'robin_hood', displayName: 'Robin Hood', rank: 'goldenerPfeil' };
@@ -8,9 +8,7 @@ const friend: Friend = { username: 'robin_hood', displayName: 'Robin Hood', rank
 const meta: Meta<FriendRow> = {
   title: 'Lists/Friend Row',
   component: FriendRow,
-  decorators: [
-    applicationConfig({ providers: [provideRouter([], withDisabledInitialNavigation())] }),
-  ],
+  decorators: [withRouter],
   args: { friend, pending: false },
 };
 export default meta;
