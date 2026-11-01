@@ -19,7 +19,6 @@ export {
   faKey,
   faMagnifyingGlass,
   faMobileScreenButton,
-  faPen,
   faRotateRight,
   faSquarePlus,
   faTrophy,
@@ -46,6 +45,22 @@ export const faShareNodesThin: IconDefinition = {
       'M14.1 5.5a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0 -6.8 0Z',
       'M2.6 12a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0 -6.8 0Z',
       'M14.1 18.5a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0 -6.8 0Z',
+    ],
+  ],
+};
+
+/** A pen drawn on the same grid as `faShareNodesThin`, so the two header buttons match in size. */
+export const faPenThin: IconDefinition = {
+  prefix: 'fas',
+  iconName: 'pen',
+  icon: [
+    24,
+    24,
+    [],
+    '',
+    [
+      'M3 21L4.41 16.76L15.02 6.15L17.85 8.98L7.24 19.59Z',
+      'M16.01 5.16L18.7 2.47A2 2 0 0 1 21.53 5.3L18.84 7.99Z',
     ],
   ],
 };

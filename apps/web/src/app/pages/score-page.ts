@@ -40,7 +40,7 @@ import { ScoreSummary } from '../scores/score-summary';
 import { OTHER_END_COLOR, PICKED_END_COLOR, TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faPen, faShareNodesThin } from '../ui/icons';
+import { faPenThin, faShareNodesThin } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -162,7 +162,7 @@ export class ScorePage {
     );
   });
 
-  protected readonly icons = { share: faShareNodesThin, edit: faPen };
+  protected readonly icons = { share: faShareNodesThin, edit: faPenThin };
   protected readonly headerButton = siteHeader().link;
   protected readonly styles = {
     details: css({ layerStyle: 'muted' }),
