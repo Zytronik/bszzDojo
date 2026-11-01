@@ -12,6 +12,7 @@ import {
   type ScoreComparison,
   type ScoreDetail,
   type ScoreInput,
+  type UpdateScoreRequest,
 } from '@bszz-dojo/shared';
 import { randomUUID } from 'node:crypto';
 import { Not, Repository } from 'typeorm';
@@ -70,6 +71,30 @@ export class ScoresService {
         best: others?.best ?? null,
       },
     };
+  }
+
+  async update(userId: string, scoreId: string, body: UpdateScoreRequest): Promise<Score> {
+    const score = await this.scores.findOneBy({ id: scoreId, userId });
+    if (!score) throw new NotFoundException('Eintrag nicht gefunden.');
+
+    const { bowType, targetSize, isSpot, shotOn, distance, arrows, tens, nines, result } = body;
+    const input: ScoreInput = {
+      bowType,
+      targetSize,
+      isSpot,
+      shotOn,
+      distance,
+      arrows,
+      tens,
+      nines,
+      result,
+      shots: body.shots ?? null,
+    };
+    const errors = scoreErrors(input);
+    if (errors.length > 0) throw new BadRequestException(errors);
+
+    await this.scores.save(this.scores.merge(score, input));
+    return toScore(score);
   }
 
   async delete(userId: string, scoreId: string): Promise<void> {

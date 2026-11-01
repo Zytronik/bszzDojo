@@ -10,6 +10,7 @@ import {
   type IsoDate,
   type Shot,
   type TargetSize,
+  type UpdateScoreRequest,
 } from '@bszz-dojo/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -50,15 +51,7 @@ export class ShotBody implements Shot {
 }
 
 /** Cross-field rules (e.g. not more tens than arrows) are checked with the shared `scoreErrors`. */
-export class ScoreBody implements CreateScoreRequest {
-  /**
-   * Optional UUID picked by the client (rounds entered offline): sending the same round again
-   * returns the one already recorded instead of a second copy.
-   */
-  @IsOptional()
-  @IsUUID('all', { message: 'Ungültige ID.' })
-  id?: string;
-
+export class ScoreInputBody implements UpdateScoreRequest {
   @ApiProperty({ enum: BOW_TYPE_IDS })
   @IsIn(BOW_TYPE_IDS, { message: 'Ungültige Bogenart.' })
   bowType: BowTypeId;
@@ -110,4 +103,14 @@ export class ScoreBody implements CreateScoreRequest {
   @ValidateNested({ each: true })
   @Type(() => ShotBody)
   shots: ShotBody[] | null;
+}
+
+export class ScoreBody extends ScoreInputBody implements CreateScoreRequest {
+  /**
+   * Optional UUID picked by the client (rounds entered offline): sending the same round again
+   * returns the one already recorded instead of a second copy.
+   */
+  @IsOptional()
+  @IsUUID('all', { message: 'Ungültige ID.' })
+  id?: string;
 }

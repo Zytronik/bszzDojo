@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -21,7 +22,7 @@ import {
 import type { AuthUser } from '../auth/auth-user';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ScoreBody } from './dto/score.body';
+import { ScoreBody, ScoreInputBody } from './dto/score.body';
 import { ScoreDetailResponse, ScoreResponse } from './dto/score.response';
 import { ScoresService } from './scores.service';
 
@@ -46,6 +47,18 @@ export class ScoresController {
   @ApiNotFoundResponse({ description: 'No such round' })
   findOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<ScoreDetailResponse> {
     return this.scores.findOne(id);
+  }
+
+  /** Replaces one of the logged-in user's rounds with the corrected one, keeping its id. */
+  @Put(':id')
+  @ApiBadRequestResponse({ description: 'German messages for every invalid field' })
+  @ApiNotFoundResponse({ description: "No such round, or it's someone else's" })
+  update(
+    @CurrentUser() user: AuthUser,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: ScoreInputBody,
+  ): Promise<ScoreResponse> {
+    return this.scores.update(user.id, id, body);
   }
 
   /** Deletes one of the logged-in user's rounds. */

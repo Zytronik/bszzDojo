@@ -47,6 +47,9 @@ export interface CreateScoreRequest extends ScoreInput {
   id?: string;
 }
 
+/** Body of `PUT /api/scores/:id`: the whole round as it should be, keeping its id */
+export type UpdateScoreRequest = ScoreInput;
+
 export interface Score extends ScoreInput {
   id: string;
 }
