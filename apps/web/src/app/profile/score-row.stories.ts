@@ -21,7 +21,7 @@ const meta: Meta<ScoreRow> = {
   title: 'Lists/Score Row',
   component: ScoreRow,
   decorators: [withRouter],
-  args: { score, variant: 'history', rank: null, editable: false, deletable: false },
+  args: { score, variant: 'history', rank: null, deletable: false },
   argTypes: { variant: { control: 'inline-radio', options: ['history', 'records'] } },
 };
 export default meta;
@@ -30,7 +30,7 @@ type Story = StoryObj<ScoreRow>;
 
 export const History: Story = {};
 /** On the user's own profile */
-export const Own: Story = { args: { editable: true, deletable: true } };
+export const Deletable: Story = { args: { deletable: true } };
 export const Record: Story = { args: { variant: 'records', rank: 1 } };
-/** Saved offline, not uploaded yet: can only be deleted until then */
+/** Saved offline, not uploaded yet: no link to its page */
 export const Pending: Story = { args: { pending: true, deletable: true } };

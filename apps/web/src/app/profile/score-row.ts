@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { BOW_TYPES, formatGermanDate, targetLabel, type Score } from '@bszz-dojo/shared';
 import { record } from 'styled-system/recipes';
 import { Icon } from '../ui/icon';
-import { faDeleteLeft, faPen } from '../ui/icons';
+import { faDeleteLeft } from '../ui/icons';
 
 /** `records`: a personal best with its place; `history`: with the distance. Opens the round. */
 @Component({
@@ -40,27 +40,16 @@ import { faDeleteLeft, faPen } from '../ui/icons';
         <span [class]="styles.highlight">x{{ score().nines }}</span>
       </p>
     </a>
-    @if (editable() || deletable()) {
+    @if (deletable()) {
       <div [class]="styles.actions">
-        @if (editable()) {
-          <a
-            [class]="styles.action"
-            [routerLink]="['/scores', score().id, 'edit']"
-            aria-label="Eintrag bearbeiten"
-          >
-            <app-icon [icon]="icons.edit" />
-          </a>
-        }
-        @if (deletable()) {
-          <button
-            type="button"
-            [class]="styles.action"
-            aria-label="Eintrag löschen"
-            (click)="deleted.emit()"
-          >
-            <app-icon [icon]="icons.delete" />
-          </button>
-        }
+        <button
+          type="button"
+          [class]="styles.action"
+          aria-label="Eintrag löschen"
+          (click)="deleted.emit()"
+        >
+          <app-icon [icon]="deleteIcon" />
+        </button>
       </div>
     }
   `,
@@ -69,14 +58,13 @@ export class ScoreRow {
   readonly score = input.required<Score>();
   readonly variant = input<'records' | 'history'>('history');
   readonly rank = input<number | null>(null);
-  readonly editable = input(false);
   readonly deletable = input(false);
   /** Saved offline and not uploaded yet */
   readonly pending = input(false);
   readonly deleted = output();
 
   protected readonly styles = record();
-  protected readonly icons = { edit: faPen, delete: faDeleteLeft };
+  protected readonly deleteIcon = faDeleteLeft;
   protected readonly formatDate = formatGermanDate;
   protected readonly bowTypes = BOW_TYPES;
   protected readonly targetLabel = targetLabel;

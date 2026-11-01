@@ -67,7 +67,7 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
   `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
   in the header (share sheet, else copy link), not for rounds waiting for upload; the archer's
-  own rounds also get an edit button there and in the profile's history.
+  own rounds also get an edit button there (only there, not in the profile's history).
 - Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
   `formatGermanDate`; today is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): one per user, set in settings, no approval.

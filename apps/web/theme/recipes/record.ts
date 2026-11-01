@@ -47,8 +47,6 @@ export const record = defineSlotRecipe({
     meta: { textStyle: 'body.small', layerStyle: 'muted' },
     actions: { display: 'flex', gap: '10', flexShrink: '0' },
     action: {
-      // A link (edit) next to buttons (delete): padded the same way.
-      display: 'inline-block',
       bg: 'transparent',
       border: 'none',
       color: 'inherit',

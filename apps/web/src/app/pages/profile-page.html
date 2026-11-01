@@ -157,7 +157,6 @@
     @if (p) { @for (score of history(); track score.id) {
     <app-score-row
       [score]="score"
-      [editable]="isOwnProfile() && !pendingIds().has(score.id)"
       [deletable]="isOwnProfile()"
       [pending]="pendingIds().has(score.id)"
       (deleted)="scoreToDelete.set(score.id)"
