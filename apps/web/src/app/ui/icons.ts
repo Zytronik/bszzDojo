@@ -19,6 +19,7 @@ export {
   faKey,
   faMagnifyingGlass,
   faMobileScreenButton,
+  faPen,
   faRotateRight,
   faSquarePlus,
   faTrophy,

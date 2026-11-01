@@ -60,11 +60,14 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
   arrow count divides by `arrowsPerEnd` (6 at 30m, else 3); `shots` (`Shot`, face units, centre 0,
   edge 1) determine tens, nines and result (`shotPoints`: spot only rings 6–10; compound: only X
   counts 10). The API checks they match. Placed arrows lock `SETUP_FIELDS`. The form starts from
-  the last round's setup (localStorage, `scores/score-setup.ts`).
+  the last round's setup (localStorage, `scores/score-setup.ts`). Archers correct their own
+  rounds with the same form (`scores/:id/edit`, `PUT /api/scores/:id`, keeps the id); only online
+  and only uploaded rounds.
 - **Score page** (`/scores/:id`): compares with the archer's rounds of same bow, distance and
   arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
   `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
-  in the header (share sheet, else copy link), not for rounds waiting for upload.
+  in the header (share sheet, else copy link), not for rounds waiting for upload; the archer's
+  own rounds also get an edit button there and in the profile's history.
 - Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
   `formatGermanDate`; today is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): one per user, set in settings, no approval.

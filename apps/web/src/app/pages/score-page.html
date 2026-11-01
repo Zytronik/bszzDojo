@@ -2,8 +2,13 @@
 @let loading = score.isLoading();
 
 <ng-template appPageHeader [back]="back()" [label]="name()" [backLabel]="backLabel()">
+  @if (loaded(); as shown) { @if (editable()) {
+  <a [class]="headerButton" [routerLink]="['/scores', shown.id, 'edit']" aria-label="Score bearbeiten">
+    <app-icon [icon]="icons.edit" />
+  </a>
+  }
   <!-- A round waiting for its upload has no page others could open yet. -->
-  @if (loaded(); as shown) { @if (pending() === null) {
+  @if (pending() === null) {
   <button type="button" [class]="headerButton" aria-label="Score teilen" (click)="share(shown)">
     <app-icon [icon]="icons.share" />
   </button>
