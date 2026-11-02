@@ -26,6 +26,11 @@ export const DUEL_TOTAL_ENDS = 5;
 export const DUEL_INVITATION_HOURS = 24;
 export const DUEL_IDLE_HOURS = 2;
 
+/** "Satz" in the set system, "Passe" in the total format */
+export function duelEndName(format: DuelFormat): string {
+  return format === 'sets' ? 'Satz' : 'Passe';
+}
+
 export function isDuelFormat(value: unknown): value is DuelFormat {
   return isOneOf(DUEL_FORMATS, value);
 }

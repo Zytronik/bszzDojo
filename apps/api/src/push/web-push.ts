@@ -39,7 +39,7 @@ const TIME_TO_LIVE = 12 * 60 * 60;
 const JWT_LIFETIME_SECONDS = 12 * 60 * 60;
 const REQUEST_TIMEOUT_MS = 5000;
 
-/** The browsers' push services; anything else isn't sent to, so the API can't be made to call other hosts. */
+/** The browsers' push services; nothing else is sent to, so the API can't be made to call others */
 const PUSH_SERVICE_HOSTS = [
   'fcm.googleapis.com',
   'push.services.mozilla.com',
@@ -61,7 +61,10 @@ export function isPushEndpoint(endpoint: string): boolean {
   );
 }
 
-export function encryptPayload(payload: Buffer, target: Pick<PushTarget, 'p256dh' | 'auth'>): Buffer {
+export function encryptPayload(
+  payload: Buffer,
+  target: Pick<PushTarget, 'p256dh' | 'auth'>,
+): Buffer {
   const browserKey = Buffer.from(target.p256dh, 'base64url');
   const authSecret = Buffer.from(target.auth, 'base64url');
   const ecdh = createECDH('prime256v1');

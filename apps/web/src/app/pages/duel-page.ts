@@ -21,6 +21,7 @@ import {
   DUEL_IDLE_HOURS,
   TARGET_SIZES,
   arrowLabel,
+  duelEndName,
   duelFaceLabel,
   duelScoreLabel,
   endTotal,
@@ -52,7 +53,6 @@ import { DuelFacts } from '../duels/duel-facts';
 import { DuelScoreboard } from '../duels/duel-scoreboard';
 import { DuelHeadline, type DuelHeadlineTone } from '../duels/duel-headline';
 import {
-  endName,
   endRows,
   hasHandicap,
   progressOf,
@@ -178,7 +178,7 @@ export class DuelPage {
     const progress = this.progress();
     return duel && progress ? endRows(duel, progress) : [];
   });
-  protected readonly endLabel = computed(() => endName(this.loaded()?.format ?? 'sets'));
+  protected readonly endLabel = computed(() => duelEndName(this.loaded()?.format ?? 'sets'));
   protected readonly caption = computed(() => {
     const duel = this.loaded();
     const progress = this.progress();

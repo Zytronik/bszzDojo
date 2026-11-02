@@ -33,9 +33,11 @@ import {
 import { randomUUID } from 'node:crypto';
 import { In, Repository } from 'typeorm';
 import { uniqueViolation } from '../common/database-errors';
+import { PushService } from '../push/push.service';
 import { findUserByName } from '../common/find-user';
 import { UserEntity } from '../users/user.entity';
 import { DuelEndEntity } from './duel-end.entity';
+import { duelMessage, type DuelNews } from './duel-notifications';
 import { DuelEntity } from './duel.entity';
 
 const OPEN: DuelStatus[] = ['invited', 'active'];
@@ -115,6 +117,7 @@ export class DuelsService {
     private readonly ends: Repository<DuelEndEntity>,
     @InjectRepository(UserEntity)
     private readonly users: Repository<UserEntity>,
+    private readonly push: PushService,
   ) {}
 
   async create(userId: string, body: CreateDuelRequest): Promise<Duel> {
@@ -151,7 +154,9 @@ export class DuelsService {
       winner: null,
       forfeitedBy: null,
     });
-    return this.get(userId, id);
+    const created = await this.get(userId, id);
+    await this.notify(created, opponent.id, 'opponent', { kind: 'invited' });
+    return created;
   }
 
   async list(userId: string): Promise<DuelList> {
@@ -187,13 +192,17 @@ export class DuelsService {
       opponentTargetSize: body.targetSize,
       opponentIsSpot: body.isSpot,
     });
-    return this.get(userId, id);
+    const accepted = await this.get(userId, id);
+    await this.notify(accepted, duel.challengerId, 'challenger', { kind: 'accepted' });
+    return accepted;
   }
 
   async decline(userId: string, id: string): Promise<Duel> {
     const duel = await this.invitation(userId, id, 'opponent');
     await this.duels.update(duel.id, { status: 'declined' });
-    return this.get(userId, id);
+    const declined = await this.get(userId, id);
+    await this.notify(declined, duel.challengerId, 'challenger', { kind: 'declined' });
+    return declined;
   }
 
   /** The challenger withdraws an invitation nobody answered yet. */
@@ -210,7 +219,9 @@ export class DuelsService {
       winner: otherSide(side),
       forfeitedBy: side,
     });
-    return this.get(userId, id);
+    const finished = await this.get(userId, id);
+    await this.notifyOther(finished, duel, side, { kind: 'forfeited' });
+    return finished;
   }
 
   async submitEnd(userId: string, id: string, body: DuelEndRequest): Promise<Duel> {
@@ -272,7 +283,23 @@ export class DuelsService {
       duel.id,
       after.phase === 'decided' ? { status: 'finished', winner: after.winner } : { status: 'active' },
     );
-    return this.get(userId, id);
+    const updated = await this.get(userId, id);
+    await this.notifyOther(
+      updated,
+      duel,
+      side,
+      after.phase === 'decided'
+        ? { kind: 'decided', progress: after }
+        : {
+            kind: 'end',
+            index: body.index,
+            shootOff: body.shootOff,
+            // Both had shot as many before, so the other archer still has this one to shoot.
+            waiting: mine === shotInPhase(pair[otherSide(side)], body.shootOff),
+            progress: after,
+          },
+    );
+    return updated;
   }
 
   /** A profile's record, the viewer's record against them, and their latest duels. */
@@ -352,6 +379,27 @@ export class DuelsService {
       throw new ConflictException('Diese Einladung ist nicht mehr offen.');
     }
     return duel;
+  }
+
+  private async notify(
+    duel: Duel,
+    recipientId: string,
+    recipient: DuelSide,
+    news: DuelNews,
+  ): Promise<void> {
+    await this.push.send([recipientId], duelMessage(duel, recipient, news));
+  }
+
+  /** Tells the archer on the other side than `actor` */
+  private async notifyOther(
+    duel: Duel,
+    entity: DuelEntity,
+    actor: DuelSide,
+    news: DuelNews,
+  ): Promise<void> {
+    const recipient = otherSide(actor);
+    const recipientId = recipient === 'challenger' ? entity.challengerId : entity.opponentId;
+    await this.notify(duel, recipientId, recipient, news);
   }
 
   private async activeDuel(

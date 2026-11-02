@@ -7,7 +7,6 @@ import {
   otherSide,
   type Duel,
   type DuelArrow,
-  type DuelFormat,
   type DuelProgress,
   type DuelSide,
 } from '@bszz-dojo/shared';
@@ -36,11 +35,6 @@ export function progressOf(duel: Duel): DuelProgress {
 /** Whether the two shoot different bows, so their points are compared with the factors */
 export function hasHandicap(duel: Duel): boolean {
   return duel.challenger.bowType !== null && duel.challenger.bowType !== duel.opponent.bowType;
-}
-
-/** "Satz" in the set system, "Passe" in the total format */
-export function endName(format: DuelFormat): string {
-  return format === 'sets' ? 'Satz' : 'Passe';
 }
 
 /** One row of the ends table, already from the viewer's side */

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { PushModule } from '../push/push.module';
 import { UserEntity } from '../users/user.entity';
 import { DuelEndEntity } from './duel-end.entity';
 import { DuelEntity } from './duel.entity';
@@ -8,7 +9,11 @@ import { DuelsController } from './duels.controller';
 import { DuelsService } from './duels.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DuelEntity, DuelEndEntity, UserEntity]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([DuelEntity, DuelEndEntity, UserEntity]),
+    AuthModule,
+    PushModule,
+  ],
   controllers: [DuelsController],
   providers: [DuelsService],
   // The profiles show each archer's duels.
