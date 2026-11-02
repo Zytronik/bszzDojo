@@ -217,6 +217,6 @@ request.
 | Invitations and open duels poll           | 20 s                                         | `duels/duels.store.ts`           |
 | Duel invitation lapses                    | 24 h after sent                              | `DUEL_INVITATION_HOURS`          |
 | Active duel abandoned                     | 2 h without a change                         | `DUEL_IDLE_HOURS`                |
-| Push message kept for an offline device   | 12 h                                         | `push/web-push.ts`               |
+| Push message kept for an offline device   | 12 h                                         | `push/push.service.ts`           |
 | Offline rounds retry                      | 30 s, on reconnect and focus                 | `scores/pending-scores.store.ts` |
 | Cached reads (rankings, profiles, rounds) | network first, cache after 5 s, kept 30 days | `ngsw-config.json`               |

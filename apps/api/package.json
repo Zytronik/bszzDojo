@@ -13,7 +13,7 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:deploy": "typeorm migration:run -d dist/database/data-source.js",
-    "push:keys": "ts-node --transpile-only scripts/vapid-keys.ts",
+    "push:keys": "web-push generate-vapid-keys",
     "swagger:metadata": "ts-node --transpile-only scripts/swagger-metadata.ts"
   },
   "dependencies": {

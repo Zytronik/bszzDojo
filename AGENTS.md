@@ -90,8 +90,8 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   scores and leaderboards.
 - **Push messages** (`apps/api/src/push/`, `settings/push.store.ts`): opt-in per device in the
   settings; `push_subscriptions` has a row per browser, re-sent at every start so it follows the
-  logged-in user, and removed on logout. `web-push.ts` encrypts and signs with `node:crypto` (no
-  package) and only sends to the browsers' push services. `DuelsService` tells the other archer
+  logged-in user, and removed on logout. Sent with the `web-push` package, only to the browsers'
+  push services (`push-endpoints.ts`). `DuelsService` tells the other archer
   about invitations, answers, ends and results (`duel-notifications.ts`, Angular's
   `notification` payload with `onActionClick`, one tag per duel) and awaits the sending before it
   answers. Keys: `VAPID_*` env vars (`npm run push:keys -w api`); without them push is off.
