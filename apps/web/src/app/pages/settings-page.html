@@ -69,6 +69,40 @@
   />
 </app-section>
 
+@if (push.supported()) {
+<app-section>
+  <h2>Mitteilungen</h2>
+  <p [class]="leadStyles">
+    Auf diesem Gerät eine Mitteilung erhalten, wenn du zu einem Duell herausgefordert wirst, dein
+    Gegner geschossen hat oder ein Duell entschieden ist. Auch wenn die App geschlossen ist.
+  </p>
+  @if (push.blocked()) {
+  <p [class]="leadStyles">
+    Mitteilungen sind für das BSZZ Dojo blockiert. Du kannst sie in den Einstellungen deines
+    Browsers oder Geräts wieder erlauben.
+  </p>
+  }
+  @if (push.subscribed()) {
+  <button type="button" appButton [pending]="push.pending()" (click)="push.disable()">
+    Mitteilungen ausschalten
+  </button>
+  } @else if (!push.blocked()) {
+  <button type="button" appButton [pending]="push.pending()" (click)="push.enable()">
+    Mitteilungen aktivieren
+  </button>
+  }
+</app-section>
+} @else if (push.needsInstall()) {
+<app-section>
+  <h2>Mitteilungen</h2>
+  <p [class]="leadStyles">
+    Auf dem iPhone gibt es Mitteilungen nur in der installierten App. Füge das BSZZ Dojo zuerst
+    zu deinem Home-Bildschirm hinzu und öffne es von dort.
+  </p>
+  <button type="button" appButton (click)="install.show()">Anleitung anzeigen</button>
+</app-section>
+}
+
 @if (install.canInstall()) {
 <app-section>
   <h2>App installieren</h2>

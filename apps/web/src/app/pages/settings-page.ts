@@ -31,6 +31,7 @@ import { errorMessage } from '../core/error-message';
 import { InstallService } from '../core/install.service';
 import { UsersApiService } from '../core/users-api.service';
 import { BadgesSection } from '../settings/badges-section';
+import { PushStore } from '../settings/push.store';
 import { SettingsStore } from '../settings/settings.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { FormButton } from '../forms/form-button';
@@ -63,6 +64,7 @@ export class SettingsPage {
   private readonly users = inject(UsersApiService);
   private readonly toasts = inject(ToastStore);
   protected readonly install = inject(InstallService);
+  protected readonly push = inject(PushStore);
   private readonly router = inject(Router);
   private readonly forms = inject(NonNullableFormBuilder);
 
@@ -168,6 +170,8 @@ export class SettingsPage {
   protected async logout(): Promise<void> {
     this.loggingOut.set(true);
     try {
+      // The next person on this device shouldn't get this account's duels.
+      if (this.push.subscribed()) await this.push.disable();
       await this.auth.logout();
       await this.router.navigate(['/login']);
     } finally {
