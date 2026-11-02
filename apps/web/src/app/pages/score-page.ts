@@ -126,7 +126,6 @@ export class ScorePage {
     const score = this.loaded();
     return score ? shownName(score) : '';
   });
-  /** Only the archer's own rounds, once they're uploaded */
   protected readonly editable = computed(
     () =>
       this.pending() === null &&

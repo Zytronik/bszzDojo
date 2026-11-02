@@ -203,7 +203,6 @@ export class DuelsService {
     return this.get(userId, id);
   }
 
-  /** Giving up counts as a loss. */
   async forfeit(userId: string, id: string): Promise<Duel> {
     const { duel, side } = await this.activeDuel(userId, id);
     await this.duels.update(duel.id, {
