@@ -32,6 +32,7 @@ import { AdminUserResponse } from './dto/admin-user.response';
 export class AdminController {
   constructor(private readonly admin: AdminService) {}
 
+  /** Every account, for the user administration. */
   @Get('users')
   listUsers(): Promise<AdminUserResponse[]> {
     return this.admin.listUsers();

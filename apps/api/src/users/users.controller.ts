@@ -14,6 +14,7 @@ import { UserProfileResponse } from './dto/user-profile.response';
 import { UserSearchQueryParams } from './dto/user-search.query';
 import { UserSearchResultResponse } from './dto/user-search-result.response';
 import { UserSettingsBody } from './dto/user-settings.body';
+import { UserSettingsResponse } from './dto/user-settings.response';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -30,6 +31,7 @@ export class UsersController {
     return this.users.search(query.q);
   }
 
+  /** The logged-in user's account with their settings. */
   @Get('me')
   getMe(@CurrentUser() user: AuthUser): Promise<UserProfileResponse> {
     return this.users.getProfile(user.id);
@@ -51,7 +53,7 @@ export class UsersController {
   updateSettings(
     @CurrentUser() user: AuthUser,
     @Body() body: UserSettingsBody,
-  ): Promise<UserSettingsBody> {
+  ): Promise<UserSettingsResponse> {
     return this.users.updateSettings(user.id, body);
   }
 }

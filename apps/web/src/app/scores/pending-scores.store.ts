@@ -12,6 +12,7 @@ import {
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage, isUnreachable } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
+import { readStored, writeStored } from '../core/stored';
 import { ToastStore } from '../layout/toast.store';
 
 /** A round entered without a connection, waiting to be uploaded. */
@@ -54,20 +55,8 @@ function isQueued<T extends PendingScore | PendingDeletion>(value: unknown): val
 }
 
 function loadQueue<T extends PendingScore | PendingDeletion>(key: string): T[] {
-  try {
-    const stored: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
-    return Array.isArray(stored) ? stored.filter((entry) => isQueued<T>(entry)) : [];
-  } catch {
-    return [];
-  }
-}
-
-function persist(key: string, entries: readonly (PendingScore | PendingDeletion)[]): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(entries));
-  } catch {
-    // Storage unavailable (private mode): the rounds then only wait while the app stays open.
-  }
+  const stored = readStored(key);
+  return Array.isArray(stored) ? stored.filter((entry) => isQueued<T>(entry)) : [];
 }
 
 export const PendingScoresStore = signalStore(
@@ -117,13 +106,13 @@ export const PendingScoresStore = signalStore(
     ) => {
       const update = (pending: PendingScore[]): void => {
         patchState(store, { pending });
-        persist(STORAGE_KEY, pending);
+        writeStored(STORAGE_KEY, pending);
       };
       const remove = (id: string): void =>
         update(store.pending().filter((entry) => entry.id !== id));
       const updateDeletions = (deletions: PendingDeletion[]): void => {
         patchState(store, { deletions });
-        persist(DELETIONS_KEY, deletions);
+        writeStored(DELETIONS_KEY, deletions);
       };
       const removeDeletion = (id: string): void =>
         updateDeletions(store.deletions().filter((entry) => entry.id !== id));
