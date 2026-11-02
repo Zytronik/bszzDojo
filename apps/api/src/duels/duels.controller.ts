@@ -72,6 +72,7 @@ export class DuelsController {
     return this.duels.accept(user.id, id, body);
   }
 
+  /** The challenged archer turns the invitation down. */
   @Post(':id/decline')
   @HttpCode(200)
   @ApiForbiddenResponse({ description: 'Not the challenged archer' })
