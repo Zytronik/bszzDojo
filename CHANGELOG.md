@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.23.0](https://github.com/Zytronik/bszzDojo/compare/v3.22.0...v3.23.0) (2026-11-02)
+
+
+### Features
+
+* edit recorded scores ([#121](https://github.com/Zytronik/bszzDojo/issues/121)) ([716f1a7](https://github.com/Zytronik/bszzDojo/commit/716f1a7bc0ff6f1b4ac4aad20d5f79cef10e3aa9))
+
 ## [3.22.0](https://github.com/Zytronik/bszzDojo/compare/v3.21.0...v3.22.0) (2026-10-31)
 
 
