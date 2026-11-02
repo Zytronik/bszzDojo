@@ -174,6 +174,8 @@ export class SubmitScorePage {
     params: () => this.id(),
     loader: ({ params }): Promise<ScoreDetail> => this.api.get(params),
   });
+  /** The arrows placed before switching to the totals tab, back when switching to the target */
+  private parkedShots: (Shot | null)[] = [];
   /** While the form is filled with the round to correct, its changes aren't the archer's. */
   private filling = false;
 
@@ -197,12 +199,13 @@ export class SubmitScorePage {
       const target = this.mode() === 'target';
       untracked(() => {
         if (!target) {
+          this.parkedShots = this.shots();
           this.form.patchValue({ shots: null });
           return;
         }
         const arrows = this.form.controls.arrows;
         if (arrows.value === null) arrows.setValue(DEFAULT_TARGET_ARROWS);
-        this.resize(arrows.value);
+        this.resize(arrows.value, this.parkedShots);
       });
     });
     effect(() => {
@@ -322,6 +325,7 @@ export class SubmitScorePage {
   private fill(score: Score): void {
     const { bowType, targetSize, isSpot, shotOn, distance, arrows, tens, nines, result } = score;
     this.mode.set(score.shots ? 'target' : 'result');
+    this.parkedShots = score.shots ?? [];
     this.filling = true;
     this.form.setValue({
       bowType,
@@ -346,8 +350,7 @@ export class SubmitScorePage {
   }
 
   /** One slot per arrow, keeping the arrows placed so far; none while the count is invalid. */
-  private resize(arrows: number | null): void {
-    const current = this.shots();
+  private resize(arrows: number | null, current = this.shots()): void {
     const perEnd = arrowsPerEnd(this.form.controls.distance.value);
     const shots = isValidEndCount(arrows, perEnd)
       ? Array.from({ length: arrows }, (_, index) => current[index] ?? null)
