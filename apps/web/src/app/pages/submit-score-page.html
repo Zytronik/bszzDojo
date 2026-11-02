@@ -1,7 +1,11 @@
+@if (id(); as scoreId) {
+<ng-template appPageHeader [back]="['/scores', scoreId]" label="Score bearbeiten" backLabel="Zurück zum Score" />
+} @else {
 <app-page-title title="Score erfassen" description="Trage hier deine Leistungen ein." />
+}
 
 <app-section>
-  <h2>Erfasse einen neuen Score</h2>
+  <h2>{{ id() ? 'Korrigiere deinen Score' : 'Erfasse einen neuen Score' }}</h2>
   <app-tabs [tabs]="modes" [(selected)]="mode">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div [class]="rows.even">
@@ -114,7 +118,7 @@
         type="submit"
         appButton
         [pending]="pending()"
-        [disabled]="mode() === 'target' && !complete()"
+        [disabled]="(mode() === 'target' && !complete()) || original.isLoading()"
       >
         Speichern
       </button>

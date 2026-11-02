@@ -20,10 +20,12 @@ import {
   shownName,
   storedEndSize,
   targetLabel,
+  usernameKey,
   type ScoreDetail,
   type Shot,
   type ShotGroup,
 } from '@bszz-dojo/shared';
+import { RouterLink } from '@angular/router';
 import { css } from 'styled-system/css';
 import { siteHeader, split } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
@@ -38,7 +40,7 @@ import { ScoreSummary } from '../scores/score-summary';
 import { OTHER_END_COLOR, PICKED_END_COLOR, TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
 import { Icon } from '../ui/icon';
-import { faShareNodesThin } from '../ui/icons';
+import { faPenThin, faShareNodesThin } from '../ui/icons';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -63,6 +65,7 @@ interface ScoreAnalysis {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeader,
+    RouterLink,
     Icon,
     Section,
     LoadingFrame,
@@ -123,6 +126,12 @@ export class ScorePage {
     const score = this.loaded();
     return score ? shownName(score) : '';
   });
+  /** Only the archer's own rounds, once they're uploaded */
+  protected readonly editable = computed(
+    () =>
+      this.pending() === null &&
+      usernameKey(this.loaded()?.username ?? '') === usernameKey(this.auth.username()),
+  );
   /** To the archer's profile; home while the round is still loading. */
   protected readonly back = computed((): string[] => {
     const score = this.loaded();
@@ -153,7 +162,7 @@ export class ScorePage {
     );
   });
 
-  protected readonly icons = { share: faShareNodesThin };
+  protected readonly icons = { share: faShareNodesThin, edit: faPenThin };
   protected readonly headerButton = siteHeader().link;
   protected readonly styles = {
     details: css({ layerStyle: 'muted' }),

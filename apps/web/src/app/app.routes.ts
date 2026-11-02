@@ -27,6 +27,12 @@ export const routes: Routes = [
     title: title('Score erfassen'),
   },
   {
+    path: 'scores/:id/edit',
+    component: SubmitScorePage,
+    canActivate: [authGuard],
+    title: title('Score bearbeiten'),
+  },
+  {
     // After `scores/new`, which would match too.
     path: 'scores/:id',
     canActivate: [authGuard],

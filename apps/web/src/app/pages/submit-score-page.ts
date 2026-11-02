@@ -4,6 +4,8 @@ import {
   computed,
   effect,
   inject,
+  input,
+  resource,
   signal,
   untracked,
 } from '@angular/core';
@@ -23,6 +25,8 @@ import {
   shotTotals,
   todayInClub,
   type BowTypeId,
+  type Score,
+  type ScoreDetail,
   type ScoreInput,
   type Shot,
   type TargetSize,
@@ -33,6 +37,7 @@ import { css, cx } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { errorMessage, isUnreachable } from '../core/error-message';
 import { ScoresApiService } from '../core/scores-api.service';
+import { ProfileHistoryMemory } from '../profile/profile-history-memory';
 import { PendingScoresStore } from '../scores/pending-scores.store';
 import { loadScoreSetup, saveScoreSetup } from '../scores/score-setup';
 import { FormButton } from '../forms/form-button';
@@ -44,7 +49,8 @@ import {
   required,
   revalidateOnChange,
 } from '../forms/validators';
-import { ToastStore } from '../layout/toast.store';
+import { PageHeader, PageHeaderState } from '../layout/page-header';
+import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoreSheet } from '../scores/score-sheet';
 import { TargetCanvas } from '../scores/target-canvas';
 import { CheckboxField } from '../ui/checkbox-field';
@@ -72,6 +78,7 @@ function isValidEndCount(arrows: number | null, perEnd: number): arrows is numbe
 }
 
 /**
+ * New rounds on `scores/new`; on `scores/:id/edit` the same form corrects a recorded one.
  * Two ways to enter a round: only its totals (`result`), or every arrow on the target (`target`),
  * where tens, nines and the result follow from the arrows' positions.
  */
@@ -80,6 +87,7 @@ function isValidEndCount(arrows: number | null, perEnd: number): arrows is numbe
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    PageHeader,
     PageTitle,
     Section,
     Tabs,
@@ -93,12 +101,17 @@ function isValidEndCount(arrows: number | null, perEnd: number): arrows is numbe
   templateUrl: './submit-score-page.html',
 })
 export class SubmitScorePage {
+  /** The round to correct; none for a new one */
+  readonly id = input<string>();
+
   protected readonly rows = { even: formRow({ split: 'even' }), wide: formRow({ split: 'wide' }) };
   private readonly api = inject(ScoresApiService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthStore);
   private readonly pendingScores = inject(PendingScoresStore);
   private readonly toasts = inject(ToastStore);
+  private readonly pageHeader = inject(PageHeaderState);
+  private readonly historyMemory = inject(ProfileHistoryMemory);
   private readonly forms = inject(NonNullableFormBuilder);
 
   protected readonly modes: TabItem[] = [
@@ -157,6 +170,15 @@ export class SubmitScorePage {
   /** The arrow the next tap on the target places */
   protected readonly selected = signal<number | null>(0);
 
+  protected readonly original = resource({
+    params: () => this.id(),
+    loader: ({ params }): Promise<ScoreDetail> => this.api.get(params),
+  });
+  /** The arrows placed before switching to the totals tab, back when switching to the target */
+  private parkedShots: (Shot | null)[] = [];
+  /** While the form is filled with the round to correct, its changes aren't the archer's. */
+  private filling = false;
+
   protected readonly pending = signal(false);
   protected readonly targetStyles = cx(split(), css({ marginBlockEnd: 'stack' }));
   protected readonly summaryStyles = css({
@@ -168,16 +190,22 @@ export class SubmitScorePage {
 
   constructor() {
     revalidateOnChange(this.form);
+    toastErrors(() => this.original.error());
+    effect(() => {
+      const score = this.original.hasValue() ? this.original.value() : null;
+      if (score) untracked(() => this.fill(score));
+    });
     effect(() => {
       const target = this.mode() === 'target';
       untracked(() => {
         if (!target) {
+          this.parkedShots = this.shots();
           this.form.patchValue({ shots: null });
           return;
         }
         const arrows = this.form.controls.arrows;
         if (arrows.value === null) arrows.setValue(DEFAULT_TARGET_ARROWS);
-        this.resize(arrows.value);
+        this.resize(arrows.value, this.parkedShots);
       });
     });
     effect(() => {
@@ -198,7 +226,9 @@ export class SubmitScorePage {
     )
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
-        if (this.mode() === 'target') this.resize(this.form.controls.arrows.value);
+        if (this.mode() === 'target' && !this.filling) {
+          this.resize(this.form.controls.arrows.value);
+        }
       });
     // A spot and compound score the same positions differently.
     merge(
@@ -207,7 +237,7 @@ export class SubmitScorePage {
     )
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
-        if (this.mode() === 'target') this.setShots(this.shots());
+        if (this.mode() === 'target' && !this.filling) this.setShots(this.shots());
       });
   }
 
@@ -242,6 +272,12 @@ export class SubmitScorePage {
     const shots = value.shots?.filter((shot) => shot !== null) ?? null;
     const score: ScoreInput = { ...value, distance, tens, nines, arrows, result, shots };
 
+    const id = this.id();
+    if (id !== undefined) {
+      await this.saveChanges(id, score);
+      return;
+    }
+
     const { bowType, targetSize, isSpot } = score;
     saveScoreSetup({ bowType, targetSize, isSpot, distance, arrows });
     if (this.auth.isOffline()) {
@@ -264,6 +300,49 @@ export class SubmitScorePage {
     }
   }
 
+  /** Offline changes aren't queued: the round on the server may be newer than this form. */
+  private async saveChanges(id: string, score: ScoreInput): Promise<void> {
+    if (this.auth.isOffline()) {
+      this.toasts.error('Ohne Verbindung kann ein Score nicht bearbeitet werden.');
+      return;
+    }
+    this.pending.set(true);
+    try {
+      await this.api.update(id, score);
+      // Older rounds the profile had loaded would still show the round as it was.
+      this.historyMemory.save(this.auth.username(), null);
+      this.toasts.success('Score gespeichert.');
+      this.pageHeader.goBack(['/scores', id]);
+    } catch (error: unknown) {
+      if (isUnreachable(error)) this.auth.markOffline();
+      this.toasts.error(errorMessage(error));
+    } finally {
+      this.pending.set(false);
+    }
+  }
+
+  /** Arrows entered on the target open in that tab, all placed, so the setup is locked. */
+  private fill(score: Score): void {
+    const { bowType, targetSize, isSpot, shotOn, distance, arrows, tens, nines, result } = score;
+    this.mode.set(score.shots ? 'target' : 'result');
+    this.parkedShots = score.shots ?? [];
+    this.filling = true;
+    this.form.setValue({
+      bowType,
+      targetSize,
+      isSpot,
+      shotOn,
+      distance,
+      arrows,
+      tens,
+      nines,
+      result,
+      shots: score.shots,
+    });
+    this.filling = false;
+    this.selected.set(null);
+  }
+
   /** Without a connection: kept on the device (the header says so), and its page opens. */
   private async keepForUpload(score: ScoreInput): Promise<void> {
     const id = this.pendingScores.add(score);
@@ -271,8 +350,7 @@ export class SubmitScorePage {
   }
 
   /** One slot per arrow, keeping the arrows placed so far; none while the count is invalid. */
-  private resize(arrows: number | null): void {
-    const current = this.shots();
+  private resize(arrows: number | null, current = this.shots()): void {
     const perEnd = arrowsPerEnd(this.form.controls.distance.value);
     const shots = isValidEndCount(arrows, perEnd)
       ? Array.from({ length: arrows }, (_, index) => current[index] ?? null)
