@@ -14,6 +14,7 @@ import { AuthStore } from '../auth/auth.store';
 import { errorMessage } from '../core/error-message';
 import { InstallService } from '../core/install.service';
 import { PushApiService } from '../core/push-api.service';
+import { readStored, writeStored } from '../core/stored';
 import { ToastStore } from '../layout/toast.store';
 
 interface PushState {
@@ -23,7 +24,15 @@ interface PushState {
   subscribed: boolean;
   permission: NotificationPermission;
   pending: boolean;
+  /** The app's own question before the browser's, which only a tap may trigger (iOS) */
+  promptOpen: boolean;
 }
+
+/**
+ * Per device: whether the app already asked. Asked once, so a "Später" isn't repeated; the
+ * settings still offer push.
+ */
+const PROMPTED_KEY = 'bszz-push-prompted';
 
 function toRequest(subscription: PushSubscription): PushSubscriptionRequest | null {
   const { endpoint, keys } = subscription.toJSON();
@@ -55,6 +64,7 @@ export const PushStore = signalStore(
     subscribed: false,
     permission: typeof Notification === 'undefined' ? 'default' : Notification.permission,
     pending: false,
+    promptOpen: false,
   })),
   withComputed((store, swPush = inject(SwPush), install = inject(InstallService)) => {
     const browserSupport =
@@ -88,6 +98,23 @@ export const PushStore = signalStore(
       };
 
       return {
+        /** At start and after a duel was set up: asks once, where push works and isn't decided. */
+        suggest(): void {
+          if (
+            store.supported() &&
+            !store.subscribed() &&
+            store.permission() === 'default' &&
+            readStored(PROMPTED_KEY) !== true
+          ) {
+            patchState(store, { promptOpen: true });
+          }
+        },
+
+        closePrompt(): void {
+          patchState(store, { promptOpen: false });
+          writeStored(PROMPTED_KEY, true);
+        },
+
         async enable(): Promise<void> {
           const publicKey = store.publicKey();
           if (!publicKey) return;

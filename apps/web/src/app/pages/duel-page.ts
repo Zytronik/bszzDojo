@@ -67,6 +67,7 @@ import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { TargetCanvas } from '../scores/target-canvas';
+import { PushStore } from '../settings/push.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
@@ -117,6 +118,7 @@ export class DuelPage {
   private readonly api = inject(DuelsApiService);
   protected readonly from = inject(PageHeaderState).duelOrigin();
   private readonly duels = inject(DuelsStore);
+  private readonly push = inject(PushStore);
   private readonly toasts = inject(ToastStore);
 
   protected readonly duel = resource({
@@ -441,11 +443,12 @@ export class DuelPage {
     );
   }
 
-  protected accept(): Promise<void> {
+  protected async accept(): Promise<void> {
     const duel = this.loaded();
     const answer = this.acceptForm.getRawValue();
     if (duel) saveDuelSetup({ format: duel.format, distance: duel.distance, ...answer });
-    return this.answer((id) => this.api.accept(id, answer));
+    await this.answer((id) => this.api.accept(id, answer));
+    this.push.suggest();
   }
 
   protected decline(): Promise<void> {

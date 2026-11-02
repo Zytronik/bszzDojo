@@ -89,7 +89,8 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
   scores and leaderboards.
 - **Push messages** (`apps/api/src/push/`, `settings/push.store.ts`): opt-in per device in the
-  settings; `push_subscriptions` has a row per browser, re-sent at every start so it follows the
+  settings, and the app asks once (`PushDialog`, at start after the install dialog and after
+  setting up a duel) before the browser's own question, which needs a tap; `push_subscriptions` has a row per browser, re-sent at every start so it follows the
   logged-in user, and removed on logout. Sent with the `web-push` package, only to the browsers'
   push services (`push-endpoints.ts`). `DuelsService` tells the other archer
   about invitations, answers, ends and results (`duel-notifications.ts`, Angular's
@@ -159,8 +160,8 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   `<ng-template appPageHeader [back] label backLabel>` (`layout/page-header.ts`), buttons styled
   `siteHeader().link`.
 - Theme: dark default, light per account (`UserSettings.theme`) as `data-theme` on `<html>`.
-  localStorage only for per-device conveniences (theme cache for first paint, install hint, score
-  and duel setup, recent searches), the last user for offline starts, and offline queues; never tokens.
+  localStorage only for per-device conveniences (theme cache for first paint, install hint, push
+  question, score and duel setup, recent searches), the last user for offline starts, and offline queues; never tokens.
 - `public/` assets are the old app's; keep their paths.
 - **PWA / offline**: the service worker caches the shell and read-only API routes everyone may see
   (rankings, profiles, scores; network first, cache after 5s). `navigationUrls` must exclude
