@@ -88,6 +88,13 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   center wins. The app polls (duel page 2.5s, `DuelsStore` 20s for invitations); invitations lapse
   after 24h, idle duels after 2h, checked on read. Giving up is a loss. Duels are separate from
   scores and leaderboards.
+- **Push messages** (`apps/api/src/push/`, `settings/push.store.ts`): opt-in per device in the
+  settings; `push_subscriptions` has a row per browser, re-sent at every start so it follows the
+  logged-in user, and removed on logout. `web-push.ts` encrypts and signs with `node:crypto` (no
+  package) and only sends to the browsers' push services. `DuelsService` tells the other archer
+  about invitations, answers, ends and results (`duel-notifications.ts`, Angular's
+  `notification` payload with `onActionClick`, one tag per duel) and awaits the sending before it
+  answers. Keys: `VAPID_*` env vars (`npm run push:keys -w api`); without them push is off.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
   anyone can add anyone with the icon button on their profile, without a confirmation and without
   appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds

@@ -44,3 +44,19 @@ To redeploy, run **Deploy** by hand (Actions → Deploy → Run workflow); it bu
 `main`. To go back to an older release, use **Instant Rollback** in the Vercel dashboard.
 
 The hook URL is the secret `VERCEL_DEPLOY_HOOK_URL` in the GitHub environment `production`.
+
+## Push messages
+
+The API signs push messages with a VAPID key pair (duel invitations, ends, results). Each Vercel
+environment needs these env vars on the `api` service; without them the API sends nothing and the
+app hides its push settings:
+
+| Variable            | Value                                                              |
+| ------------------- | ------------------------------------------------------------------ |
+| `VAPID_PUBLIC_KEY`  | from `npm run push:keys -w api`                                    |
+| `VAPID_PRIVATE_KEY` | from the same run; a secret                                        |
+| `VAPID_SUBJECT`     | a contact for the push services, e.g. `mailto:` the club's address |
+
+Use one pair per environment and keep it: browsers subscribe with the public key, so a new pair
+makes every device subscribe again (the app does that by itself on its next start).
+
