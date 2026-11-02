@@ -89,6 +89,11 @@ extended per workspace). The web app also runs the
 Oxlint JS plugin: no hard-coded colors, no `!important`, no escape hatches, only valid tokens.
 Every function must declare its return type and `any` is not allowed. CI fails on warnings too.
 
+## Game modes
+
+Rounds, leaderboards and duels, with their rules and timings (polling, when invitations lapse,
+offline sync): [docs/game-modes.md](docs/game-modes.md).
+
 ## Deployment
 
 Web, API and database are all on Vercel: one project with two
