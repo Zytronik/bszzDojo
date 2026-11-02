@@ -8,6 +8,7 @@ import {
   type BowTypeId,
   type TargetSize,
 } from '@bszz-dojo/shared';
+import { readStored, writeStored } from '../core/stored';
 
 /** The setup of the last round saved on this device, which "Score erfassen" starts with. */
 export interface ScoreSetup {
@@ -42,19 +43,10 @@ function isScoreSetup(value: unknown): value is ScoreSetup {
 }
 
 export function loadScoreSetup(): ScoreSetup | null {
-  try {
-    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    return isScoreSetup(stored) ? stored : null;
-  } catch {
-    // Unavailable storage (private mode) or a damaged entry: start with the defaults.
-    return null;
-  }
+  const stored = readStored(STORAGE_KEY);
+  return isScoreSetup(stored) ? stored : null;
 }
 
 export function saveScoreSetup(setup: ScoreSetup): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(setup));
-  } catch {
-    // Storage can be unavailable (private mode); the next round then starts with the defaults.
-  }
+  writeStored(STORAGE_KEY, setup);
 }

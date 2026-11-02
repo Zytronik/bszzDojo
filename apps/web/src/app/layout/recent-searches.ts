@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { isRecord, usernameKey, type UserSearchResult } from '@bszz-dojo/shared';
 import { AuthStore } from '../auth/auth.store';
+import { readStored, writeStored } from '../core/stored';
 
 /**
  * Per device in localStorage, like the score setup: only a convenience for the next search. Kept
@@ -23,14 +24,10 @@ function isProfile(value: unknown): value is UserSearchResult {
 }
 
 function load(): StoredRecent | null {
-  try {
-    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (!isRecord(stored) || typeof stored['userId'] !== 'string') return null;
-    const profiles = Array.isArray(stored['profiles']) ? stored['profiles'] : [];
-    return { userId: stored['userId'], profiles: profiles.filter(isProfile).slice(0, RECENT_LIMIT) };
-  } catch {
-    return null;
-  }
+  const stored = readStored(STORAGE_KEY);
+  if (!isRecord(stored) || typeof stored['userId'] !== 'string') return null;
+  const profiles = Array.isArray(stored['profiles']) ? stored['profiles'] : [];
+  return { userId: stored['userId'], profiles: profiles.filter(isProfile).slice(0, RECENT_LIMIT) };
 }
 
 /** The profiles last opened from the search, newest first, shown before anything is typed. */
@@ -53,10 +50,6 @@ export class RecentSearches {
       ...this.profiles().filter((profile) => usernameKey(profile.username) !== key),
     ].slice(0, RECENT_LIMIT);
     this.stored.set({ userId, profiles });
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ userId, profiles }));
-    } catch {
-      // Storage unavailable (private mode): remembered only while the app stays open.
-    }
+    writeStored(STORAGE_KEY, { userId, profiles });
   }
 }

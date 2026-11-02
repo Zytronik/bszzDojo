@@ -1,4 +1,5 @@
 import { isRecord, parseUserSettings, type UserProfile } from '@bszz-dojo/shared';
+import { readStored, removeStored, writeStored } from '../core/stored';
 
 /**
  * The logged-in user, kept on this device only so the app can start offline and show the data the
@@ -17,29 +18,17 @@ function isUserProfile(value: unknown): value is UserProfile {
   );
 }
 
+/** Without a stored user (or storage), the app needs a connection to start. */
 export function loadOfflineUser(): UserProfile | null {
-  try {
-    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (!isUserProfile(stored)) return null;
-    return { ...stored, rank: stored.rank ?? null, settings: parseUserSettings(stored.settings) };
-  } catch {
-    // Unavailable storage (private mode) or a damaged entry: no offline start.
-    return null;
-  }
+  const stored = readStored(STORAGE_KEY);
+  if (!isUserProfile(stored)) return null;
+  return { ...stored, rank: stored.rank ?? null, settings: parseUserSettings(stored.settings) };
 }
 
 export function saveOfflineUser(user: UserProfile): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  } catch {
-    // Storage can be unavailable (private mode); the app then needs a connection to start.
-  }
+  writeStored(STORAGE_KEY, user);
 }
 
 export function clearOfflineUser(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Nothing was stored then either.
-  }
+  removeStored(STORAGE_KEY);
 }

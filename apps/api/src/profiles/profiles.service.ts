@@ -1,13 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  PROFILE_HISTORY_SIZE,
-  usernameKey,
-  type Profile,
-  type ProfileHistory,
-} from '@bszz-dojo/shared';
+import { PROFILE_HISTORY_SIZE, type Profile, type ProfileHistory } from '@bszz-dojo/shared';
 import { Repository } from 'typeorm';
 import { toBadge } from '../badges/badge-mapper';
+import { findUserByName } from '../common/find-user';
 import { BadgeEntity } from '../badges/badge.entity';
 import { byShotOn, toScore } from '../scores/score-mapper';
 import { ScoreEntity } from '../scores/score.entity';
@@ -32,7 +28,7 @@ export class ProfilesService {
   ) {}
 
   async profile(username: string): Promise<Profile> {
-    const user = await this.user(username);
+    const user = await findUserByName(this.users, username);
 
     const [scores, badges] = await Promise.all([
       this.scores.findBy({ userId: user.id }),
@@ -59,7 +55,7 @@ export class ProfilesService {
 
   /** In the profile's order (`history`): newest day first, on the same day the last entered. */
   async history(username: string, offset: number): Promise<ProfileHistory> {
-    const user = await this.user(username);
+    const user = await findUserByName(this.users, username);
     const scores = await this.scores.find({
       where: { userId: user.id },
       order: { shotOn: 'DESC', createdAt: 'DESC' },
@@ -71,11 +67,5 @@ export class ProfilesService {
       scores: scores.slice(0, PROFILE_HISTORY_SIZE).map(toScore),
       hasMore: scores.length > PROFILE_HISTORY_SIZE,
     };
-  }
-
-  private async user(username: string): Promise<UserEntity> {
-    const user = await this.users.findOneBy({ usernameKey: usernameKey(username) });
-    if (!user) throw new NotFoundException('Benutzer nicht gefunden.');
-    return user;
   }
 }

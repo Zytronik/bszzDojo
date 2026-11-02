@@ -9,6 +9,7 @@ import {
   type DuelFace,
   type DuelSettings,
 } from '@bszz-dojo/shared';
+import { readStored, writeStored } from '../core/stored';
 import { loadScoreSetup } from '../scores/score-setup';
 
 /** The last duel set up or accepted on this device, which the next one starts with. */
@@ -35,12 +36,8 @@ function isDuelSetup(value: unknown): value is DuelSetup {
 
 /** The last duel's setup, else the bow, face and distance of the last round */
 export function loadDuelSetup(): Partial<DuelSetup> {
-  try {
-    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (isDuelSetup(stored)) return stored;
-  } catch {
-    // Unavailable storage (private mode) or a damaged entry: fall back to the score setup.
-  }
+  const stored = readStored(STORAGE_KEY);
+  if (isDuelSetup(stored)) return stored;
   const score = loadScoreSetup();
   return score
     ? {
@@ -53,9 +50,5 @@ export function loadDuelSetup(): Partial<DuelSetup> {
 }
 
 export function saveDuelSetup(setup: DuelSetup): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(setup));
-  } catch {
-    // Storage can be unavailable (private mode); the next duel then starts with the defaults.
-  }
+  writeStored(STORAGE_KEY, setup);
 }

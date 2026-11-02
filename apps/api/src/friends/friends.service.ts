@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { shownName, usernameKey, type Friend } from '@bszz-dojo/shared';
+import { shownName, type Friend } from '@bszz-dojo/shared';
 import { Repository } from 'typeorm';
+import { findUserByName } from '../common/find-user';
 import { UserEntity } from '../users/user.entity';
 import { FriendEntity } from './friend.entity';
 
@@ -27,7 +28,7 @@ export class FriendsService {
 
   /** Adding someone twice is fine: the first row stays. */
   async add(userId: string, username: string): Promise<void> {
-    const friend = await this.findUser(username);
+    const friend = await findUserByName(this.users, username);
     if (friend.id === userId) {
       throw new BadRequestException('Du kannst dich nicht selbst als Freund hinzufügen.');
     }
@@ -40,13 +41,7 @@ export class FriendsService {
   }
 
   async remove(userId: string, username: string): Promise<void> {
-    const friend = await this.findUser(username);
+    const friend = await findUserByName(this.users, username);
     await this.friends.delete({ userId, friendId: friend.id });
-  }
-
-  private async findUser(username: string): Promise<UserEntity> {
-    const user = await this.users.findOneBy({ usernameKey: usernameKey(username) });
-    if (!user) throw new NotFoundException('Benutzer nicht gefunden.');
-    return user;
   }
 }

@@ -13,7 +13,6 @@ import {
   duelProgress,
   duelSettingsErrors,
   otherSide,
-  usernameKey,
   type AcceptDuelRequest,
   type BowTypeId,
   type CreateDuelRequest,
@@ -34,6 +33,7 @@ import {
 import { randomUUID } from 'node:crypto';
 import { In, Repository } from 'typeorm';
 import { uniqueViolation } from '../common/database-errors';
+import { findUserByName } from '../common/find-user';
 import { UserEntity } from '../users/user.entity';
 import { DuelEndEntity } from './duel-end.entity';
 import { DuelEntity } from './duel.entity';
@@ -120,8 +120,7 @@ export class DuelsService {
   async create(userId: string, body: CreateDuelRequest): Promise<Duel> {
     const errors = duelSettingsErrors(body);
     if (errors.length > 0) throw new BadRequestException(errors);
-    const opponent = await this.users.findOneBy({ usernameKey: usernameKey(body.opponent) });
-    if (!opponent) throw new NotFoundException('Benutzer nicht gefunden.');
+    const opponent = await findUserByName(this.users, body.opponent);
     if (opponent.id === userId) {
       throw new BadRequestException('Du kannst dich nicht selbst herausfordern.');
     }
@@ -280,8 +279,7 @@ export class DuelsService {
   /** A profile's record, the viewer's record against them, and their latest duels. */
   async profile(viewerId: string, username: string): Promise<ProfileDuels> {
     await this.expireStale();
-    const user = await this.users.findOneBy({ usernameKey: usernameKey(username) });
-    if (!user) throw new NotFoundException('Benutzer nicht gefunden.');
+    const user = await findUserByName(this.users, username);
 
     const finished = await this.duels.find({
       select: { id: true, challengerId: true, opponentId: true, winner: true },
