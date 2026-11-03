@@ -7,8 +7,8 @@ import { PushStore } from '../settings/push.store';
 import { Dialog } from '../ui/dialog';
 
 /**
- * Asks once per device whether to turn on push messages (duels, the month-end rankings). Browsers
- * only show their own question after a tap (Safari not at all otherwise), so this one comes first.
+ * Asks once per device whether to turn on push messages. Browsers only show their own question
+ * after a tap (Safari not at all otherwise), so this one comes first.
  */
 @Component({
   selector: 'app-push-dialog',
@@ -21,9 +21,8 @@ import { Dialog } from '../ui/dialog';
       (closed)="push.closePrompt()"
     >
       <p [class]="leadStyles">
-        Erfahre sofort, wenn dich jemand herausfordert, dein Gegner geschossen hat oder ein Duell
-        entschieden ist, und kurz vor Monatsende, wo du in der Monatsrangliste stehst. Auch wenn
-        die App geschlossen ist.
+        Erfahre sofort, was im Dojo läuft: neue Herausforderungen, wenn du im Duell dran bist, und
+        kurz vor Monatsende dein Platz in der Monatsrangliste. Auch wenn die App geschlossen ist.
       </p>
       <div [class]="actionStyles">
         <button type="button" appButton (click)="accept()">Aktivieren</button>
