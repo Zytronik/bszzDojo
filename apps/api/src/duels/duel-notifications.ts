@@ -31,7 +31,6 @@ export function duelMessage(duel: Duel, recipient: DuelSide, news: DuelNews): Pu
       title,
       body,
       icon: ICON,
-      // One message per duel on the device: the newest replaces the one before.
       tag: `duel-${duel.id}`,
       renotify: true,
       data: {

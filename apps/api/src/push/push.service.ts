@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import type { PushConfig, PushMessage, PushSubscriptionRequest } from '@bszz-dojo/shared';
 import { randomUUID } from 'node:crypto';
 import { In, Repository } from 'typeorm';
-import { WebPushError, sendNotification, type VapidKeys } from 'web-push';
+import { WebPushError, sendNotification, type RequestOptions } from 'web-push';
 import { isPushEndpoint } from './push-endpoints';
 import { PushSubscriptionEntity } from './push-subscription.entity';
 
@@ -13,12 +13,13 @@ const TIME_TO_LIVE = 12 * 60 * 60;
 const REQUEST_TIMEOUT_MS = 5000;
 
 type PushOutcome = 'sent' | 'gone' | 'failed';
+type VapidDetails = NonNullable<RequestOptions['vapidDetails']>;
 
 @Injectable()
 export class PushService {
   private readonly logger = new Logger(PushService.name);
   /** `null` without the VAPID env vars: then nothing is sent and the app offers no push. */
-  private readonly vapid: (VapidKeys & { subject: string }) | null;
+  private readonly vapid: VapidDetails | null;
 
   constructor(
     @InjectRepository(PushSubscriptionEntity)
@@ -72,7 +73,7 @@ export class PushService {
   private async sendTo(
     target: PushSubscriptionEntity,
     payload: string,
-    vapidDetails: VapidKeys & { subject: string },
+    vapidDetails: VapidDetails,
   ): Promise<PushOutcome> {
     if (!isPushEndpoint(target.endpoint)) return 'gone';
     try {

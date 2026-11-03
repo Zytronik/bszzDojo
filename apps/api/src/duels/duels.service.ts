@@ -390,7 +390,6 @@ export class DuelsService {
     await this.push.send([recipientId], duelMessage(duel, recipient, news));
   }
 
-  /** Tells the archer on the other side than `actor` */
   private async notifyOther(
     duel: Duel,
     entity: DuelEntity,
