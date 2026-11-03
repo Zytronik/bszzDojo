@@ -11,6 +11,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { PushModule } from './push/push.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { ScoresModule } from './scores/scores.module';
+import { StreaksModule } from './streaks/streaks.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -36,6 +37,7 @@ import { UsersModule } from './users/users.module';
     DuelsModule,
     FriendsModule,
     PushModule,
+    StreaksModule,
     AdminModule,
   ],
 })

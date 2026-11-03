@@ -4,6 +4,7 @@ import { AuthModule } from '../auth/auth.module';
 import { BadgeEntity } from '../badges/badge.entity';
 import { DuelsModule } from '../duels/duels.module';
 import { ScoreEntity } from '../scores/score.entity';
+import { StreaksModule } from '../streaks/streaks.module';
 import { UserEntity } from '../users/user.entity';
 import { ProfilesController } from './profiles.controller';
 import { ProfilesService } from './profiles.service';
@@ -13,6 +14,7 @@ import { ProfilesService } from './profiles.service';
     TypeOrmModule.forFeature([UserEntity, ScoreEntity, BadgeEntity]),
     AuthModule,
     DuelsModule,
+    StreaksModule,
   ],
   controllers: [ProfilesController],
   providers: [ProfilesService],
