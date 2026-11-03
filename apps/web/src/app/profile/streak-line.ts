@@ -32,19 +32,16 @@ export class StreakLine {
       ? 'Trainingsserie, diese Woche trainiert'
       : 'Trainingsserie, diese Woche noch kein Training',
   );
+  // Text flow rather than flex: like Font Awesome's own inline icons, the flame sits a little
+  // below the middle of the line, which centers it on the letters.
   protected readonly styles = {
-    root: css({
-      display: 'flex',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-      columnGap: '5',
-      m: '0',
-      marginBlockEnd: '5',
-    }),
+    root: css({ m: '0', marginBlockEnd: '5' }),
     flame: css({
+      marginInlineEnd: '5',
       layerStyle: 'muted',
+      '& svg': { verticalAlign: '-0.125em' },
       '&[data-done]': { color: 'accent.default', opacity: 'full' },
     }),
-    record: css({ layerStyle: 'muted' }),
+    record: css({ marginInlineStart: '5', layerStyle: 'muted' }),
   };
 }
