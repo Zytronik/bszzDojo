@@ -8,7 +8,12 @@
   <app-loading-frame [loading]="!p" [lines]="3">
     @if (p) {
     <div [class]="pageStyles.nameRow">
-      <h1>{{ p | shownName }}</h1>
+      <div [class]="pageStyles.nameGroup">
+        <h1>{{ p | shownName }}</h1>
+        @if (p.streak; as streak) {
+        <app-streak-badge [streak]="streak" />
+        }
+      </div>
       @if (isOwnProfile()) {
       <a [class]="iconButton" routerLink="/friends" aria-label="Meine Freunde">
         <app-icon [icon]="icons.heart" />
@@ -57,7 +62,7 @@
       @if (p.streak; as streak) {
       <div [class]="pageStyles.stat">
         <p>Trainingsserie:</p>
-        <p>{{ weeksLabel(streak.current) }}</p>
+        <p>{{ weeksLabel(streak.current) }} (Rekord: {{ weeksLabel(streak.best) }})</p>
       </div>
       }
       @if (p.badges.length > 0) {

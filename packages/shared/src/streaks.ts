@@ -1,21 +1,15 @@
 import { todayInClub, type IsoDate } from './dates';
 
-/** How many weeks the streak's week strip shows, this week included */
-export const STREAK_STRIP_WEEKS = 8;
-
 /**
  * Weeks in a row with at least one training (a recorded round or a duel end), Monday to Sunday in
  * the club's time zone. A streak isn't lost while this week is still running: it counts up to
- * last week until the archer trains this week too. Response of `GET /api/users/me/streak`, and
- * part of every profile.
+ * last week until the archer trains this week too. Part of every profile.
  */
 export interface TrainingStreak {
   current: number;
   best: number;
   /** Trained this week already, so the streak is safe until next Monday */
   thisWeek: boolean;
-  /** The last `STREAK_STRIP_WEEKS` weeks, oldest first, this week last: trained or not */
-  recent: boolean[];
 }
 
 /** "1 Woche", "5 Wochen" */
@@ -58,9 +52,5 @@ export function trainingStreak(
     best = Math.max(best, run);
     previous = monday;
   }
-
-  const recent = Array.from({ length: STREAK_STRIP_WEEKS }, (_, index) =>
-    weeks.has(addDays(thisMonday, (index - STREAK_STRIP_WEEKS + 1) * 7)),
-  );
-  return { current, best, thisWeek, recent };
+  return { current, best, thisWeek };
 }

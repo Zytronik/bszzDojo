@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type {
-  TrainingStreak,
   UpdateProfileRequest,
   UserProfile,
   UserSearchResult,
@@ -20,10 +19,6 @@ export class UsersApiService {
 
   updateMe(changes: UpdateProfileRequest): Promise<UserProfile> {
     return firstValueFrom(this.http.patch<UserProfile>(apiUrl('users/me'), changes));
-  }
-
-  streak(): Promise<TrainingStreak> {
-    return firstValueFrom(this.http.get<TrainingStreak>(apiUrl('users/me/streak')));
   }
 
   saveSettings(settings: UserSettings): Promise<UserSettings> {

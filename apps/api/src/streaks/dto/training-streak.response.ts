@@ -9,7 +9,4 @@ export class TrainingStreakResponse implements TrainingStreak {
 
   /** Trained this week already (Monday to Sunday, Europe/Zurich) */
   thisWeek: boolean;
-
-  /** The last 8 weeks, oldest first, this week last: trained or not */
-  recent: boolean[];
 }

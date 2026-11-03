@@ -41,6 +41,7 @@ import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
+import { StreakBadge } from '../profile/streak-badge';
 import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
@@ -67,6 +68,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     RouterLink,
     Icon,
     DuelRow,
+    StreakBadge,
   ],
   templateUrl: './profile-page.html',
 })
@@ -167,6 +169,7 @@ export class ProfilePage {
       marginBlockEnd: '5',
       '& h1': { marginBlockEnd: '0' },
     }),
+    nameGroup: css({ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '15' }),
     rankRow: css({
       display: 'flex',
       alignItems: 'center',
