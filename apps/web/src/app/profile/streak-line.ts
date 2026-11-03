@@ -37,11 +37,11 @@ export class StreakLine {
   protected readonly styles = {
     root: css({ m: '0', marginBlockEnd: '5' }),
     flame: css({
-      marginInlineEnd: '5',
+      me: '5',
       layerStyle: 'muted',
       '& svg': { verticalAlign: '-0.125em' },
       '&[data-done]': { color: 'accent.default', opacity: 'full' },
     }),
-    record: css({ marginInlineStart: '5', layerStyle: 'muted' }),
+    record: css({ ms: '5', layerStyle: 'muted' }),
   };
 }
