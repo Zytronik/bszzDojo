@@ -7,6 +7,7 @@ export * from './duels';
 export * from './friends';
 export * from './guards';
 export * from './profiles';
+export * from './push';
 export * from './rankings';
 export * from './ranks';
 export * from './scores';

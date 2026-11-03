@@ -8,6 +8,7 @@ import { DuelsModule } from './duels/duels.module';
 import { typeOrmOptions } from './database/typeorm-options';
 import { FriendsModule } from './friends/friends.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { PushModule } from './push/push.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { ScoresModule } from './scores/scores.module';
 import { UsersModule } from './users/users.module';
@@ -34,6 +35,7 @@ import { UsersModule } from './users/users.module';
     BadgesModule,
     DuelsModule,
     FriendsModule,
+    PushModule,
     AdminModule,
   ],
 })

@@ -188,6 +188,28 @@ The second poll runs everywhere in the app (`DuelsStore`): it fills the dashboar
 invitations that arrive while the app is open (each once; the ones there at startup only show on
 the dashboard). Duels aren't cached by the service worker, so they need a connection.
 
+### Push messages
+
+Polling only works while the app is open. For everything else, archers can turn on push messages
+per device under Einstellungen → Mitteilungen. The app also asks once per device, at the start
+and after challenging someone or accepting a duel ("Später" means it doesn't ask again there). They also arrive while the app is in the background
+or closed, and a tap opens the duel.
+
+| When                                                 | Who gets it               |
+| ---------------------------------------------------- | ------------------------- |
+| A new invitation                                     | the challenged archer     |
+| The invitation is accepted or declined               | the challenger            |
+| An end (or shoot-off arrow) was shot: "Du bist dran" | the other archer          |
+| Both shot the end: its result with the score         | the one who shot first    |
+| Level after the regular ends: shoot-off              | the one who shot first    |
+| The duel is decided, or the other gave up            | the archer who didn't act |
+
+Each archer only hears about what the other one did. A device shows one message per duel; a newer
+one replaces it. Push messages need the browser's permission, and on iPhones (iOS 16.4 or newer)
+the app installed on the home screen. Logging out turns them off on that device. Invitations that
+lapse or duels that are abandoned send nothing, because the API only notices that on the next
+request.
+
 ## Timings at a glance
 
 | What                                      | Value                                        | Where                            |
@@ -196,5 +218,6 @@ the dashboard). Duels aren't cached by the service worker, so they need a connec
 | Invitations and open duels poll           | 20 s                                         | `duels/duels.store.ts`           |
 | Duel invitation lapses                    | 24 h after sent                              | `DUEL_INVITATION_HOURS`          |
 | Active duel abandoned                     | 2 h without a change                         | `DUEL_IDLE_HOURS`                |
+| Push message kept for an offline device   | 12 h                                         | `push/push.service.ts`           |
 | Offline rounds retry                      | 30 s, on reconnect and focus                 | `scores/pending-scores.store.ts` |
 | Cached reads (rankings, profiles, rounds) | network first, cache after 5 s, kept 30 days | `ngsw-config.json`               |

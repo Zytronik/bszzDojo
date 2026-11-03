@@ -48,6 +48,7 @@ import { FieldControl, FormField } from '../forms/form-field';
 import { INVALID_FORM, checkForm, required, rule } from '../forms/validators';
 import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore } from '../layout/toast.store';
+import { PushStore } from '../settings/push.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { Section } from '../ui/section';
 
@@ -92,6 +93,7 @@ export class DuelNewPage {
   private readonly users = inject(UsersApiService);
   private readonly auth = inject(AuthStore);
   private readonly duels = inject(DuelsStore);
+  private readonly push = inject(PushStore);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
@@ -210,6 +212,7 @@ export class DuelNewPage {
       const duel = await this.api.create({ opponent: rival.username, ...setup });
       void this.duels.refresh();
       await this.router.navigate(['/duels', duel.id], { replaceUrl: true });
+      this.push.suggest();
     } catch (error: unknown) {
       this.toasts.error(errorMessage(error));
     } finally {

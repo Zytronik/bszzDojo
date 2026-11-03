@@ -21,6 +21,7 @@ import {
   DUEL_IDLE_HOURS,
   TARGET_SIZES,
   arrowLabel,
+  duelEndName,
   duelFaceLabel,
   duelScoreLabel,
   endTotal,
@@ -52,7 +53,6 @@ import { DuelFacts } from '../duels/duel-facts';
 import { DuelScoreboard } from '../duels/duel-scoreboard';
 import { DuelHeadline, type DuelHeadlineTone } from '../duels/duel-headline';
 import {
-  endName,
   endRows,
   hasHandicap,
   progressOf,
@@ -67,6 +67,7 @@ import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
 import { TargetCanvas } from '../scores/target-canvas';
+import { PushStore } from '../settings/push.store';
 import { CheckboxField } from '../ui/checkbox-field';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
@@ -117,6 +118,7 @@ export class DuelPage {
   private readonly api = inject(DuelsApiService);
   protected readonly from = inject(PageHeaderState).duelOrigin();
   private readonly duels = inject(DuelsStore);
+  private readonly push = inject(PushStore);
   private readonly toasts = inject(ToastStore);
 
   protected readonly duel = resource({
@@ -178,7 +180,7 @@ export class DuelPage {
     const progress = this.progress();
     return duel && progress ? endRows(duel, progress) : [];
   });
-  protected readonly endLabel = computed(() => endName(this.loaded()?.format ?? 'sets'));
+  protected readonly endLabel = computed(() => duelEndName(this.loaded()?.format ?? 'sets'));
   protected readonly caption = computed(() => {
     const duel = this.loaded();
     const progress = this.progress();
@@ -441,11 +443,12 @@ export class DuelPage {
     );
   }
 
-  protected accept(): Promise<void> {
+  protected async accept(): Promise<void> {
     const duel = this.loaded();
     const answer = this.acceptForm.getRawValue();
     if (duel) saveDuelSetup({ format: duel.format, distance: duel.distance, ...answer });
-    return this.answer((id) => this.api.accept(id, answer));
+    await this.answer((id) => this.api.accept(id, answer));
+    this.push.suggest();
   }
 
   protected decline(): Promise<void> {

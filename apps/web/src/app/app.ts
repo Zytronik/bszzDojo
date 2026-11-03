@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { css } from 'styled-system/css';
 import { AuthStore } from './auth/auth.store';
 import { InstallDialog } from './layout/install-dialog';
+import { PushDialog } from './layout/push-dialog';
 import { SearchOverlay } from './layout/search-overlay';
 import { SiteFooter } from './layout/site-footer';
 import { SiteHeader } from './layout/site-header';
@@ -13,7 +14,15 @@ import { SettingsStore } from './settings/settings.store';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, SiteHeader, SearchOverlay, SiteFooter, Toaster, InstallDialog],
+  imports: [
+    RouterOutlet,
+    SiteHeader,
+    SearchOverlay,
+    SiteFooter,
+    Toaster,
+    InstallDialog,
+    PushDialog,
+  ],
   template: `
     <app-site-header />
     @if (auth.isAuthenticated()) {
@@ -25,6 +34,7 @@ import { SettingsStore } from './settings/settings.store';
     <app-site-footer />
     <app-toaster />
     <app-install-dialog />
+    <app-push-dialog />
   `,
 })
 export class App {

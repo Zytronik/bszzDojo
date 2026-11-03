@@ -5,6 +5,7 @@ import { BadgeEntity } from '../badges/badge.entity';
 import { DuelEndEntity } from '../duels/duel-end.entity';
 import { DuelEntity } from '../duels/duel.entity';
 import { FriendEntity } from '../friends/friend.entity';
+import { PushSubscriptionEntity } from '../push/push-subscription.entity';
 import { ScoreEntity } from '../scores/score.entity';
 import { UserEntity } from '../users/user.entity';
 
@@ -16,6 +17,7 @@ const ENTITIES = [
   FriendEntity,
   DuelEntity,
   DuelEndEntity,
+  PushSubscriptionEntity,
 ];
 
 /**
