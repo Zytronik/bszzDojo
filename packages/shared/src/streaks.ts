@@ -53,7 +53,7 @@ export function trainingStreak(
   let best = 0;
   let run = 0;
   let previous: IsoDate | null = null;
-  for (const monday of [...weeks].sort()) {
+  for (const monday of [...weeks].toSorted()) {
     run = previous !== null && addDays(previous, 7) === monday ? run + 1 : 1;
     best = Math.max(best, run);
     previous = monday;
