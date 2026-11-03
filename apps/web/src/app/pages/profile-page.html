@@ -9,39 +9,37 @@
     @if (p) {
     <div [class]="pageStyles.nameRow">
       <h1>{{ p | shownName }}</h1>
-      <div [class]="pageStyles.nameActions">
-        @if (p.streak; as streak) {
-        <app-streak-badge [streak]="streak" />
-        }
-        @if (isOwnProfile()) {
-        <a [class]="iconButton" routerLink="/friends" aria-label="Meine Freunde">
-          <app-icon [icon]="icons.heart" />
-        </a>
-        } @else if (friends.isFriend(p.username)) {
-        <button
-          type="button"
-          [class]="iconButton"
-          aria-pressed="true"
-          [attr.aria-label]="(p | shownName) + ' als Freund entfernen'"
-          [disabled]="friends.changing() === p.username"
-          (click)="friends.remove(p)"
-        >
-          <app-icon [icon]="icons.heart" />
-        </button>
-        } @else {
-        <button
-          type="button"
-          [class]="iconButton"
-          aria-pressed="false"
-          [attr.aria-label]="(p | shownName) + ' als Freund hinzufügen'"
-          [disabled]="friends.changing() === p.username"
-          (click)="friends.add(p)"
-        >
-          <app-icon [icon]="icons.outline" />
-        </button>
-        }
-      </div>
+      @if (isOwnProfile()) {
+      <a [class]="iconButton" routerLink="/friends" aria-label="Meine Freunde">
+        <app-icon [icon]="icons.heart" />
+      </a>
+      } @else if (friends.isFriend(p.username)) {
+      <button
+        type="button"
+        [class]="iconButton"
+        aria-pressed="true"
+        [attr.aria-label]="(p | shownName) + ' als Freund entfernen'"
+        [disabled]="friends.changing() === p.username"
+        (click)="friends.remove(p)"
+      >
+        <app-icon [icon]="icons.heart" />
+      </button>
+      } @else {
+      <button
+        type="button"
+        [class]="iconButton"
+        aria-pressed="false"
+        [attr.aria-label]="(p | shownName) + ' als Freund hinzufügen'"
+        [disabled]="friends.changing() === p.username"
+        (click)="friends.add(p)"
+      >
+        <app-icon [icon]="icons.outline" />
+      </button>
+      }
     </div>
+    @if (p.streak; as streak) {
+    <app-streak-line [streak]="streak" />
+    }
     <div [class]="pageStyles.rankRow">
       <p>Abzeichen:</p>
       @if (p.rank) {
@@ -59,16 +57,6 @@
         <p>Anzahl Scores:</p>
         <p>{{ p.stats.totalScores }}</p>
       </div>
-      @if (p.streak; as streak) {
-      <div [class]="pageStyles.stat">
-        <p>Trainingsserie:</p>
-        <p>{{ weeksLabel(streak.current) }}</p>
-      </div>
-      <div [class]="pageStyles.stat">
-        <p>Längste Serie:</p>
-        <p>{{ weeksLabel(streak.best) }}</p>
-      </div>
-      }
       @if (p.badges.length > 0) {
       <div [class]="pageStyles.stat">
         <p>Anzahl Auszeichnungen:</p>

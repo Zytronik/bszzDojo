@@ -100,7 +100,7 @@ The rules and timings of rounds, leaderboards and duels are explained for people
 - **Training streak** (`streaks.ts`, `apps/api/src/streaks/`): weeks in a row (Monday to Sunday,
   `CLUB_TIME_ZONE`) with a round (by `shotOn`) or a duel end (by when it was saved); not lost while
   the current week is running. `trainingStreak` computes it from the weeks' Mondays, which one
-  query collects; part of `Profile`, shown as `StreakBadge` beside the friend button.
+  query collects; part of `Profile`, shown as `StreakLine` under the name.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
   anyone can add anyone with the icon button on their profile, without a confirmation and without
   appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds
