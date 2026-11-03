@@ -143,8 +143,8 @@ The rules and timings of rounds, leaderboards and duels are explained for people
 - Standalone, `OnPush`, signals (`input`, `model`, `computed`, `linkedSignal`, `resource`,
   `effect`), `inject()`, `@if` / `@for`, no zone.js.
 - Folders: `pages/` (one per route; params as `input()`s), features (`auth/`, `settings/`,
-  `dashboard/`, `profile/`, `scores/`, `duels/`, `friends/`, `admin/`), `layout/` (header, search, footer, toasts),
-  `ui/`, `core/` (API services, helpers).
+  `dashboard/`, `profile/`, `scores/`, `duels/`, `friends/`, `admin/`), `layout/` (header, search,
+  footer, toasts, the install and push dialogs), `ui/`, `core/` (API services, helpers).
 - App-wide state in SignalStores (`*.store.ts`, root); only stores call `patchState`. Page data via
   `resource()`; lists in `<app-loading-frame>` (skeleton shaped like the rows, never "Wird
   geladen…"); empty lists `<app-empty-state>Keine … vorhanden.</app-empty-state>`.
@@ -192,11 +192,11 @@ The rules and timings of rounds, leaderboards and duels are explained for people
 ## Storybook
 
 Storybook 10 (`apps/web/.storybook/`), built in CI. Every reusable component in `ui/`, `forms/`,
-`profile/`, `dashboard/`, `scores/`, `duels/`, `friends/` has a `*.stories.ts` with one story per meaningful state;
-pages and layout have none. Stories follow the app rules (no inline styles). `routerLink` needs
-the `withRouter` decorator, charts `withHttp` (`.storybook/decorators.ts`). New
-semantic tokens go in `src/stories/colors.mdx`. Keep its peers `@angular/animations` and
-`@angular/platform-browser-dynamic` on the Angular major.
+`profile/`, `dashboard/`, `scores/`, `duels/`, `friends/` has a `*.stories.ts` with one story per
+meaningful state; pages, layout and settings have none. Stories follow the app rules (no inline
+styles). `routerLink` needs the `withRouter` decorator, charts `withHttp`
+(`.storybook/decorators.ts`). New semantic tokens go in `src/stories/colors.mdx`. Keep its peers
+`@angular/animations` and `@angular/platform-browser-dynamic` on the Angular major.
 
 ## Git
 

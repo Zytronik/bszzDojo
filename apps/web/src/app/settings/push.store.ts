@@ -20,7 +20,6 @@ import { ToastStore } from '../layout/toast.store';
 interface PushState {
   /** The server's VAPID key; `null` when it sends no push messages, `undefined` until loaded */
   publicKey: string | null | undefined;
-  /** This browser receives the logged-in user's push messages */
   subscribed: boolean;
   permission: NotificationPermission;
   pending: boolean;

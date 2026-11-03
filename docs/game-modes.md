@@ -191,9 +191,9 @@ the dashboard). Duels aren't cached by the service worker, so they need a connec
 ### Push messages
 
 Polling only works while the app is open. For everything else, archers can turn on push messages
-per device under Einstellungen → Mitteilungen. The app also asks once per device, at the start
-and after challenging someone or accepting a duel ("Später" means it doesn't ask again there). They also arrive while the app is in the background
-or closed, and a tap opens the duel.
+per device under Einstellungen → Mitteilungen. They also arrive while the app is in the background
+or closed, and a tap opens the duel. The app asks once per device, at the start and after
+challenging someone or accepting a duel; after "Später" it doesn't ask again on that device.
 
 | When                                                 | Who gets it               |
 | ---------------------------------------------------- | ------------------------- |

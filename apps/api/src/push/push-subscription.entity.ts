@@ -23,7 +23,6 @@ export class PushSubscriptionEntity {
   @JoinColumn({ name: 'user_id', foreignKeyConstraintName: 'FK_push_subscriptions_user' })
   user: UserEntity;
 
-  /** The push service's URL for this browser */
   @Index('UQ_push_subscriptions_endpoint', { unique: true })
   @Column({ type: 'text' })
   endpoint: string;
