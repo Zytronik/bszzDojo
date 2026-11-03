@@ -21,8 +21,7 @@ import { Dialog } from '../ui/dialog';
       (closed)="push.closePrompt()"
     >
       <p [class]="leadStyles">
-        Erfahre sofort, was im Dojo läuft: neue Herausforderungen, wenn du im Duell dran bist, und
-        kurz vor Monatsende dein Platz in der Monatsrangliste. Auch wenn die App geschlossen ist.
+        Erfahre sofort, was im Dojo läuft, auch wenn die App geschlossen ist.
       </p>
       <div [class]="actionStyles">
         <button type="button" appButton (click)="accept()">Aktivieren</button>
