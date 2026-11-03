@@ -18,20 +18,30 @@ packages/
 
 - Accounts with a username (case-insensitive, no spaces) and password, plus an optional display
   name shown instead of the username; stays logged in for 30 days.
-- Record rounds (bow type, target face, spot, date, distance, arrows, 10s, 9s, result).
+- Record rounds as totals or arrow by arrow on the target (bow type, target face, spot, date,
+  distance, arrows); correct or delete them later. Works offline: rounds wait on the device and
+  upload once there's a connection.
+- A page per round: comparison with your other rounds, and for target rounds the arrows per end,
+  group size, end totals, ring distribution and scorecard. Shareable by link.
 - Leaderboards: all time and this month at 18m, 8m and 30m (30 arrows, with the bow type's handicap),
   and the medal table of tournament placings.
 - Profiles with your club badge ("Abzeichen"), average per arrow, personal bests per distance,
-  a progress chart per bow type, placings ("Auszeichnungen") and the latest rounds (deletable on
-  your own profile).
+  a progress chart per bow type, placings ("Auszeichnungen"), duel record and the latest rounds.
+- Duels: match play against another archer (set system or total points, with a shoot-off), each
+  with their own bow and face; push messages when it's your turn (opt-in per device).
+- Friends: add archers to your own list, like following.
 - Settings: record and delete your placings (SM, Clubturnier, Turnier), username, display name,
-  Abzeichen, password, light and dark theme (saved in the account).
-- User search. Admins can delete users.
+  Abzeichen, password, light and dark theme (saved in the account), push messages.
+- User search. Admins can delete users and reset passwords.
+
+How rounds, leaderboards and duels work in detail: [docs/game-modes.md](docs/game-modes.md).
 
 ## Getting started
 
 1. Create `apps/api/.env` from `apps/api/.env.example`: a Postgres `DATABASE_URL` (the dev
    database or a local Postgres) and a random `JWT_ACCESS_SECRET` (`openssl rand -base64 48`).
+   Push messages are optional: after `npm install`, add a VAPID key pair
+   (`npm run push:keys -w api`) to try them.
 2. Install and run:
 
 ```bash
