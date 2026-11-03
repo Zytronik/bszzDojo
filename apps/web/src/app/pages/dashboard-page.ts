@@ -10,12 +10,14 @@ import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@b
 import { css } from 'styled-system/css';
 import { AuthStore } from '../auth/auth.store';
 import { RankingsApiService } from '../core/rankings-api.service';
+import { UsersApiService } from '../core/users-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
 import { DuelRow } from '../duels/duel-row';
 import { DuelsStore } from '../duels/duels.store';
 import { withPendingRankings } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { MedalList } from '../dashboard/medal-list';
+import { StreakCard } from '../dashboard/streak-card';
 import { toastErrors } from '../layout/toast.store';
 import { LoadingFrame } from '../ui/loading-frame';
 import { PageTitle } from '../ui/page-title';
@@ -33,6 +35,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     MedalList,
     LoadingFrame,
     DuelRow,
+    StreakCard,
   ],
   templateUrl: './dashboard-page.html',
 })
@@ -42,6 +45,9 @@ export class DashboardPage {
 
   private readonly pendingScores = inject(PendingScoresStore);
   protected readonly rankings = resource({ loader: () => this.api.get() });
+  private readonly users = inject(UsersApiService);
+  /** Not cached for offline use: without a connection the card just isn't shown. */
+  protected readonly streak = resource({ loader: () => this.users.streak() });
   /** With the user's rounds still waiting for the sync */
   protected readonly shown = computed(() =>
     this.rankings.hasValue()
@@ -75,7 +81,10 @@ export class DashboardPage {
 
   constructor() {
     toastErrors(() => this.rankings.error());
-    reloadAfterUploads(this.pendingScores, () => this.rankings.reload());
+    reloadAfterUploads(this.pendingScores, () => {
+      this.rankings.reload();
+      this.streak.reload();
+    });
     void this.duels.refresh();
   }
 }

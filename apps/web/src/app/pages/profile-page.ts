@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   usernameKey,
+  weeksLabel,
   type DistanceProgress,
   type PersonalBests,
   type DuelRecord,
@@ -89,6 +90,7 @@ export class ProfilePage {
     loader: ({ params }) => this.duelsApi.ofProfile(params.username),
   });
   protected readonly boltIcon = faBolt;
+  protected readonly weeksLabel = weeksLabel;
   protected readonly challengeStyles = cx(button(), css({ marginBlockStart: '15' }));
 
   protected readonly isOwnProfile = computed(

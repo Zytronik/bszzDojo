@@ -18,6 +18,11 @@ export interface TrainingStreak {
   recent: boolean[];
 }
 
+/** "1 Woche", "5 Wochen" */
+export function weeksLabel(count: number): string {
+  return count === 1 ? '1 Woche' : `${count} Wochen`;
+}
+
 function addDays(day: IsoDate, days: number): IsoDate {
   const date = new Date(`${day}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);

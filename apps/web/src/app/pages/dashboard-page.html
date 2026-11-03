@@ -3,6 +3,17 @@
   description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
 />
 
+@if (!streak.error()) {
+<app-section>
+  <h2>Trainingsserie</h2>
+  <app-loading-frame [loading]="!streak.hasValue()" [lines]="2">
+    @if (streak.hasValue()) {
+    <app-streak-card [streak]="streak.value()" />
+    }
+  </app-loading-frame>
+</app-section>
+}
+
 @if (duels.invitations().length > 0 || duels.open().length > 0) {
 <app-section>
   <h2>Duelle</h2>

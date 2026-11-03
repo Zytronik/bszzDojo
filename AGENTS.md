@@ -97,6 +97,10 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   (`duel-notifications.ts`, Angular's `notification` payload with `onActionClick`, one tag per duel)
   and awaits the sending before it answers. Keys: `VAPID_*` env vars (`npm run push:keys -w api`);
   without them push is off.
+- **Training streak** (`streaks.ts`, `apps/api/src/streaks/`): weeks in a row (Monday to Sunday,
+  `CLUB_TIME_ZONE`) with a round (by `shotOn`) or a duel end (by when it was saved); not lost while
+  the current week is running. `trainingStreak` computes it from the weeks' Mondays, which one
+  query collects; `GET /api/users/me/streak` for the dashboard's `StreakCard`, and in `Profile`.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
   anyone can add anyone with the icon button on their profile, without a confirmation and without
   appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds

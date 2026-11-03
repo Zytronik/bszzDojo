@@ -54,6 +54,12 @@
         <p>Anzahl Scores:</p>
         <p>{{ p.stats.totalScores }}</p>
       </div>
+      @if (p.streak; as streak) {
+      <div [class]="pageStyles.stat">
+        <p>Trainingsserie:</p>
+        <p>{{ weeksLabel(streak.current) }}</p>
+      </div>
+      }
       @if (p.badges.length > 0) {
       <div [class]="pageStyles.stat">
         <p>Anzahl Auszeichnungen:</p>

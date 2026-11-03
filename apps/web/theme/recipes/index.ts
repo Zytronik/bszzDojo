@@ -20,6 +20,7 @@ import { skeleton } from './skeleton';
 import { spinner } from './spinner';
 import { split } from './split';
 import { steps } from './steps';
+import { streak } from './streak';
 import { tabs } from './tabs';
 import { toast } from './toast';
 
@@ -49,6 +50,7 @@ export const slotRecipes = {
   siteHeader,
   skeleton,
   steps,
+  streak,
   tabs,
   toast,
 };
