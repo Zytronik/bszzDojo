@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.24.0](https://github.com/Zytronik/bszzDojo/compare/v3.23.0...v3.24.0) (2026-11-03)
+
+
+### Features
+
+* send push messages for duels ([#124](https://github.com/Zytronik/bszzDojo/issues/124)) ([a1c6610](https://github.com/Zytronik/bszzDojo/commit/a1c6610d4f5454298c3992b67950fc98036e5d42))
+
 ## [3.23.0](https://github.com/Zytronik/bszzDojo/compare/v3.22.0...v3.23.0) (2026-11-02)
 
 
