@@ -4,7 +4,7 @@ import { css } from 'styled-system/css';
 import { Icon } from '../ui/icon';
 import { faFire } from '../ui/icons';
 
-/** The flame with the weeks in a row, next to the name; lit once this week is trained. */
+/** The flame with the weeks in a row on a profile; lit once this week is trained. */
 @Component({
   selector: 'app-streak-badge',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,13 +31,17 @@ export class StreakBadge {
     const done = thisWeek ? ', diese Woche schon trainiert' : '';
     return `Trainingsserie: ${weeksLabel(current)} in Folge${done}`;
   });
+  // As high as the icon buttons next to it, so the row lines up.
   protected readonly styles = css({
     display: 'inline-flex',
     alignItems: 'center',
     gap: '5',
-    fontSize: 'xl',
+    h: 'control',
+    px: '10',
+    layerStyle: 'surface',
+    rounded: 'sm',
     fontWeight: 'bold',
-    layerStyle: 'muted',
-    '&[data-done]': { color: 'accent.default', opacity: 'full' },
+    '& > *': { opacity: 'muted' },
+    '&[data-done]': { color: 'accent.default', '& > *': { opacity: 'full' } },
   });
 }

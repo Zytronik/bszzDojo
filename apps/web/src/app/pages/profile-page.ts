@@ -169,7 +169,7 @@ export class ProfilePage {
       marginBlockEnd: '5',
       '& h1': { marginBlockEnd: '0' },
     }),
-    nameGroup: css({ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '15' }),
+    nameActions: css({ display: 'flex', alignItems: 'center', gap: '10', flexShrink: '0' }),
     rankRow: css({
       display: 'flex',
       alignItems: 'center',
