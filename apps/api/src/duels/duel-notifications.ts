@@ -9,9 +9,7 @@ import {
   type DuelSide,
   type PushMessage,
 } from '@bszz-dojo/shared';
-
-/** The icon of the installed app (`manifest.webmanifest`) */
-const ICON = '/img/fav/android-icon-192x192.png';
+import { pushMessage } from '../push/push-message';
 
 export type DuelNews =
   | { kind: 'invited' }
@@ -25,21 +23,11 @@ export type DuelNews =
 /** What the archer on `recipient`'s side is told about something the other archer did. */
 export function duelMessage(duel: Duel, recipient: DuelSide, news: DuelNews): PushMessage {
   const actor = shownName(duel[otherSide(recipient)]);
-  const { title, body } = text(duel, recipient, actor, news);
-  return {
-    notification: {
-      title,
-      body,
-      icon: ICON,
-      tag: `duel-${duel.id}`,
-      renotify: true,
-      data: {
-        onActionClick: {
-          default: { operation: 'navigateLastFocusedOrOpen', url: `/duels/${duel.id}` },
-        },
-      },
-    },
-  };
+  return pushMessage({
+    ...text(duel, recipient, actor, news),
+    tag: `duel-${duel.id}`,
+    url: `/duels/${duel.id}`,
+  });
 }
 
 function text(

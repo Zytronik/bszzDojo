@@ -32,3 +32,8 @@ export function secretMatches(secret: string, storedHash: string): boolean {
   const actual = Buffer.from(hashSecret(secret), 'hex');
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
+
+/** In constant time, so the comparison doesn't reveal how much of a guess was right */
+export function sameSecret(given: string, expected: string): boolean {
+  return secretMatches(given, hashSecret(expected));
+}

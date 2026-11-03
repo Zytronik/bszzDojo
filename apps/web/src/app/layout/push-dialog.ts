@@ -7,8 +7,8 @@ import { PushStore } from '../settings/push.store';
 import { Dialog } from '../ui/dialog';
 
 /**
- * Asks once per device whether to turn on duel push messages. Browsers only show their own
- * question after a tap (Safari not at all otherwise), so this one comes first.
+ * Asks once per device whether to turn on push messages (duels, the month-end rankings). Browsers
+ * only show their own question after a tap (Safari not at all otherwise), so this one comes first.
  */
 @Component({
   selector: 'app-push-dialog',
@@ -16,13 +16,14 @@ import { Dialog } from '../ui/dialog';
   imports: [Dialog, FormButton],
   template: `
     <app-dialog
-      title="Mitteilungen für Duelle?"
+      title="Mitteilungen aktivieren?"
       [open]="push.promptOpen()"
       (closed)="push.closePrompt()"
     >
       <p [class]="leadStyles">
         Erfahre sofort, wenn dich jemand herausfordert, dein Gegner geschossen hat oder ein Duell
-        entschieden ist. Auch wenn die App geschlossen ist.
+        entschieden ist, und kurz vor Monatsende, wo du in der Monatsrangliste stehst. Auch wenn
+        die App geschlossen ist.
       </p>
       <div [class]="actionStyles">
         <button type="button" appButton (click)="accept()">Aktivieren</button>
