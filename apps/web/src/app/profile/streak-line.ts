@@ -10,13 +10,14 @@ import { faFire } from '../ui/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon],
   template: `
-    <p [class]="styles.root">
+    <p [class]="styles.root" title="Trainingsserie: Wochen in Folge mit Training">
       <span [class]="styles.flame" [attr.data-done]="streak().thisWeek || null">
         <app-icon [icon]="icon" [label]="flameLabel()" />
       </span>
-      <span><strong>{{ current() }}</strong> Trainingsserie</span>
+      <span><strong>{{ current() }}</strong> in Folge</span>
       @if (streak().best > streak().current) {
-        <span [class]="styles.record">· Rekord: {{ best() }}</span>
+        <!-- Only the number, so it stays on one line on phones -->
+        <span [class]="styles.record">· Rekord: {{ streak().best }}</span>
       }
     </p>
   `,
@@ -26,9 +27,10 @@ export class StreakLine {
 
   protected readonly icon = faFire;
   protected readonly current = computed(() => weeksLabel(this.streak().current));
-  protected readonly best = computed(() => weeksLabel(this.streak().best));
   protected readonly flameLabel = computed(() =>
-    this.streak().thisWeek ? 'Diese Woche trainiert' : 'Diese Woche noch kein Training',
+    this.streak().thisWeek
+      ? 'Trainingsserie, diese Woche trainiert'
+      : 'Trainingsserie, diese Woche noch kein Training',
   );
   protected readonly styles = {
     root: css({

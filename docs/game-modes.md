@@ -110,8 +110,8 @@ closed in. Weeks run Monday to Sunday in the club's time zone.
 
 - While this week has no training yet, the streak still counts up to last week: it's only lost
   once a whole week passes without training.
-- Every profile shows it in a line under the name: a flame, lit once this week is trained, the
-  weeks in a row and, while it's longer, the record (longest streak).
+- Every profile shows it in a line under the name: a flame, lit once this week is trained, "5
+  Wochen in Folge" and, while it's longer, the record (longest streak) in weeks.
 - It's computed on every request from the rounds and duel ends, so deleting or editing a round
   changes it too. Rounds still waiting for their upload count once they're uploaded.
 
