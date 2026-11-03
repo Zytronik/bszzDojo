@@ -99,6 +99,13 @@ The leaderboards load when the dashboard opens; there's no polling. Offline, the
 the service worker cache is shown (at most 30 days old), with rounds still waiting for their upload
 merged in.
 
+**Month-end push:** 3 days before the month's last day, at about 18:00 (19:00 in summer), every
+archer with a qualifying round this month and push messages turned on is told where they stand on
+the distance with their best place, and how many points (on their own bow, with the factor) they
+need to pass the next archer or get into the top 10; the leader hears their lead instead. A daily
+Vercel Cron calls `GET /api/cron/month-end` (`CRON_SECRET`), which only sends on that one day.
+
+
 ## Duels
 
 `duels.ts` · API `duels/` · web `pages/duel-*.ts`, `duels/`

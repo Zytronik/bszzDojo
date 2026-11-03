@@ -53,8 +53,9 @@ function hasKey(subscription: PushSubscription, publicKey: string): boolean {
 }
 
 /**
- * Push messages for duels on this device. The browser keeps the subscription, the server which
- * user it belongs to: it's sent again at every start, so it follows whoever is logged in.
+ * Push messages on this device (duels, the month-end rankings). The browser keeps the
+ * subscription, the server which user it belongs to: it's sent again at every start, so it follows
+ * whoever is logged in.
  */
 export const PushStore = signalStore(
   { providedIn: 'root' },

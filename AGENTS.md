@@ -96,7 +96,11 @@ The rules and timings of rounds, leaderboards and duels are explained for people
   `DuelsService` tells the other archer about invitations, answers, ends and results
   (`duel-notifications.ts`, Angular's `notification` payload with `onActionClick`, one tag per duel)
   and awaits the sending before it answers. Keys: `VAPID_*` env vars (`npm run push:keys -w api`);
-  without them push is off.
+  without them push is off. Messages are built with `pushMessage` (`push/push-message.ts`).
+- **Month-end push** (`rankings/month-end*.ts`): a daily Vercel Cron (`vercel.json`) calls
+  `GET /api/cron/month-end` (`CronGuard`, `CRON_SECRET`, not in Swagger); it sends on the day
+  `MONTH_END_NOTICE_DAYS` (3) before the month's last day, to everyone on this month's boards
+  (`monthStandings`, all places), their best place and the points to the next place.
 - **Friends** (`friends` table, `/api/users/me/friends`, `/friends`): one-sided like following:
   anyone can add anyone with the icon button on their profile, without a confirmation and without
   appearing in the other's list; the own profile's button opens the list. `FriendsStore` holds

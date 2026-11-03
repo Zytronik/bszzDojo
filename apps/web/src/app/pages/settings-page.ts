@@ -170,7 +170,7 @@ export class SettingsPage {
   protected async logout(): Promise<void> {
     this.loggingOut.set(true);
     try {
-      // The next person on this device shouldn't get this account's duels.
+      // The next person on this device shouldn't get this account's messages.
       if (this.push.subscribed()) await this.push.disable();
       await this.auth.logout();
       await this.router.navigate(['/login']);

@@ -60,3 +60,11 @@ app hides its push settings:
 Use one pair per environment and keep it: browsers subscribe with the public key, so a new pair
 makes every device subscribe again (the app does that by itself on its next start).
 
+## Scheduled jobs
+
+Vercel Cron (`crons` in the root `vercel.json`) runs on production deployments only. It calls
+`/api/cron/month-end` every day at 17:00 UTC; the API sends the month-end rankings push on the day
+it's due (see `docs/game-modes.md`). Vercel sends the project's `CRON_SECRET` as
+`Authorization: Bearer …`, and the API refuses every cron request without it, so set
+`CRON_SECRET` (e.g. `openssl rand -base64 32`) on the production environment.
+
