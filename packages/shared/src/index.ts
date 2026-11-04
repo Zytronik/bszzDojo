@@ -12,6 +12,7 @@ export * from './rankings';
 export * from './ranks';
 export * from './scores';
 export * from './settings';
+export * from './streaks';
 export * from './target';
 export * from './target-stats';
 export * from './users';

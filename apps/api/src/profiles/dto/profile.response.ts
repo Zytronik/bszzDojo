@@ -14,6 +14,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { BadgeResponse } from '../../badges/dto/badge.response';
 import { RankedScoreResponse, ScoreResponse } from '../../scores/dto/score.response';
+import { TrainingStreakResponse } from '../../streaks/dto/training-streak.response';
 
 export class ProfileStatsResponse implements ProfileStats {
   /** Average points per arrow over all rounds, two decimals; null without rounds. */
@@ -74,4 +75,7 @@ export class ProfileResponse implements Profile {
 
   /** The last 15 rounds, newest first */
   history: ScoreResponse[];
+
+  /** Weeks in a row with training */
+  streak: TrainingStreakResponse;
 }

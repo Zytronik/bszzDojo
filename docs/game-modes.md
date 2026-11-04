@@ -10,6 +10,7 @@ the web app and the API apply the same ones; the file is named with each section
 | Round (Score) | alone       | profile, leaderboards       | no, uploaded later     |
 | Leaderboards  | everyone    | the dashboard               | no, cached for 30 days |
 | Duel          | two archers | the duel record on profiles | yes                    |
+| Streak        | alone       | profiles                    | no, cached with them   |
 
 ## Rounds (Scores)
 
@@ -105,6 +106,20 @@ the distance with their best place, and how many points (on their own bow, with 
 need to pass the next archer or get into the top 10; the leader hears their lead instead. A daily
 Vercel Cron calls `GET /api/cron/month-end` (`CRON_SECRET`), which only sends on that one day.
 
+## Training streak
+
+`streaks.ts` · API `streaks/` · web `profile/streak-line.ts`
+
+Like Duolingo's streak, counted in weeks: how many weeks in a row an archer trained at least once.
+A recorded round counts for the week of the day it was shot, a duel end for the week it was
+closed in. Weeks run Monday to Sunday in the club's time zone.
+
+- While this week has no training yet, the streak still counts up to last week: it's only lost
+  once a whole week passes without training.
+- Every profile shows it in a line under the name: a flame, lit once this week is trained, "5
+  Wochen in Folge" and, while it's longer, the record (longest streak) in weeks.
+- It's computed on every request from the rounds and duel ends, so deleting or editing a round
+  changes it too. Rounds still waiting for their upload count once they're uploaded.
 
 ## Duels
 

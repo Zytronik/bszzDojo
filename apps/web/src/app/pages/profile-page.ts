@@ -40,6 +40,7 @@ import { withPendingProfile } from '../scores/pending-merge';
 import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores.store';
 import { BadgeRow } from '../profile/badge-row';
 import { ScoreRow } from '../profile/score-row';
+import { StreakLine } from '../profile/streak-line';
 import { FormButton } from '../forms/form-button';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import { EmptyState } from '../ui/empty-state';
@@ -66,6 +67,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     RouterLink,
     Icon,
     DuelRow,
+    StreakLine,
   ],
   templateUrl: './profile-page.html',
 })

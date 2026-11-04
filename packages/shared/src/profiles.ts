@@ -4,6 +4,7 @@ import type { BowTypeId } from './bow-types';
 import type { IsoDate } from './dates';
 import type { RankId } from './ranks';
 import type { RankedScore, Score } from './scores';
+import type { TrainingStreak } from './streaks';
 
 export const PERSONAL_BESTS_PER_DISTANCE = 3;
 export const PROFILE_HISTORY_SIZE = 15;
@@ -47,6 +48,7 @@ export interface Profile extends UserName {
   progress: DistanceProgress[];
   /** Newest first */
   history: Score[];
+  streak: TrainingStreak;
 }
 
 /** `GET /api/profiles/:username/history`: older rounds after the profile's first page */

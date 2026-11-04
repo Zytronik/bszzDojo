@@ -7,6 +7,7 @@ import { findUserByName } from '../common/find-user';
 import { BadgeEntity } from '../badges/badge.entity';
 import { byShotOn, toScore } from '../scores/score-mapper';
 import { ScoreEntity } from '../scores/score.entity';
+import { StreaksService } from '../streaks/streaks.service';
 import { UserEntity } from '../users/user.entity';
 import {
   history,
@@ -25,17 +26,19 @@ export class ProfilesService {
     private readonly scores: Repository<ScoreEntity>,
     @InjectRepository(BadgeEntity)
     private readonly badges: Repository<BadgeEntity>,
+    private readonly streaks: StreaksService,
   ) {}
 
   async profile(username: string): Promise<Profile> {
     const user = await findUserByName(this.users, username);
 
-    const [scores, badges] = await Promise.all([
+    const [scores, badges, streak] = await Promise.all([
       this.scores.findBy({ userId: user.id }),
       this.badges.find({
         where: { userId: user.id },
         order: { year: 'DESC', place: 'ASC', createdAt: 'DESC' },
       }),
+      this.streaks.streak(user.id),
     ]);
     const rounds: ProfileRound[] = scores
       .toSorted(byShotOn)
@@ -50,6 +53,7 @@ export class ProfilesService {
       personalBests: personalBests(rounds),
       progress: progress(rounds),
       history: history(rounds),
+      streak,
     };
   }
 

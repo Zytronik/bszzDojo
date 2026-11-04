@@ -37,6 +37,9 @@
       </button>
       }
     </div>
+    @if (p.streak; as streak) {
+    <app-streak-line [streak]="streak" />
+    }
     <div [class]="pageStyles.rankRow">
       <p>Abzeichen:</p>
       @if (p.rank) {

@@ -29,6 +29,7 @@ packages/
   a progress chart per bow type, placings ("Auszeichnungen"), duel record and the latest rounds.
 - Duels: match play against another archer (set system or total points, with a shoot-off), each
   with their own bow and face; push messages when it's your turn (opt-in per device).
+- Training streak: weeks in a row with training, shown on the profiles.
 - Before the month ends, a push message with your place in the monthly ranking and the points to
   the next place.
 - Friends: add archers to your own list, like following.

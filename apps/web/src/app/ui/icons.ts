@@ -10,6 +10,7 @@ export {
   faCirclePlus,
   faCrown,
   faDeleteLeft,
+  faFire,
   faFlag,
   faEllipsisVertical,
   faFaceFrown,
