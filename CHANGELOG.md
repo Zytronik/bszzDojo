@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.25.0](https://github.com/Zytronik/bszzDojo/compare/v3.24.0...v3.25.0) (2026-11-04)
+
+
+### Features
+
+* add weekly training streaks ([#130](https://github.com/Zytronik/bszzDojo/issues/130)) ([14d9e57](https://github.com/Zytronik/bszzDojo/commit/14d9e57e2380b96611f14c253bc03f11aedeba23))
+* push the monthly ranking before the month ends ([#131](https://github.com/Zytronik/bszzDojo/issues/131)) ([e3b2500](https://github.com/Zytronik/bszzDojo/commit/e3b2500bddd0f30ba78847f8e4d79c29bcb368c8))
+
 ## [3.24.0](https://github.com/Zytronik/bszzDojo/compare/v3.23.0...v3.24.0) (2026-11-03)
 
 
