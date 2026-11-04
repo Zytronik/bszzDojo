@@ -37,11 +37,14 @@ function compareRounds(a: AdjustedRound, b: AdjustedRound): number {
 }
 
 /**
- * Each user's best round, by the result with the bow type's handicap, top `LEADERBOARD_SIZE`.
+ * Each user's best round, by the result with the bow type's handicap, the top `size` of them.
  * The old app picked each user's best raw result and applied the handicap afterwards, so a better
  * handicapped round with another bow could be missed; this compares handicapped results throughout.
  */
-export function buildLeaderboard(rounds: readonly LeaderboardRound[]): LeaderboardEntry[] {
+export function buildLeaderboard(
+  rounds: readonly LeaderboardRound[],
+  size: number = LEADERBOARD_SIZE,
+): LeaderboardEntry[] {
   const bestPerUser = new Map<string, AdjustedRound>();
   for (const round of rounds) {
     const adjusted: AdjustedRound = {
@@ -54,7 +57,7 @@ export function buildLeaderboard(rounds: readonly LeaderboardRound[]): Leaderboa
   }
   return [...bestPerUser.values()]
     .toSorted(compareRounds)
-    .slice(0, LEADERBOARD_SIZE)
+    .slice(0, size)
     .map((round, index) => ({
       rank: index + 1,
       username: round.username,
