@@ -37,9 +37,26 @@ export function todayInClub(now: Date = new Date()): IsoDate {
   }).format(now);
 }
 
-export function currentClubMonth(now: Date = new Date()): CalendarMonth {
-  const [year, month] = todayInClub(now).split('-').map(Number);
+export function monthOf(day: IsoDate): CalendarMonth {
+  const [year, month] = day.split('-').map(Number);
   return { year: year ?? 1970, month: month ?? 1 };
+}
+
+export function currentClubMonth(now: Date = new Date()): CalendarMonth {
+  return monthOf(todayInClub(now));
+}
+
+export function addDays(day: IsoDate, days: number): IsoDate {
+  const date = new Date(`${day}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+/** Calendar days from `from` to `to`, negative when `to` is earlier */
+export function daysBetween(from: IsoDate, to: IsoDate): number {
+  return Math.round(
+    (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / (24 * 60 * 60 * 1000),
+  );
 }
 
 /** Inclusive */

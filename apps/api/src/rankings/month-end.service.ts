@@ -1,15 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { monthRange, todayInClub, type CalendarMonth, type IsoDate } from '@bszz-dojo/shared';
+import { daysBetween, monthOf, monthRange, todayInClub, type IsoDate } from '@bszz-dojo/shared';
 import { pushMessage } from '../push/push-message';
 import { PushService } from '../push/push.service';
 import { MONTH_END_NOTICE_DAYS, monthEndText } from './month-end';
 import { RankingsService } from './rankings.service';
-
-function daysBetween(from: IsoDate, to: IsoDate): number {
-  return Math.round(
-    (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / (24 * 60 * 60 * 1000),
-  );
-}
 
 @Injectable()
 export class MonthEndService {
@@ -23,8 +17,7 @@ export class MonthEndService {
    * month's last day, so the schedule can stay a plain daily one. Returns how many were told.
    */
   async notify(today: IsoDate = todayInClub()): Promise<number> {
-    const [year, monthNumber] = today.split('-').map(Number);
-    const month: CalendarMonth = { year: year ?? 0, month: monthNumber ?? 0 };
+    const month = monthOf(today);
     if (daysBetween(today, monthRange(month).to) !== MONTH_END_NOTICE_DAYS) return 0;
 
     const { boards, userIds } = await this.rankings.monthStandings(month);

@@ -12,6 +12,7 @@ export class CronController {
 
   constructor(private readonly monthEnd: MonthEndService) {}
 
+  /** Daily; sends the month-end rankings push only on its day. */
   @Get('month-end')
   @HttpCode(204)
   async monthEndRankings(): Promise<void> {
