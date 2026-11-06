@@ -37,7 +37,8 @@ packages/
   Abzeichen, password, light and dark theme (saved in the account), push messages.
 - User search. Admins can delete users and reset passwords.
 
-How rounds, leaderboards and duels work in detail: [docs/game-modes.md](docs/game-modes.md).
+How rounds, leaderboards, the training streak, duels and push messages work in detail:
+[docs/game-modes.md](docs/game-modes.md).
 
 ## Getting started
 

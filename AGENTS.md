@@ -46,8 +46,8 @@ npm only; never hand-edit `package-lock.json`. If CI lacks a platform package
 
 ## Domain
 
-The rules and timings of rounds, leaderboards and duels are explained for people in
-`docs/game-modes.md`; update it when you change one of them.
+The rules and timings of rounds, leaderboards, the training streak, duels and push messages are
+explained for people in `docs/game-modes.md`; update it when you change one of them.
 
 - **Bow types** (`BOW_TYPES`): handicap in integer percent (`factorPercent`), `adjustedResult`
   rounds down.
