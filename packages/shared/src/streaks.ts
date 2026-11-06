@@ -1,4 +1,4 @@
-import { todayInClub, type IsoDate } from './dates';
+import { addDays, todayInClub, type IsoDate } from './dates';
 
 /**
  * Weeks in a row with at least one training (a recorded round or a duel end), Monday to Sunday in
@@ -17,19 +17,12 @@ export function weeksLabel(count: number): string {
   return count === 1 ? '1 Woche' : `${count} Wochen`;
 }
 
-function addDays(day: IsoDate, days: number): IsoDate {
-  const date = new Date(`${day}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
-/** The Monday of the week `day` is in */
 export function weekStart(day: IsoDate): IsoDate {
   const weekday = new Date(`${day}T00:00:00Z`).getUTCDay();
   return addDays(day, -((weekday + 6) % 7));
 }
 
-/** `trainedWeeks`: the Mondays of the weeks with training, in any order, duplicates allowed */
+/** `trainedWeeks`: any day of each week with training, in any order, duplicates allowed */
 export function trainingStreak(
   trainedWeeks: readonly IsoDate[],
   today: IsoDate = todayInClub(),
