@@ -40,3 +40,17 @@ export const TwoBowTypes: Story = {};
 export const OneBowType: Story = {
   args: { progress: { ...progress, series: progress.series.slice(0, 1) } },
 };
+/** Two rounds on one day: two points, the date once on the axis */
+export const TwoRoundsOneDay: Story = {
+  args: {
+    progress: {
+      ...progress,
+      series: [
+        {
+          bowType: 'r',
+          points: [...progress.series[0].points, { shotOn: '2026-10-21', result: 249 }],
+        },
+      ],
+    },
+  },
+};
