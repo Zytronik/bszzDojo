@@ -135,7 +135,7 @@ export class ProgressChart {
                 color,
                 maxRotation: 0,
                 // The same day twice in a row is labelled once.
-                callback: (_value, index) =>
+                callback: (_value, index): string =>
                   index > 0 && slots[index - 1] === slots[index] ? '' : shortDate(slots[index]),
               },
             },
