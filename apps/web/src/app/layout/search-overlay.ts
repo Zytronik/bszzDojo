@@ -39,7 +39,7 @@ interface TextPart {
 }
 
 /** The text with its first case-insensitive occurrence of `query` marked, as the API matches. */
-export function markMatch(text: string, query: string): TextPart[] {
+function markMatch(text: string, query: string): TextPart[] {
   const at = query ? text.toLowerCase().indexOf(query.toLowerCase()) : -1;
   if (at < 0) return [{ text, match: false }];
   return [

@@ -16,7 +16,7 @@ import { readStored, writeStored } from '../core/stored';
 import { ToastStore } from '../layout/toast.store';
 
 /** A round entered without a connection, waiting to be uploaded. */
-export interface PendingScore {
+interface PendingScore {
   /** Sent along, so an upload repeated after a lost answer isn't recorded twice. */
   id: string;
   userId: string;
@@ -24,7 +24,7 @@ export interface PendingScore {
 }
 
 /** A round of the server's deleted without a connection, kept to show the profile without it. */
-export interface PendingDeletion {
+interface PendingDeletion {
   id: string;
   userId: string;
   score: Score;

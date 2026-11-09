@@ -12,13 +12,13 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
-export interface PageOrigin {
+interface PageOrigin {
   back: string[];
   backLabel: string;
 }
 
 /** What a detail page shows in the header instead of the logo and the navigation */
-export interface PageHeaderBar {
+interface PageHeaderBar {
   back: readonly string[];
   /** Next to the arrow, e.g. whose round it is */
   label: string;

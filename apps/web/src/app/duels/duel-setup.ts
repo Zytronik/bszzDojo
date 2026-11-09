@@ -13,7 +13,7 @@ import { readStored, writeStored } from '../core/stored';
 import { loadScoreSetup } from '../scores/score-setup';
 
 /** The last duel set up or accepted on this device, which the next one starts with. */
-export interface DuelSetup extends DuelSettings, DuelFace {
+interface DuelSetup extends DuelSettings, DuelFace {
   bowType: BowTypeId;
 }
 

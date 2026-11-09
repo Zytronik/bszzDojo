@@ -25,7 +25,6 @@ export {
   faTrophy,
   faUser,
   faWifi,
-  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 /**

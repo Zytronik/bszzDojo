@@ -20,8 +20,8 @@ import { recordLabel } from './record-label';
 import { SHOT_COLOR, drawShot, drawTargetFace } from './target-face';
 
 /** Instagram's portrait format; WhatsApp and the rest show it whole too. */
-export const SHARE_CARD_WIDTH = 1080;
-export const SHARE_CARD_HEIGHT = 1350;
+const SHARE_CARD_WIDTH = 1080;
+const SHARE_CARD_HEIGHT = 1350;
 
 const PADDING = 80;
 const LOGO_URL = '/img/logo_weiss.png';
@@ -30,7 +30,7 @@ const TARGET_CENTER_Y = 690;
 const TARGET_RADIUS = 290;
 const SHOT_RADIUS = 9;
 
-export interface ShareCardColors {
+interface ShareCardColors {
   background: string;
   text: string;
   muted: string;
@@ -105,7 +105,7 @@ function drawRun(
 }
 
 /** On a canvas of `SHARE_CARD_WIDTH` × `SHARE_CARD_HEIGHT` px. */
-export async function drawShareCard(
+async function drawShareCard(
   canvas: HTMLCanvasElement,
   score: ScoreDetail,
   colors: ShareCardColors,

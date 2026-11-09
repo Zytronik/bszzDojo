@@ -11,7 +11,7 @@ import {
 import { readStored, writeStored } from '../core/stored';
 
 /** The setup of the last round saved on this device, which "Score erfassen" starts with. */
-export interface ScoreSetup {
+interface ScoreSetup {
   bowType: BowTypeId;
   targetSize: TargetSize;
   isSpot: boolean;

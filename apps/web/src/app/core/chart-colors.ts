@@ -3,7 +3,7 @@
  * `borderColor`, data `ringColor`) and the chart reads them back. Chart.js's own grid is
  * translucent black, which disappears on the dark theme.
  */
-export interface ChartColors {
+interface ChartColors {
   text: string;
   grid: string;
   data: string;
