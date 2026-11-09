@@ -88,8 +88,20 @@ function drawTarget(context: CanvasRenderingContext2D, score: ScoreDetail): void
   context.restore();
 }
 
-function counts(score: ScoreDetail): string {
-  return `${score.arrows} Pfeile · ${score.tens}× 10 · ${score.nines}× 9`;
+/** Text in alternating colors, the way the app highlights values: `[plain, highlighted, …]`. */
+function drawRun(
+  context: CanvasRenderingContext2D,
+  parts: readonly string[],
+  x: number,
+  y: number,
+  colors: readonly [string, string],
+): void {
+  let left = x;
+  parts.forEach((part, index) => {
+    context.fillStyle = colors[index % 2];
+    context.fillText(part, left, y);
+    left += context.measureText(part).width;
+  });
 }
 
 /** On a canvas of `SHARE_CARD_WIDTH` × `SHARE_CARD_HEIGHT` px. */
@@ -153,8 +165,13 @@ export async function drawShareCard(
   context.font = `40px ${font}`;
   const setup = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
   context.fillText(fitText(context, setup, textWidth), PADDING, 1232);
-  context.fillStyle = colors.muted;
-  context.fillText(fitText(context, counts(score), textWidth), PADDING, 1288);
+  drawRun(
+    context,
+    [`${score.arrows} Pfeile · 10er: `, `x${score.tens}`, ' 9er: ', `x${score.nines}`],
+    PADDING,
+    1288,
+    [colors.muted, colors.accent],
+  );
 }
 
 export async function shareCardBlob(score: ScoreDetail, colors: ShareCardColors): Promise<Blob> {

@@ -109,8 +109,8 @@ export class ScoreSummary {
       figures.push({ label: 'Xer', value: String(xs) });
     }
     figures.push(
-      { label: '10er', value: String(score.tens) },
-      { label: '9er', value: String(score.nines) },
+      { label: '10er', value: `x${score.tens}` },
+      { label: '9er', value: `x${score.nines}` },
     );
     if (score.shots) {
       const misses = score.shots.filter(

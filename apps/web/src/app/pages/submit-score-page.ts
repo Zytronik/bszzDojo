@@ -187,6 +187,7 @@ export class SubmitScorePage {
     flexWrap: 'wrap',
     marginBlockStart: '10',
   });
+  protected readonly highlightStyles = css({ color: 'accent.default' });
 
   constructor() {
     revalidateOnChange(this.form);
