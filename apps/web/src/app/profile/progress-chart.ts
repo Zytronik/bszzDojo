@@ -134,9 +134,9 @@ export class ProgressChart {
               ticks: {
                 color,
                 maxRotation: 0,
-                // The same day twice in a row is labelled once.
-                callback: (_value, index): string =>
-                  index > 0 && slots[index - 1] === slots[index] ? '' : shortDate(slots[index]),
+                // Every round gets its date, also the second one of a day, so it isn't taken for
+                // a round on another day.
+                callback: (_value, index): string => shortDate(slots[index]),
               },
             },
             y: { ticks: { color }, grid, border: grid },
