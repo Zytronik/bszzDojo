@@ -38,7 +38,13 @@ function canShareFiles(): boolean {
   imports: [Dialog, FormButton, ShareCard],
   template: `
     <app-dialog title="Score teilen" [open]="open()" (closed)="closed.emit()">
-      <app-share-card [score]="score()" />
+      <!--
+        Only while open: a closed dialog keeps its content outside the page, where the card can't
+        read its colors from CSS, and it wouldn't draw again on opening.
+      -->
+      @if (open()) {
+        <app-share-card [score]="score()" />
+      }
       <div [class]="styles.actions">
         <button type="button" appButton [pending]="image() === null" (click)="shareImage()">
           {{ filesShareable ? 'Bild teilen' : 'Bild speichern' }}
