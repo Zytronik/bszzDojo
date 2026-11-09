@@ -63,8 +63,8 @@ let logo: Promise<HTMLImageElement | null> | null = null;
 function loadLogo(): Promise<HTMLImageElement | null> {
   logo ??= new Promise((resolve) => {
     const image = new Image();
-    image.onload = (): void => resolve(image);
-    image.onerror = (): void => resolve(null);
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', () => resolve(null));
     image.src = LOGO_URL;
   });
   return logo;
@@ -204,7 +204,7 @@ export class ShareCard {
     maxW: 'canvas',
     aspectRatio: '4 / 5',
     mx: 'auto',
-    borderRadius: 'md',
+    rounded: 'md',
   });
   protected readonly label = computed(
     () => `Bild: ${shownName(this.score())}, ${this.score().result} Punkte`,
