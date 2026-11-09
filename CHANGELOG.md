@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.25.1](https://github.com/Zytronik/bszzDojo/compare/v3.25.0...v3.25.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **web:** label the progress chart's x axis with the dates ([#134](https://github.com/Zytronik/bszzDojo/issues/134)) ([6a97e06](https://github.com/Zytronik/bszzDojo/commit/6a97e063a0453e3ecf76e585bc4f5db92ce19e0d))
+
 ## [3.25.0](https://github.com/Zytronik/bszzDojo/compare/v3.24.0...v3.25.0) (2026-11-04)
 
 
