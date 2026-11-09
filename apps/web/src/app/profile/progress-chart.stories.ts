@@ -40,7 +40,7 @@ export const TwoBowTypes: Story = {};
 export const OneBowType: Story = {
   args: { progress: { ...progress, series: progress.series.slice(0, 1) } },
 };
-/** Two rounds on one day: two points, each with the date */
+/** Two rounds on one day: both as points, the line through their average */
 export const TwoRoundsOneDay: Story = {
   args: {
     progress: {

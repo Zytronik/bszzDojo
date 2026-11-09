@@ -42,13 +42,16 @@ Chart.register(
 /**
  * One line per bow type over every day any of them was shot. The old chart labelled the x axis
  * with the first bow type's dates only, so the other lines were drawn against the wrong days.
+ * A day with several rounds of a bow type: the line goes through their average and every round
+ * is a point of its own on that day.
  */
 type ProgressChartData = ChartData<'line', (number | null)[], string>;
 
 interface ProgressChartInput {
   data: ProgressChartData;
-  /** The day of each x position; several rounds on one day take one position each. */
-  slots: IsoDate[];
+  days: IsoDate[];
+  /** The bow types' lines come first; the datasets after them only hold a day's rounds. */
+  lines: number;
 }
 
 /** "08.11.26": the tooltip has the long date, the axis needs room for many. */
@@ -57,42 +60,52 @@ function shortDate(day: IsoDate): string {
   return `${date}.${month}.${year.slice(2)}`;
 }
 
+function average(values: readonly number[]): number {
+  return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
+}
+
 function chartData(progress: DistanceProgress): ProgressChartInput {
   const days = [
     ...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn))),
   ].toSorted();
-  // Several rounds on one day: one x position each, in the order they were entered.
-  const slots: string[] = [];
-  for (const day of days) {
-    const perDay = Math.max(
-      ...progress.series.map(
-        (series) => series.points.filter((point) => point.shotOn === day).length,
-      ),
-    );
-    for (let index = 0; index < perDay; index++) slots.push(day);
-  }
+  const perSeries = progress.series.map((series) => ({
+    ...BOW_TYPES[series.bowType],
+    results: days.map((day) =>
+      series.points.filter((point) => point.shotOn === day).map((point) => point.result),
+    ),
+  }));
 
-  const datasets = progress.series.map((series) => {
-    const data: (number | null)[] = slots.map(() => null);
-    const used = new Map<string, number>();
-    for (const point of series.points) {
-      const nth = used.get(point.shotOn) ?? 0;
-      used.set(point.shotOn, nth + 1);
-      const slot = slots.indexOf(point.shotOn) + nth;
-      data[slot] = point.result;
-    }
-    const { name, chartColor } = BOW_TYPES[series.bowType];
+  const lines = perSeries.map(({ name, chartColor, results }) => {
+    const shared = results.map((ofDay) => ofDay.length > 1);
     return {
       label: name,
-      data,
+      data: results.map((ofDay) => (ofDay.length > 0 ? average(ofDay) : null)),
       borderWidth: 1,
       tension: 0.3,
       spanGaps: true,
       borderColor: chartColor,
       backgroundColor: chartColor,
+      // An average is no round: no point and no tooltip of its own.
+      pointRadius: shared.map((several) => (several ? 0 : 3)),
+      pointHitRadius: shared.map((several) => (several ? 0 : 1)),
     };
   });
-  return { data: { labels: slots.map((day) => formatGermanDate(day)), datasets }, slots };
+  const rounds = perSeries.flatMap(({ name, chartColor, results }) => {
+    const most = Math.max(...results.map((ofDay) => (ofDay.length > 1 ? ofDay.length : 0)));
+    return Array.from({ length: most }, (_, nth) => ({
+      label: name,
+      data: results.map((ofDay) => (ofDay.length > 1 ? (ofDay[nth] ?? null) : null)),
+      showLine: false,
+      borderColor: chartColor,
+      backgroundColor: chartColor,
+    }));
+  });
+
+  return {
+    data: { labels: days.map((day) => formatGermanDate(day)), datasets: [...lines, ...rounds] },
+    days,
+    lines: lines.length,
+  };
 }
 
 @Component({
@@ -119,7 +132,7 @@ export class ProgressChart {
       const color = colors.text;
       const grid = { color: colors.grid };
 
-      const { data, slots } = chartData(progress);
+      const { data, days, lines } = chartData(progress);
 
       this.chart?.destroy();
       this.chart = new Chart<'line', (number | null)[], string>(this.canvas().nativeElement, {
@@ -134,15 +147,16 @@ export class ProgressChart {
               ticks: {
                 color,
                 maxRotation: 0,
-                // Every round gets its date, also the second one of a day, so it isn't taken for
-                // a round on another day.
-                callback: (_value, index): string => shortDate(slots[index]),
+                callback: (_value, index): string => shortDate(days[index]),
               },
             },
             y: { ticks: { color }, grid, border: grid },
           },
           plugins: {
-            legend: { display: true },
+            legend: {
+              display: true,
+              labels: { filter: (item): boolean => (item.datasetIndex ?? 0) < lines },
+            },
             tooltip: { displayColors: true },
           },
         },
