@@ -10,17 +10,10 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { ringCount, type Shot, type ShotGroup } from '@bszz-dojo/shared';
+import { type Shot, type ShotGroup } from '@bszz-dojo/shared';
 import { css, cx } from 'styled-system/css';
+import { SHOT_COLOR, drawShot, drawTargetFace } from './target-face';
 
-/**
- * Canvas can't read CSS tokens, and these are the target face's own colors, not theme colors, so
- * they stay the same in the light theme. Per ring pair from the outside: 1–2 white, 3–4 black,
- * 5–6 blue, 7–8 red, 9–10 gold (World Archery).
- */
-const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as const;
-const RING_LINE_COLOR = '#000000';
-const SHOT_COLOR = '#ffae00';
 const SELECTED_COLOR = '#00e5ff';
 const GROUP_SHADOW_COLOR = 'rgba(0, 0, 0, 0.6)';
 const AREA_TINT = 0.12;
@@ -243,23 +236,7 @@ export class TargetCanvas {
     context.translate(size / 2 + this.pan.x, size / 2 + this.pan.y);
 
     const faceRadius = (size / 2) * FACE_SHARE * this.zoom;
-    const rings = ringCount(isSpot);
-    const ringWidth = faceRadius / rings;
-    for (let ring = rings; ring > 0; ring--) {
-      // Ring number 1–10 counted from the outside; a spot starts at 6.
-      const number = 11 - ring;
-      context.beginPath();
-      context.arc(0, 0, ring * ringWidth, 0, Math.PI * 2);
-      context.fillStyle = RING_COLORS[Math.floor((number - 1) / 2)] ?? RING_LINE_COLOR;
-      context.fill();
-      context.strokeStyle = RING_LINE_COLOR;
-      context.lineWidth = 1;
-      context.stroke();
-    }
-    // The inner 10 (X ring), half as wide as the 10.
-    context.beginPath();
-    context.arc(0, 0, ringWidth / 2, 0, Math.PI * 2);
-    context.stroke();
+    drawTargetFace(context, faceRadius, isSpot);
 
     const group = this.group();
     const groupColors = group ? this.groupColors() : null;
@@ -268,12 +245,13 @@ export class TargetCanvas {
     const colors = this.shotColors();
     shots.forEach((shot, index) => {
       if (!shot) return;
-      context.beginPath();
-      context.arc(shot.x * faceRadius, shot.y * faceRadius, SHOT_RADIUS, 0, Math.PI * 2);
-      context.fillStyle = index === selected ? SELECTED_COLOR : (colors?.[index] ?? SHOT_COLOR);
-      context.fill();
-      context.strokeStyle = RING_LINE_COLOR;
-      context.stroke();
+      drawShot(
+        context,
+        shot.x * faceRadius,
+        shot.y * faceRadius,
+        SHOT_RADIUS,
+        index === selected ? SELECTED_COLOR : (colors?.[index] ?? SHOT_COLOR),
+      );
     });
     if (group && groupColors) this.drawCross(context, group, faceRadius, groupColors);
   }

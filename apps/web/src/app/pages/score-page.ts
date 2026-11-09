@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import {
-  APP_NAME,
   BOW_TYPES,
   endTotals,
   formatGermanDate,
@@ -31,11 +30,12 @@ import { siteHeader, split } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { ScoresApiService } from '../core/scores-api.service';
 import { PageHeader } from '../layout/page-header';
-import { ToastStore, toastErrors } from '../layout/toast.store';
+import { toastErrors } from '../layout/toast.store';
 import { BarChart } from '../scores/bar-chart';
 import { PendingScoresStore } from '../scores/pending-scores.store';
 import { GroupAnalysis } from '../scores/group-analysis';
 import { ScoreSheet } from '../scores/score-sheet';
+import { ShareDialog } from '../scores/share-dialog';
 import { ScoreSummary } from '../scores/score-summary';
 import { OTHER_END_COLOR, PICKED_END_COLOR, TargetCanvas } from '../scores/target-canvas';
 import { EmptyState } from '../ui/empty-state';
@@ -76,6 +76,7 @@ interface ScoreAnalysis {
     GroupAnalysis,
     BarChart,
     ScoreSheet,
+    ShareDialog,
   ],
   templateUrl: './score-page.html',
 })
@@ -83,7 +84,6 @@ export class ScorePage {
   readonly id = input.required<string>();
 
   private readonly api = inject(ScoresApiService);
-  private readonly toasts = inject(ToastStore);
   private readonly auth = inject(AuthStore);
   private readonly pendingScores = inject(PendingScoresStore);
 
@@ -152,6 +152,7 @@ export class ScorePage {
   });
   /** The arrow tapped on the scorecard, highlighted on the target */
   protected readonly selected = signal<number | null>(null);
+  protected readonly sharing = signal(false);
   protected readonly shotColors = computed(() => {
     const end = this.end();
     const analysis = this.analysis();
@@ -172,26 +173,6 @@ export class ScorePage {
 
   constructor() {
     toastErrors(() => this.score.error());
-  }
-
-  /** The phone's share sheet; where there's none (most desktop browsers), the link is copied. */
-  protected async share(score: ScoreDetail): Promise<void> {
-    const url = new URL(`/scores/${score.id}`, location.origin).href;
-    const text = `${shownName(score)}: ${score.result} Punkte (${this.details()}), ${this.title()}`;
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title: APP_NAME, text, url });
-      } catch {
-        // Closed without sharing, or not allowed: nothing to tell.
-      }
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      this.toasts.success('Link kopiert.');
-    } catch {
-      this.toasts.error('Der Link konnte nicht kopiert werden.');
-    }
   }
 
   private analyse(score: ScoreDetail, shots: Shot[]): ScoreAnalysis {
