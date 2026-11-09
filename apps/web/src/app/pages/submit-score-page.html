@@ -107,8 +107,8 @@
         <div>
           <app-score-sheet [points]="points()" [inner]="inner()" [perEnd]="perEnd()" [(selected)]="selected" />
           <p [class]="summaryStyles" aria-live="polite">
-            <span>10er: <span [class]="highlightStyles">x{{ totals().tens }}</span></span>
-            <span>9er: <span [class]="highlightStyles">x{{ totals().nines }}</span></span>
+            <span>10er: <span [class]="highlightStyles">{{ totals().tens }}</span></span>
+            <span>9er: <span [class]="highlightStyles">{{ totals().nines }}</span></span>
             <span>Total: {{ totals().result }}</span>
           </p>
         </div>

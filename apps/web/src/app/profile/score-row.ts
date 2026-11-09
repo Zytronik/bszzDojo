@@ -36,8 +36,8 @@ import { faDeleteLeft } from '../ui/icons';
       </p>
       <p [class]="styles.results">
         <span [class]="styles.highlight">{{ score().result }}</span>
-        10er: <span [class]="styles.highlight">x{{ score().tens }}</span> 9er:
-        <span [class]="styles.highlight">x{{ score().nines }}</span>
+        10er: <span [class]="styles.highlight">{{ score().tens }}</span> 9er:
+        <span [class]="styles.highlight">{{ score().nines }}</span>
       </p>
     </a>
     @if (deletable()) {

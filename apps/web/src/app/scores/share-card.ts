@@ -167,7 +167,7 @@ export async function drawShareCard(
   context.fillText(fitText(context, setup, textWidth), PADDING, 1232);
   drawRun(
     context,
-    [`${score.arrows} Pfeile · 10er: `, `x${score.tens}`, ' 9er: ', `x${score.nines}`],
+    [`${score.arrows} Pfeile · 10er: `, String(score.tens), ' 9er: ', String(score.nines)],
     PADDING,
     1288,
     [colors.muted, colors.accent],
