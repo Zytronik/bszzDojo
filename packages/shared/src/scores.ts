@@ -1,5 +1,5 @@
 import type { UserName } from './auth';
-import { isBowTypeId, type BowTypeId } from './bow-types';
+import { BOW_TYPES, isBowTypeId, type BowTypeId } from './bow-types';
 import { isValidIsoDate, todayInClub, type IsoDate } from './dates';
 import { isInteger, isOneOf } from './guards';
 import { arrowsPerEnd, isShot, shotTotals, type Shot } from './target';
@@ -150,6 +150,13 @@ export function scoreErrors(score: ScoreInput, today: IsoDate = todayInClub()): 
 /** "40cm Spot" */
 export function targetLabel(score: Pick<ScoreInput, 'targetSize' | 'isSpot'>): string {
   return `${score.targetSize}cm${score.isSpot ? ' Spot' : ''}`;
+}
+
+/** "Recurve · 18m · 40cm Spot" */
+export function setupLabel(
+  score: Pick<Score, 'bowType' | 'distance' | 'targetSize' | 'isSpot'>,
+): string {
+  return `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
 }
 
 function isComplete(shots: readonly (Shot | null)[], arrows: number | null): shots is Shot[] {

@@ -8,10 +8,10 @@ import {
   viewChild,
 } from '@angular/core';
 import {
-  BOW_TYPES,
+  APP_NAME,
   formatGermanDate,
+  setupLabel,
   shownName,
-  targetLabel,
   type ScoreDetail,
   type Shot,
 } from '@bszz-dojo/shared';
@@ -132,7 +132,7 @@ async function drawShareCard(
   }
   context.fillStyle = colors.text;
   context.font = `700 52px ${font}`;
-  context.fillText('BSZZ Dojo', brandX, 134);
+  context.fillText(APP_NAME, brandX, 134);
 
   const record = recordLabel(score);
   if (record) {
@@ -163,8 +163,7 @@ async function drawShareCard(
 
   context.fillStyle = colors.text;
   context.font = `40px ${font}`;
-  const setup = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
-  context.fillText(fitText(context, setup, textWidth), PADDING, 1232);
+  context.fillText(fitText(context, setupLabel(score), textWidth), PADDING, 1232);
   drawRun(
     context,
     [`${score.arrows} Pfeile · 10er: `, String(score.tens), ' 9er: ', String(score.nines)],

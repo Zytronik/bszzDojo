@@ -69,7 +69,9 @@ explained for people in `docs/game-modes.md`; update it when you change one of t
 - **Score page** (`/scores/:id`): compares with the archer's rounds of same bow, distance and
   arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
   `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
-  in the header (share sheet, else copy link), not for rounds waiting for upload; the archer's
+  in the header opens `ShareDialog`: the round as an image (`ShareCard`, 1080 × 1350, drawn on a
+  canvas in the fixed `shareCard.*` colors) or the link, through the share sheet, else download
+  and clipboard; not for rounds waiting for upload; the archer's
   own rounds also get an edit button there (only there, not in the profile's history).
 - Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
   `formatGermanDate`; today is `todayInClub()`.

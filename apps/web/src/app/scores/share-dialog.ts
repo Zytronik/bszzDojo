@@ -10,10 +10,9 @@ import {
 } from '@angular/core';
 import {
   APP_NAME,
-  BOW_TYPES,
   formatGermanDate,
+  setupLabel,
   shownName,
-  targetLabel,
   type ScoreDetail,
 } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
@@ -74,8 +73,8 @@ export class ShareDialog {
   );
   private readonly text = computed(() => {
     const score = this.score();
-    const details = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
-    return `${shownName(score)}: ${score.result} Punkte (${details}), ${formatGermanDate(score.shotOn)}`;
+    const date = formatGermanDate(score.shotOn);
+    return `${shownName(score)}: ${score.result} Punkte (${setupLabel(score)}), ${date}`;
   });
   protected readonly styles = {
     actions: css({
