@@ -8,7 +8,12 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { BOW_TYPES, formatGermanDate, type DistanceProgress } from '@bszz-dojo/shared';
+import {
+  BOW_TYPES,
+  formatGermanDate,
+  type DistanceProgress,
+  type IsoDate,
+} from '@bszz-dojo/shared';
 import {
   CategoryScale,
   Chart,
@@ -40,7 +45,19 @@ Chart.register(
  */
 type ProgressChartData = ChartData<'line', (number | null)[], string>;
 
-function chartData(progress: DistanceProgress): ProgressChartData {
+interface ProgressChartInput {
+  data: ProgressChartData;
+  /** The day of each x position; several rounds on one day take one position each. */
+  slots: IsoDate[];
+}
+
+/** "08.11.26": the tooltip has the long date, the axis needs room for many. */
+function shortDate(day: IsoDate): string {
+  const [year, month, date] = day.split('-');
+  return `${date}.${month}.${year.slice(2)}`;
+}
+
+function chartData(progress: DistanceProgress): ProgressChartInput {
   const days = [
     ...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn))),
   ].toSorted();
@@ -75,7 +92,7 @@ function chartData(progress: DistanceProgress): ProgressChartData {
       backgroundColor: chartColor,
     };
   });
-  return { labels: slots.map((day) => formatGermanDate(day)), datasets };
+  return { data: { labels: slots.map((day) => formatGermanDate(day)), datasets }, slots };
 }
 
 @Component({
@@ -102,14 +119,26 @@ export class ProgressChart {
       const color = colors.text;
       const grid = { color: colors.grid };
 
+      const { data, slots } = chartData(progress);
+
       this.chart?.destroy();
       this.chart = new Chart<'line', (number | null)[], string>(this.canvas().nativeElement, {
         type: 'line',
-        data: chartData(progress),
+        data,
         options: {
           color,
           scales: {
-            x: { display: false },
+            x: {
+              grid,
+              border: grid,
+              ticks: {
+                color,
+                maxRotation: 0,
+                // The same day twice in a row is labelled once.
+                callback: (_value, index): string =>
+                  index > 0 && slots[index - 1] === slots[index] ? '' : shortDate(slots[index]),
+              },
+            },
             y: { ticks: { color }, grid, border: grid },
           },
           plugins: {
