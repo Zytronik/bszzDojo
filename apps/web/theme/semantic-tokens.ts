@@ -51,7 +51,6 @@ export const semanticTokens = defineSemanticTokens({
       fg: { value: '{colors.white}' },
       muted: { value: '{colors.gray.400}' },
       accent: { value: '{colors.vermilion.500}' },
-      border: { value: '{colors.gray.800}' },
     },
     /** Backgrounds of the club badges ("Abzeichen") */
     rank: {

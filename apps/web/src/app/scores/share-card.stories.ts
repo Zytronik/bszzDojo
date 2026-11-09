@@ -46,7 +46,7 @@ export const WithoutRecord: Story = {
 export const WithoutShots: Story = {
   args: { score: { ...sharedScore, shots: null } },
 };
-/** A miss: the face shrinks so it stays on the card */
+/** A miss: next to the face, which keeps its size */
 export const WithMiss: Story = {
   args: { score: { ...sharedScore, shots: [...shots.slice(1), { x: -1.1, y: 0.2 }] } },
 };

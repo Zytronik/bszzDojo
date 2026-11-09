@@ -37,7 +37,6 @@ export interface ShareCardColors {
   text: string;
   muted: string;
   accent: string;
-  border: string;
 }
 
 /**
@@ -53,7 +52,6 @@ export function shareCardColors(element: Element): ShareCardColors {
     text: read('fg'),
     muted: read('muted'),
     accent: read('accent'),
-    border: read('border'),
   };
 }
 
@@ -79,33 +77,25 @@ function fitText(context: CanvasRenderingContext2D, text: string, maxWidth: numb
   return `${shortened.trimEnd()}…`;
 }
 
-function drawTarget(
-  context: CanvasRenderingContext2D,
-  score: ScoreDetail,
-  colors: ShareCardColors,
-): void {
+function drawTarget(context: CanvasRenderingContext2D, score: ScoreDetail): void {
   const shots = (score.shots ?? []).filter((shot): shot is Shot => shot !== null);
   const farthest = Math.max(0, ...shots.map((shot) => Math.hypot(shot.x, shot.y)));
-  // As far in as every arrow still fits with a margin; missed arrows shrink the face instead.
-  const zoom = farthest > 0 ? Math.min(MAX_ZOOM, 0.88 / farthest) : 1;
+  // In as far as every arrow still fits, never out: a miss lies next to the face, on the card.
+  const zoom = farthest > 0 ? Math.min(MAX_ZOOM, Math.max(1, 0.88 / farthest)) : 1;
   const faceRadius = TARGET_RADIUS * zoom;
 
   context.save();
   context.translate(SHARE_CARD_WIDTH / 2, TARGET_CENTER_Y);
-  context.beginPath();
-  context.arc(0, 0, TARGET_RADIUS, 0, Math.PI * 2);
-  context.clip();
+  if (zoom > 1) {
+    context.beginPath();
+    context.arc(0, 0, TARGET_RADIUS, 0, Math.PI * 2);
+    context.clip();
+  }
   drawTargetFace(context, faceRadius, score.isSpot, 2);
   for (const shot of shots) {
     drawShot(context, shot.x * faceRadius, shot.y * faceRadius, SHOT_RADIUS, SHOT_COLOR, 3);
   }
   context.restore();
-
-  context.beginPath();
-  context.arc(SHARE_CARD_WIDTH / 2, TARGET_CENTER_Y, TARGET_RADIUS, 0, Math.PI * 2);
-  context.strokeStyle = colors.border;
-  context.lineWidth = 6;
-  context.stroke();
 }
 
 function counts(score: ScoreDetail): string {
@@ -158,7 +148,7 @@ export async function drawShareCard(
   context.font = `40px ${font}`;
   context.fillText(formatGermanDate(score.shotOn), PADDING, 348);
 
-  drawTarget(context, score, colors);
+  drawTarget(context, score);
 
   context.fillStyle = colors.accent;
   context.font = `700 180px ${font}`;
