@@ -39,12 +39,6 @@ Chart.register(
   Tooltip,
 );
 
-/**
- * One line per bow type over every day any of them was shot. The old chart labelled the x axis
- * with the first bow type's dates only, so the other lines were drawn against the wrong days.
- * A day with several rounds of a bow type: the line goes through their average and every round
- * is a point of its own on that day.
- */
 type ProgressChartData = ChartData<'line', (number | null)[], string>;
 
 interface ProgressChartInput {
@@ -64,6 +58,12 @@ function average(values: readonly number[]): number {
   return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
 }
 
+/**
+ * One line per bow type over every day any of them was shot. The old chart labelled the x axis
+ * with the first bow type's dates only, so the other lines were drawn against the wrong days.
+ * A day with several rounds of a bow type: the line goes through their average and every round
+ * is a point of its own on that day.
+ */
 function chartData(progress: DistanceProgress): ProgressChartInput {
   const days = [
     ...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn))),
