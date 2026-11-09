@@ -28,9 +28,7 @@ const LOGO_URL = '/img/logo_weiss.png';
 const LOGO_HEIGHT = 110;
 const TARGET_CENTER_Y = 690;
 const TARGET_RADIUS = 290;
-/** At most this far in, so a tight group still shows the rings around it. */
-const MAX_ZOOM = 3;
-const SHOT_RADIUS = 11;
+const SHOT_RADIUS = 9;
 
 export interface ShareCardColors {
   background: string;
@@ -79,21 +77,13 @@ function fitText(context: CanvasRenderingContext2D, text: string, maxWidth: numb
 
 function drawTarget(context: CanvasRenderingContext2D, score: ScoreDetail): void {
   const shots = (score.shots ?? []).filter((shot): shot is Shot => shot !== null);
-  const farthest = Math.max(0, ...shots.map((shot) => Math.hypot(shot.x, shot.y)));
-  // In as far as every arrow still fits, never out: a miss lies next to the face, on the card.
-  const zoom = farthest > 0 ? Math.min(MAX_ZOOM, Math.max(1, 0.88 / farthest)) : 1;
-  const faceRadius = TARGET_RADIUS * zoom;
 
   context.save();
   context.translate(SHARE_CARD_WIDTH / 2, TARGET_CENTER_Y);
-  if (zoom > 1) {
-    context.beginPath();
-    context.arc(0, 0, TARGET_RADIUS, 0, Math.PI * 2);
-    context.clip();
-  }
-  drawTargetFace(context, faceRadius, score.isSpot, 2);
+  // Always the whole face, never zoomed: a miss lies next to it, on the card.
+  drawTargetFace(context, TARGET_RADIUS, score.isSpot, 2);
   for (const shot of shots) {
-    drawShot(context, shot.x * faceRadius, shot.y * faceRadius, SHOT_RADIUS, SHOT_COLOR, 3);
+    drawShot(context, shot.x * TARGET_RADIUS, shot.y * TARGET_RADIUS, SHOT_RADIUS, SHOT_COLOR, 3);
   }
   context.restore();
 }
