@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.25.2](https://github.com/Zytronik/bszzDojo/compare/v3.25.1...v3.25.2) (2026-11-09)
+
+
+### Bug Fixes
+
+* **web:** draw a day's rounds around the daily average in the chart ([#136](https://github.com/Zytronik/bszzDojo/issues/136)) ([7baf8a7](https://github.com/Zytronik/bszzDojo/commit/7baf8a700d27a24b107b6f74db085ebd7fa073e5))
+
 ## [3.25.1](https://github.com/Zytronik/bszzDojo/compare/v3.25.0...v3.25.1) (2026-11-09)
 
 
