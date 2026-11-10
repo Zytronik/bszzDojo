@@ -70,7 +70,7 @@ export class SetupDialog {
     heading: css({ textStyle: 'body.small', layerStyle: 'muted', marginBlockEnd: '5' }),
     recent: css({
       display: 'flex',
-      flexDirection: 'column',
+      flexDir: 'column',
       gap: '8',
       marginBlockEnd: '20',
     }),
@@ -84,7 +84,7 @@ export class SetupDialog {
       textAlign: 'start',
       cursor: 'pointer',
       borderWidth: 'thick',
-      borderColor: 'transparent',
+      borderColor: 'bg.surface',
       _pressed: { borderColor: 'accent.default' },
     }),
     bow: css({ fontWeight: 'bold' }),
