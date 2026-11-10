@@ -8,6 +8,7 @@ import {
 } from '@bszz-dojo/shared';
 import { css, cx } from 'styled-system/css';
 import { card } from 'styled-system/recipes';
+import { recordLabel } from './record-label';
 
 interface Figure {
   label: string;
@@ -96,12 +97,7 @@ export class ScoreSummary {
     return references;
   });
 
-  protected readonly badge = computed(() => {
-    const { result, comparison } = this.score();
-    if (comparison.best === null) return null;
-    if (result > comparison.best) return 'Persönlicher Rekord';
-    return result === comparison.best ? 'Rekord egalisiert' : null;
-  });
+  protected readonly badge = computed(() => recordLabel(this.score()));
 
   protected readonly figures = computed((): Figure[] => {
     const score = this.score();

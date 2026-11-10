@@ -9,7 +9,7 @@
   }
   <!-- A round waiting for its upload has no page others could open yet. -->
   @if (pending() === null) {
-  <button type="button" [class]="headerButton" aria-label="Score teilen" (click)="share(shown)">
+  <button type="button" [class]="headerButton" aria-label="Score teilen" (click)="sharing.set(true)">
     <app-icon [icon]="icons.share" />
   </button>
   } }
@@ -119,4 +119,8 @@
     </app-loading-frame>
   </div>
 </app-section>
+}
+
+@if (s && pending() === null) {
+<app-share-dialog [open]="sharing()" [score]="s" (closed)="sharing.set(false)" />
 }

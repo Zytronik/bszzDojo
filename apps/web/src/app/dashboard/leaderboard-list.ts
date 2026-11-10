@@ -22,8 +22,8 @@ import { ShownNamePipe } from '../ui/shown-name.pipe';
           }}</a>
           <p [class]="styles.results">
             <span [class]="styles.highlight">{{ entry.adjustedResult }}</span> ({{ entry.result }})
-            10er: <span [class]="styles.highlight">x{{ entry.tens }}</span> 9er:
-            <span [class]="styles.highlight">x{{ entry.nines }}</span>
+            10er: <span [class]="styles.highlight">{{ entry.tens }}</span> 9er:
+            <span [class]="styles.highlight">{{ entry.nines }}</span>
           </p>
           <p [class]="styles.meta">
             {{ formatDate(entry.shotOn) }}
