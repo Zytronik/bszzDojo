@@ -36,6 +36,8 @@ Scoring on the target (`shotPoints`):
 - An arrow on a line counts for the higher ring.
 - The inner 10 (X) is half as wide as the 10. For compound bows only the X counts 10; the rest of
   the 10 counts 9.
+- Every X is also a 10er: the round's tens include them, so for compound bows the tens are
+  exactly the Xs. Only the ring distribution shows X and the rest of the 10 as separate bars.
 
 The form starts with the setup of the last round saved on the device (localStorage). The API
 checks every round with the same rules (`scoreErrors`): the date isn't in the future or before

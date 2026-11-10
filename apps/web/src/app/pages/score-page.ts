@@ -9,16 +9,15 @@ import {
   signal,
 } from '@angular/core';
 import {
-  BOW_TYPES,
   endTotals,
   formatGermanDate,
   isInnerTen,
   ringDistribution,
+  setupLabel,
   shotGroup,
   shotPoints,
   shownName,
   storedEndSize,
-  targetLabel,
   usernameKey,
   type ScoreDetail,
   type Shot,
@@ -119,8 +118,7 @@ export class ScorePage {
   });
   protected readonly details = computed(() => {
     const score = this.loaded();
-    if (!score) return '';
-    return `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
+    return score ? setupLabel(score) : '';
   });
   protected readonly name = computed(() => {
     const score = this.loaded();

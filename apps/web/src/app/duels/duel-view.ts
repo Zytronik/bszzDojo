@@ -12,7 +12,7 @@ import {
 } from '@bszz-dojo/shared';
 
 /** The viewer on the left, the rival on the right; an onlooker sees the challenger first. */
-export interface DuelSides {
+interface DuelSides {
   me: DuelSide;
   them: DuelSide;
 }

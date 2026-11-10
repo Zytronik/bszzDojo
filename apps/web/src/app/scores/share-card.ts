@@ -8,10 +8,10 @@ import {
   viewChild,
 } from '@angular/core';
 import {
-  BOW_TYPES,
+  APP_NAME,
   formatGermanDate,
+  setupLabel,
   shownName,
-  targetLabel,
   type ScoreDetail,
   type Shot,
 } from '@bszz-dojo/shared';
@@ -20,8 +20,8 @@ import { recordLabel } from './record-label';
 import { SHOT_COLOR, drawShot, drawTargetFace } from './target-face';
 
 /** Instagram's portrait format; WhatsApp and the rest show it whole too. */
-export const SHARE_CARD_WIDTH = 1080;
-export const SHARE_CARD_HEIGHT = 1350;
+const SHARE_CARD_WIDTH = 1080;
+const SHARE_CARD_HEIGHT = 1350;
 
 const PADDING = 80;
 const LOGO_URL = '/img/logo_weiss.png';
@@ -30,7 +30,7 @@ const TARGET_CENTER_Y = 690;
 const TARGET_RADIUS = 290;
 const SHOT_RADIUS = 9;
 
-export interface ShareCardColors {
+interface ShareCardColors {
   background: string;
   text: string;
   muted: string;
@@ -105,7 +105,7 @@ function drawRun(
 }
 
 /** On a canvas of `SHARE_CARD_WIDTH` × `SHARE_CARD_HEIGHT` px. */
-export async function drawShareCard(
+async function drawShareCard(
   canvas: HTMLCanvasElement,
   score: ScoreDetail,
   colors: ShareCardColors,
@@ -132,7 +132,7 @@ export async function drawShareCard(
   }
   context.fillStyle = colors.text;
   context.font = `700 52px ${font}`;
-  context.fillText('BSZZ Dojo', brandX, 134);
+  context.fillText(APP_NAME, brandX, 134);
 
   const record = recordLabel(score);
   if (record) {
@@ -163,8 +163,7 @@ export async function drawShareCard(
 
   context.fillStyle = colors.text;
   context.font = `40px ${font}`;
-  const setup = `${BOW_TYPES[score.bowType].name} · ${score.distance}m · ${targetLabel(score)}`;
-  context.fillText(fitText(context, setup, textWidth), PADDING, 1232);
+  context.fillText(fitText(context, setupLabel(score), textWidth), PADDING, 1232);
   drawRun(
     context,
     [`${score.arrows} Pfeile · 10er: `, String(score.tens), ' 9er: ', String(score.nines)],

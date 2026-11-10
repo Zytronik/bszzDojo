@@ -6,7 +6,7 @@ import { ringCount } from '@bszz-dojo/shared';
  * 5–6 blue, 7–8 red, 9–10 gold (World Archery).
  */
 const RING_COLORS = ['#ffffff', '#1f1f1f', '#1a5fd0', '#e0262b', '#f8d21c'] as const;
-export const RING_LINE_COLOR = '#000000';
+const RING_LINE_COLOR = '#000000';
 export const SHOT_COLOR = '#ffae00';
 
 /** Centered on the context's origin. */

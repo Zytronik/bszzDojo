@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { duel } from 'styled-system/recipes';
 
-export interface DuelFact {
+interface DuelFact {
   label: string;
   value: string;
 }

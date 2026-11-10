@@ -62,15 +62,17 @@ explained for people in `docs/game-modes.md`; update it when you change one of t
 - **Scores**: entered as totals or arrow by arrow on the target (tab, default). On the target the
   arrow count divides by `arrowsPerEnd` (6 at 30m, else 3); `shots` (`Shot`, face units, centre 0,
   edge 1) determine tens, nines and result (`shotPoints`: spot only rings 6–10; compound: only X
-  counts 10). The API checks they match. Placed arrows lock `SETUP_FIELDS`. The form starts from
-  the last round's setup (localStorage, `scores/score-setup.ts`). Archers correct their own
-  rounds with the same form (`scores/:id/edit`, `PUT /api/scores/:id`, keeps the id); only online
-  and only uploaded rounds.
+  counts 10; every X is also one of the `tens`). The API checks they match. Placed arrows lock
+  `SETUP_FIELDS`. The form starts from the last round's setup (localStorage,
+  `scores/score-setup.ts`). Archers correct their own rounds with the same form
+  (`scores/:id/edit`, `PUT /api/scores/:id`, keeps the id); only online and only uploaded rounds.
 - **Score page** (`/scores/:id`): compares with the archer's rounds of same bow, distance and
   arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
   `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
-  in the header (share sheet, else copy link), not for rounds waiting for upload; the archer's
-  own rounds also get an edit button there (only there, not in the profile's history).
+  in the header opens `ShareDialog`: the round as an image (`ShareCard`, 1080 × 1350, drawn on a
+  canvas in the fixed `shareCard.*` colors) or the link, through the share sheet, else download
+  and clipboard; not for rounds waiting for upload. The archer's own rounds also get an edit
+  button there (only there, not in the profile's history).
 - Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
   `formatGermanDate`; today is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): one per user, set in settings, no approval.
