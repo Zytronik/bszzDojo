@@ -63,9 +63,9 @@ explained for people in `docs/game-modes.md`; update it when you change one of t
   arrow count divides by `arrowsPerEnd` (6 at 30m, else 3); `shots` (`Shot`, face units, centre 0,
   edge 1) determine tens, nines and result (`shotPoints`: spot only rings 6–10; compound: only X
   counts 10; every X is also one of the `tens`). The API checks they match. Placed arrows lock
-  `SETUP_FIELDS`. The form starts from the last round's setup (localStorage,
-  `scores/score-setup.ts`). Archers correct their own rounds with the same form
-  (`scores/:id/edit`, `PUT /api/scores/:id`, keeps the id); only online and only uploaded rounds.
+  `SETUP_FIELDS`. New rounds take bow, distance and face from the archer's setup (below). Archers
+  correct their own rounds with the same form (`scores/:id/edit`, `PUT /api/scores/:id`, keeps the
+  id); only online and only uploaded rounds.
 - **Score page** (`/scores/:id`): compares with the archer's rounds of same bow, distance and
   arrows (`ScoreComparison`); for target rounds shows arrows, group in cm (`shotGroup`,
   `OUTLIER_SHARE`), end totals, ring distribution (`target-stats.ts`) and scorecard. Share button
@@ -73,6 +73,13 @@ explained for people in `docs/game-modes.md`; update it when you change one of t
   canvas in the fixed `shareCard.*` colors) or the link, through the share sheet, else download
   and clipboard; not for rounds waiting for upload. The archer's own rounds also get an edit
   button there (only there, not in the profile's history).
+- **Setup** (`ArcherySetup`, `UserSettings.setup`, the last `RECENT_SETUPS` in `recentSetups`): bow,
+  distance and face the archer shoots with now, shown and changed with `SetupPicker` (dashboard,
+  new rounds). Saving a round or setting up or accepting a duel makes its setup the current one
+  (`SettingsStore.useSetup`). It only presets: new rounds and duels start from it, the dashboard's
+  boards and profiles open on its distance, the progress chart draws its bow stronger. It never
+  filters anything out. Rounds from before it existed seed it from the device's last round
+  (`scores/score-setup.ts`).
 - Dates: `shotOn` is an `IsoDate` (`YYYY-MM-DD`), never a timestamp; format with
   `formatGermanDate`; today is `todayInClub()`.
 - **Abzeichen** (`RANKS`, `users.rank`): one per user, set in settings, no approval.

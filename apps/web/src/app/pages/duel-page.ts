@@ -66,6 +66,7 @@ import { FieldControl, FormField } from '../forms/form-field';
 import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
+import { SettingsStore } from '../settings/settings.store';
 import { TargetCanvas } from '../scores/target-canvas';
 import { PushStore } from '../settings/push.store';
 import { CheckboxField } from '../ui/checkbox-field';
@@ -244,7 +245,8 @@ export class DuelPage {
 
   protected readonly bowTypes = BOW_TYPE_OPTIONS;
   protected readonly targetSizes = TARGET_SIZES;
-  private readonly setup = loadDuelSetup();
+  private readonly settings = inject(SettingsStore);
+  private readonly setup = loadDuelSetup(this.settings.setup());
   protected readonly acceptForm = new FormGroup({
     bowType: new FormControl<BowTypeId>(this.setup.bowType ?? 'r', { nonNullable: true }),
     targetSize: new FormControl<TargetSize>(this.setup.targetSize ?? 40, { nonNullable: true }),
@@ -446,7 +448,10 @@ export class DuelPage {
   protected async accept(): Promise<void> {
     const duel = this.loaded();
     const answer = this.acceptForm.getRawValue();
-    if (duel) saveDuelSetup({ format: duel.format, distance: duel.distance, ...answer });
+    if (duel) {
+      saveDuelSetup({ format: duel.format, distance: duel.distance, ...answer });
+      this.settings.useSetup({ distance: duel.distance, ...answer });
+    }
     await this.answer((id) => this.api.accept(id, answer));
     this.push.suggest();
   }

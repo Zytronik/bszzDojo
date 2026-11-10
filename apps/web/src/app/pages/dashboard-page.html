@@ -3,6 +3,10 @@
   description="Hier kannst du deine Leistungen im BSZZ Dojo eintragen und mit anderen vergleichen."
 />
 
+<div [class]="setupStyles">
+  <app-setup-picker />
+</div>
+
 @if (duels.invitations().length > 0 || duels.open().length > 0) {
 <app-section>
   <h2>Duelle</h2>

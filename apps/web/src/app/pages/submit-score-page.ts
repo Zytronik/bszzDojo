@@ -24,6 +24,7 @@ import {
   shotPoints,
   shotTotals,
   todayInClub,
+  type ArcherySetup,
   type BowTypeId,
   type Score,
   type ScoreDetail,
@@ -52,6 +53,8 @@ import {
 import { PageHeader, PageHeaderState } from '../layout/page-header';
 import { ToastStore, toastErrors } from '../layout/toast.store';
 import { ScoreSheet } from '../scores/score-sheet';
+import { SetupPicker } from '../scores/setup-picker';
+import { SettingsStore } from '../settings/settings.store';
 import { TargetCanvas } from '../scores/target-canvas';
 import { CheckboxField } from '../ui/checkbox-field';
 import { PageTitle } from '../ui/page-title';
@@ -97,6 +100,7 @@ function isValidEndCount(arrows: number | null, perEnd: number): arrows is numbe
     FormField,
     FieldControl,
     FormButton,
+    SetupPicker,
   ],
   templateUrl: './submit-score-page.html',
 })
@@ -130,7 +134,17 @@ export class SubmitScorePage {
     MAX_RESULT: MAX_ARROWS * POINTS_PER_ARROW,
   };
 
-  private readonly setup = loadScoreSetup();
+  private readonly settings = inject(SettingsStore);
+  /**
+   * The last round on this device, from before setups were stored in the account: it becomes the
+   * first setup.
+   */
+  private readonly lastRound = loadScoreSetup();
+  private readonly setup = this.settings.setup() ?? this.lastRound;
+  /** New rounds take bow, distance and face from the setup bar; corrections show the fields. */
+  protected readonly usesSetup = computed(
+    () => this.id() === undefined && this.settings.setup() !== null,
+  );
 
   protected readonly form = this.forms.group({
     bowType: this.forms.control<BowTypeId>(this.setup?.bowType ?? 'r'),
@@ -188,8 +202,10 @@ export class SubmitScorePage {
     marginBlockStart: '10',
   });
   protected readonly highlightStyles = css({ color: 'accent.default' });
+  protected readonly styles = { setup: css({ marginBlockEnd: 'stack' }) };
 
   constructor() {
+    if (!this.settings.setup() && this.lastRound) this.settings.useSetup(this.lastRound);
     revalidateOnChange(this.form);
     toastErrors(() => this.original.error());
     effect(() => {
@@ -247,6 +263,10 @@ export class SubmitScorePage {
     return { tens: tens ?? 0, nines: nines ?? 0, result: result ?? 0 };
   });
 
+  protected applySetup({ bowType, distance, targetSize, isSpot }: ArcherySetup): void {
+    this.form.patchValue({ bowType, distance, targetSize, isSpot });
+  }
+
   protected place(shot: Shot): void {
     const index = this.selected();
     const shots = [...this.shots()];
@@ -281,6 +301,7 @@ export class SubmitScorePage {
 
     const { bowType, targetSize, isSpot } = score;
     saveScoreSetup({ bowType, targetSize, isSpot, distance, arrows });
+    this.settings.useSetup({ bowType, distance, targetSize, isSpot });
     if (this.auth.isOffline()) {
       await this.keepForUpload(score);
       return;

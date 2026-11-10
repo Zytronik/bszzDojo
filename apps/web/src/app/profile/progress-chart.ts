@@ -11,6 +11,7 @@ import {
 import {
   BOW_TYPES,
   formatGermanDate,
+  type BowTypeId,
   type DistanceProgress,
   type IsoDate,
 } from '@bszz-dojo/shared';
@@ -54,6 +55,11 @@ function shortDate(day: IsoDate): string {
   return `${date}.${month}.${year.slice(2)}`;
 }
 
+/** `rgb(…)` from `BOW_TYPES` at 35% opacity, for the lines of the other bow types */
+function faded(color: string): string {
+  return color.replace('rgb(', 'rgba(').replace(')', ', 0.35)');
+}
+
 function average(values: readonly number[]): number {
   return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
 }
@@ -64,23 +70,34 @@ function average(values: readonly number[]): number {
  * A day with several rounds of a bow type: the line goes through their average and every round
  * is a point of its own on that day.
  */
-function chartData(progress: DistanceProgress): ProgressChartInput {
+function chartData(
+  progress: DistanceProgress,
+  emphasized: BowTypeId | null,
+): ProgressChartInput {
   const days = [
     ...new Set(progress.series.flatMap((series) => series.points.map((point) => point.shotOn))),
   ].toSorted();
+  // Only next to other lines: a single one stays as it is.
+  const highlight =
+    progress.series.length > 1 && progress.series.some((series) => series.bowType === emphasized);
   const perSeries = progress.series.map((series) => ({
     ...BOW_TYPES[series.bowType],
+    chartColor:
+      highlight && series.bowType !== emphasized
+        ? faded(BOW_TYPES[series.bowType].chartColor)
+        : BOW_TYPES[series.bowType].chartColor,
+    strong: highlight && series.bowType === emphasized,
     results: days.map((day) =>
       series.points.filter((point) => point.shotOn === day).map((point) => point.result),
     ),
   }));
 
-  const lines = perSeries.map(({ name, chartColor, results }) => {
+  const lines = perSeries.map(({ name, chartColor, strong, results }) => {
     const shared = results.map((ofDay) => ofDay.length > 1);
     return {
       label: name,
       data: results.map((ofDay) => (ofDay.length > 0 ? average(ofDay) : null)),
-      borderWidth: 1,
+      borderWidth: strong ? 3 : 1,
       tension: 0.3,
       spanGaps: true,
       borderColor: chartColor,
@@ -116,6 +133,8 @@ function chartData(progress: DistanceProgress): ProgressChartInput {
 })
 export class ProgressChart {
   readonly progress = input.required<DistanceProgress>();
+  /** The viewer's bow type, drawn stronger than the others */
+  readonly emphasized = input<BowTypeId | null>(null);
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -132,7 +151,7 @@ export class ProgressChart {
       const color = colors.text;
       const grid = { color: colors.grid };
 
-      const { data, days, lines } = chartData(progress);
+      const { data, days, lines } = chartData(progress, this.emphasized());
 
       this.chart?.destroy();
       this.chart = new Chart<'line', (number | null)[], string>(this.canvas().nativeElement, {

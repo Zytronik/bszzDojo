@@ -8,6 +8,11 @@
   <h2>{{ id() ? 'Korrigiere deinen Score' : 'Erfasse einen neuen Score' }}</h2>
   <app-tabs [tabs]="modes" [(selected)]="mode">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (usesSetup()) {
+      <div [class]="styles.setup">
+        <app-setup-picker [disabled]="locked()" (changed)="applySetup($event)" />
+      </div>
+      } @else {
       <div [class]="rows.even">
         <app-form-field label="Bogenart:">
           <select appFieldControl formControlName="bowType">
@@ -16,13 +21,14 @@
             }
           </select>
         </app-form-field>
-        <app-form-field label="Datum:">
+        <app-form-field label="Distanz:">
           <input
             appFieldControl
-            type="date"
-            formControlName="shotOn"
-            [max]="today"
-            [min]="earliestDate"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="limits.MAX_DISTANCE"
+            formControlName="distance"
           />
         </app-form-field>
       </div>
@@ -41,15 +47,15 @@
           (checkedChange)="form.controls.isSpot.setValue($event)"
         />
       </div>
+      }
       <div [class]="rows.even">
-        <app-form-field label="Distanz:">
+        <app-form-field label="Datum:">
           <input
             appFieldControl
-            type="number"
-            inputmode="numeric"
-            min="0"
-            [max]="limits.MAX_DISTANCE"
-            formControlName="distance"
+            type="date"
+            formControlName="shotOn"
+            [max]="today"
+            [min]="earliestDate"
           />
         </app-form-field>
         <app-form-field label="Anzahl Pfeile:">

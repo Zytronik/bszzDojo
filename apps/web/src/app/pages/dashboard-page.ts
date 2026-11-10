@@ -3,8 +3,8 @@ import {
   Component,
   computed,
   inject,
+  linkedSignal,
   resource,
-  signal,
 } from '@angular/core';
 import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
@@ -18,6 +18,8 @@ import { PendingScoresStore, reloadAfterUploads } from '../scores/pending-scores
 import { MedalList } from '../dashboard/medal-list';
 import { toastErrors } from '../layout/toast.store';
 import { LoadingFrame } from '../ui/loading-frame';
+import { SetupPicker } from '../scores/setup-picker';
+import { SettingsStore } from '../settings/settings.store';
 import { PageTitle } from '../ui/page-title';
 import { Section } from '../ui/section';
 import { Tabs, type TabItem } from '../ui/tabs';
@@ -33,6 +35,7 @@ import { Tabs, type TabItem } from '../ui/tabs';
     MedalList,
     LoadingFrame,
     DuelRow,
+    SetupPicker,
   ],
   templateUrl: './dashboard-page.html',
 })
@@ -56,10 +59,17 @@ export class DashboardPage {
     id: String(distance),
     label: `${distance}m`,
   }));
-  protected readonly allTimeTab = signal(this.distanceTabs[0]?.id ?? '');
-  protected readonly monthlyTab = signal(this.distanceTabs[0]?.id ?? '');
+  private readonly settings = inject(SettingsStore);
+  /** The boards open on the distance of the archer's setup, if it has one. */
+  private readonly setupTab = computed(() => {
+    const distance = String(this.settings.setup()?.distance);
+    return this.distanceTabs.find((tab) => tab.id === distance)?.id ?? this.distanceTabs[0]?.id;
+  });
+  protected readonly allTimeTab = linkedSignal(() => this.setupTab() ?? '');
+  protected readonly monthlyTab = linkedSignal(() => this.setupTab() ?? '');
 
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
+  protected readonly setupStyles = css({ marginBlockEnd: 'stack' });
   protected readonly duels = inject(DuelsStore);
 
   protected monthName(month: number): string {

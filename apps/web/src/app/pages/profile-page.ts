@@ -48,6 +48,7 @@ import { RankBadge } from '../ui/rank-badge';
 import { Section } from '../ui/section';
 import { LoadingFrame } from '../ui/loading-frame';
 import { Tabs, type TabItem } from '../ui/tabs';
+import { SettingsStore } from '../settings/settings.store';
 
 @Component({
   selector: 'app-profile-page',
@@ -107,7 +108,11 @@ export class ProfilePage {
       : profile;
   });
 
-  /** The first distance again whenever another profile is opened. */
+  protected readonly settings = inject(SettingsStore);
+  /**
+   * The distance of the viewer's setup when the profile has rounds there, else the first; again
+   * whenever another profile is opened.
+   */
   protected readonly recordsTab = linkedSignal(() => this.firstTab(this.shown()?.personalBests));
   protected readonly chartTab = linkedSignal(() => this.firstTab(this.shown()?.progress));
 
@@ -290,6 +295,8 @@ export class ProfilePage {
   }
 
   private firstTab(groups: readonly { distance: number }[] | undefined): string {
-    return groups?.[0] ? String(groups[0].distance) : '';
+    const distance = this.settings.setup()?.distance;
+    const group = groups?.find((candidate) => candidate.distance === distance) ?? groups?.[0];
+    return group ? String(group.distance) : '';
   }
 }

@@ -19,6 +19,20 @@ the web app and the API apply the same ones; the file is named with each section
 A round is one session: bow type, target face (122, 80, 60 or 40cm, full face or spot), distance
 (1–90m), date shot, number of arrows (1–300) and the result with its tens and nines.
 
+### The setup
+
+Every archer has a current setup: bow type, distance and face. It is shown at the top of the
+start page and of "Score erfassen", and a tap changes it: the last three setups are one tap each,
+or a new one is picked. Saving a round, or setting up or accepting a duel, makes that setup the
+current one.
+
+The setup only presets things, it never hides anything:
+
+- New rounds take bow, distance and face from it; only the date and the arrows are left to fill in.
+- New duels and accepted invitations start with its bow and face (and, for a new duel, distance).
+- The start page's boards and every profile open on its distance.
+- The progress chart draws its bow type stronger than the others.
+
 ### Entering a round
 
 The form ("Score erfassen", `/scores/new`) has two tabs:
