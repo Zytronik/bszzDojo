@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.26.0](https://github.com/Zytronik/bszzDojo/compare/v3.25.2...v3.26.0) (2026-11-10)
+
+
+### Features
+
+* **web:** share a round as an image ([#138](https://github.com/Zytronik/bszzDojo/issues/138)) ([7278b31](https://github.com/Zytronik/bszzDojo/commit/7278b317ada44119d509ce9cc4604b0079b2f993))
+
+
+### Refactoring
+
+* clean up after the share card ([#139](https://github.com/Zytronik/bszzDojo/issues/139)) ([a384c18](https://github.com/Zytronik/bszzDojo/commit/a384c188c827fc53afb53a25a87f897454aaa164))
+
 ## [3.25.2](https://github.com/Zytronik/bszzDojo/compare/v3.25.1...v3.25.2) (2026-11-09)
 
 
