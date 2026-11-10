@@ -42,6 +42,7 @@ import { errorMessage } from '../core/error-message';
 import { DuelsApiService } from '../core/duels-api.service';
 import { UsersApiService } from '../core/users-api.service';
 import { loadDuelSetup, saveDuelSetup } from '../duels/duel-setup';
+import { SettingsStore } from '../settings/settings.store';
 import { DuelsStore } from '../duels/duels.store';
 import { FormButton } from '../forms/form-button';
 import { FieldControl, FormField } from '../forms/form-field';
@@ -97,7 +98,8 @@ export class DuelNewPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
   private readonly forms = inject(NonNullableFormBuilder);
-  private readonly setup = loadDuelSetup();
+  private readonly settings = inject(SettingsStore);
+  private readonly setup = loadDuelSetup(this.settings.setup());
 
   /** The link only carries the username; the search finds the display name to show. */
   private readonly linkedOpponent = resource({
@@ -207,6 +209,7 @@ export class DuelNewPage {
     if (distance === null) return;
     const setup = { format: this.chosenFormat(), bowType, distance, targetSize, isSpot };
     saveDuelSetup(setup);
+    this.settings.useSetup(setup);
     this.saving.set(true);
     try {
       const duel = await this.api.create({ opponent: rival.username, ...setup });

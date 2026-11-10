@@ -1,0 +1,55 @@
+<app-dialog title="Setup wechseln" [open]="open()" (closed)="closed.emit()">
+  @if (recent().length > 0) {
+  <h3 [class]="styles.heading">Zuletzt verwendet</h3>
+  <div [class]="styles.recent">
+    @for (setup of recent(); track $index) {
+    <button
+      type="button"
+      [class]="styles.option"
+      [attr.aria-pressed]="isCurrent(setup)"
+      (click)="pick(setup)"
+    >
+      <span [class]="styles.bow">{{ bowName(setup) }}</span>
+      <span>{{ details(setup) }}</span>
+    </button>
+    }
+  </div>
+  <h3 [class]="styles.heading">Neues Setup</h3>
+  }
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div [class]="rows.even">
+      <app-form-field label="Bogenart:">
+        <select appFieldControl formControlName="bowType">
+          @for (bowType of bowTypes; track bowType.id) {
+          <option [ngValue]="bowType.id">{{ bowType.name }}</option>
+          }
+        </select>
+      </app-form-field>
+      <app-form-field label="Distanz:">
+        <input
+          appFieldControl
+          type="number"
+          inputmode="numeric"
+          min="1"
+          [max]="maxDistance"
+          formControlName="distance"
+        />
+      </app-form-field>
+    </div>
+    <div [class]="rows.wide">
+      <app-form-field label="Scheibengrösse:">
+        <select appFieldControl formControlName="targetSize">
+          @for (size of targetSizes; track size) {
+          <option [ngValue]="size">{{ size }}cm</option>
+          }
+        </select>
+      </app-form-field>
+      <app-checkbox-field
+        label="Spot:"
+        [checked]="form.controls.isSpot.value"
+        (checkedChange)="form.controls.isSpot.setValue($event)"
+      />
+    </div>
+    <button type="submit" appButton>Übernehmen</button>
+  </form>
+</app-dialog>

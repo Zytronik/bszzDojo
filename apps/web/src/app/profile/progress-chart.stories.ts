@@ -54,3 +54,5 @@ export const TwoRoundsOneDay: Story = {
     },
   },
 };
+/** The viewer's setup is Recurve: its line stronger, the others faded */
+export const Emphasized: Story = { args: { emphasized: 'r' } };

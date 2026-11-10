@@ -132,7 +132,7 @@
     } @else {
     <app-tabs [tabs]="distanceTabs(p.progress)" [(selected)]="chartTab">
       @if (progressFor(p.progress); as progress) {
-      <app-progress-chart [progress]="progress" />
+      <app-progress-chart [progress]="progress" [emphasized]="settings.setup()?.bowType ?? null" />
       }
     </app-tabs>
     } }

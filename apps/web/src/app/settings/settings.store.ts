@@ -1,5 +1,13 @@
 import { DOCUMENT, effect, inject, untracked } from '@angular/core';
-import { isTheme, type Theme, type UserSettings } from '@bszz-dojo/shared';
+import {
+  DEFAULT_USER_SETTINGS,
+  isTheme,
+  parseUserSettings,
+  withSetup,
+  type ArcherySetup,
+  type Theme,
+  type UserSettings,
+} from '@bszz-dojo/shared';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { AuthStore } from '../auth/auth.store';
 import { UsersApiService } from '../core/users-api.service';
@@ -21,8 +29,11 @@ function initialTheme(): Theme {
 
 export const SettingsStore = signalStore(
   { providedIn: 'root' },
-  withState<UserSettings>(() => ({ theme: initialTheme() })),
-  withMethods((store, api = inject(UsersApiService), toasts = inject(ToastStore)) => {
+  withState<UserSettings>(() => ({ ...DEFAULT_USER_SETTINGS, theme: initialTheme() })),
+  withMethods((store) => {
+    const api = inject(UsersApiService);
+    const toasts = inject(ToastStore);
+    const auth = inject(AuthStore);
     let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
     const cancelPendingSave = (): void => {
@@ -33,23 +44,43 @@ export const SettingsStore = signalStore(
     const save = async (): Promise<void> => {
       saveTimer = null;
       try {
-        await api.saveSettings({ theme: store.theme() });
+        await api.saveSettings({
+          theme: store.theme(),
+          setup: store.setup(),
+          recentSetups: store.recentSetups(),
+        });
       } catch {
-        toasts.error('Das Theme konnte nicht gespeichert werden.');
+        // Offline the header's status pill already says so; the next change saves it then.
+        if (!auth.isOffline()) toasts.error('Die Einstellungen konnten nicht gespeichert werden.');
       }
+    };
+
+    const saveSoon = (): void => {
+      cancelPendingSave();
+      saveTimer = setTimeout(() => void save(), SAVE_DEBOUNCE_MS);
     };
 
     return {
       /** Replaces the local settings with the account's, without saving them back. */
       load(settings: UserSettings): void {
         cancelPendingSave();
-        patchState(store, settings);
+        // The last user cached for offline starts may come from an app version without setups.
+        patchState(store, parseUserSettings(settings));
       },
 
       setTheme(theme: Theme): void {
         patchState(store, { theme });
-        cancelPendingSave();
-        saveTimer = setTimeout(() => void save(), SAVE_DEBOUNCE_MS);
+        saveSoon();
+      },
+
+      /** Makes `setup` the current one, e.g. after a round was saved with it. */
+      useSetup(setup: ArcherySetup): void {
+        const settings = withSetup(
+          { theme: store.theme(), setup: store.setup(), recentSetups: store.recentSetups() },
+          setup,
+        );
+        patchState(store, { setup: settings.setup, recentSetups: settings.recentSetups });
+        saveSoon();
       },
     };
   }),

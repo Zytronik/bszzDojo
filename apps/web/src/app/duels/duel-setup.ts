@@ -5,6 +5,7 @@ import {
   isInteger,
   isRecord,
   isTargetSize,
+  type ArcherySetup,
   type BowTypeId,
   type DuelFace,
   type DuelSettings,
@@ -34,19 +35,16 @@ function isDuelSetup(value: unknown): value is DuelSetup {
   );
 }
 
-/** The last duel's setup, else the bow, face and distance of the last round */
-export function loadDuelSetup(): Partial<DuelSetup> {
+/**
+ * The archer's current setup (bow, face, distance) with the last duel's format; without a setup,
+ * the last duel's or the last round's.
+ */
+export function loadDuelSetup(current: ArcherySetup | null): Partial<DuelSetup> {
   const stored = readStored(STORAGE_KEY);
-  if (isDuelSetup(stored)) return stored;
-  const score = loadScoreSetup();
-  return score
-    ? {
-        bowType: score.bowType,
-        targetSize: score.targetSize,
-        isSpot: score.isSpot,
-        distance: score.distance,
-      }
-    : {};
+  const last: Partial<DuelSetup> = isDuelSetup(stored) ? stored : (loadScoreSetup() ?? {});
+  if (!current) return last;
+  const { bowType, distance, targetSize, isSpot } = current;
+  return { format: last.format, bowType, distance, targetSize, isSpot };
 }
 
 export function saveDuelSetup(setup: DuelSetup): void {

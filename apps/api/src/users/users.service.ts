@@ -4,6 +4,7 @@ import {
   USER_SEARCH_LIMIT,
   normalizeDisplayName,
   normalizeUsername,
+  parseUserSettings,
   usernameKey,
   type UpdateProfileRequest,
   type UserProfile,
@@ -59,7 +60,9 @@ export class UsersService {
     return toUserProfile(user);
   }
 
-  async updateSettings(userId: string, settings: UserSettings): Promise<UserSettings> {
+  async updateSettings(userId: string, body: UserSettings): Promise<UserSettings> {
+    // Plain JSON for the jsonb column, with what older app versions don't send yet filled in.
+    const settings = parseUserSettings(body);
     const result = await this.users.update(userId, { settings });
     if (result.affected === 0) throw new NotFoundException();
     return settings;
