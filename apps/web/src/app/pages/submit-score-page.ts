@@ -154,7 +154,7 @@ export class SubmitScorePage {
     distance: this.numberControl('distance', this.setup?.distance ?? DEFAULT_DISTANCE),
     tens: this.numberControl('tens'),
     nines: this.numberControl('nines'),
-    arrows: this.numberControl('arrows', this.setup?.arrows ?? null),
+    arrows: this.numberControl('arrows', this.lastRound?.arrows ?? null),
     result: this.numberControl('result'),
     // `null` in the `result` mode; on the target one slot per arrow, `null` until it's placed.
     shots: this.forms.control<(Shot | null)[] | null>(null, formRule(scoreFieldErrors, 'shots')),
