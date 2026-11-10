@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { LEADERBOARD_DISTANCES, MONTH_NAMES, type DistanceLeaderboard } from '@bszz-dojo/shared';
 import { css } from 'styled-system/css';
+import { pageContainer } from 'styled-system/recipes';
 import { AuthStore } from '../auth/auth.store';
 import { RankingsApiService } from '../core/rankings-api.service';
 import { LeaderboardList } from '../dashboard/leaderboard-list';
@@ -69,7 +70,7 @@ export class DashboardPage {
   protected readonly monthlyTab = linkedSignal(() => this.setupTab() ?? '');
 
   protected readonly leadStyles = css({ marginBlockEnd: '10' });
-  protected readonly setupStyles = css({ marginBlockEnd: 'stack' });
+  protected readonly setupStyles = pageContainer();
   protected readonly duels = inject(DuelsStore);
 
   protected monthName(month: number): string {

@@ -46,7 +46,7 @@ export class SetupBar {
         w: 'full',
         textAlign: 'start',
         cursor: 'pointer',
-        _disabled: { cursor: 'default' },
+        _disabled: { cursor: 'default', opacity: 'muted' },
       }),
     ),
     text: css({ display: 'flex', flexDirection: 'column', minW: '0' }),
